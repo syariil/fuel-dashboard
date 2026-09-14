@@ -24,3 +24,80 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+html {
+  background: #0f1115;
+}
+
+body {
+  background: #0f1115;
+  color: #edeff5;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f1115;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262b36;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3dbdf5;
+}
+
+.recharts-wrapper {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.recharts-text {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (max-width: 900px) {
+  .fuel-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fleet-leaderboards {
+    grid-template-columns: 1fr !important;
+  }
+
+  .two-column-section {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .fuel-navigation {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .fuel-navigation {
+    grid-template-columns: 1fr !important;
+  }
+}
