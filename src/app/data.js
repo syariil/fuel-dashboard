@@ -59,7 +59,7 @@ export const CONSUMPTION_TREND = [
 ];
 
 export const CAT_COMPARE = [
-  { cat: "Produksi", new: 5718.3, base: 5700.6, wow: 0.3 },
+  { cat: "Produksi", new: 5795.08, base: 4358.68, wow: 32.96 },
   { cat: "MHR", new: 548.7, base: 445.8, wow: 23.1 },
   { cat: "Pendukung", new: 201.5, base: 183.8, wow: 9.7 },
 ];

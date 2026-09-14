@@ -213,11 +213,11 @@ const ExecSummary = () => (
           margin: 0,
           lineHeight: 1.5,
         }}>
-        Minggu pertama operasi penuh setelah restart akhir Agustus. Konsumsi
-        rata-rata <span style={{ color: C.accentBright }}>6.469 L/hari</span> —
-        naik tipis <span style={{ color: C.accentBright }}>+2,2%</span> vs
-        baseline 31 Agu–5 Sep (6.330 L/hari). Armada hampir penuh: 24 DT dan 12
-        EXC aktif. Fuel ratio DT weighted{" "}
+        Minggu Kedua operasi penuh dibulan September. Konsumsi rata-rata{" "}
+        <span style={{ color: C.accentBright }}>6.469 L/hari</span> — naik tipis{" "}
+        <span style={{ color: C.accentBright }}>+2,2%</span> vs baseline 31
+        Agu–5 Sep (6.330 L/hari). Armada hampir penuh: 24 DT dan 12 EXC aktif.
+        Fuel ratio DT weighted{" "}
         <span style={{ color: C.accentBright }}>23,18 L/HM</span>. Stok EOD 13
         Sep ≈ <span style={{ color: C.accentBright }}>21.979 L</span> (runway
         3–4 hari) setelah Stock-In 22.000 L pada 7 Sep — lihat halaman Kualitas
@@ -1722,7 +1722,7 @@ const RestartTransition = () => {
             margin: 0,
             lineHeight: 1.5,
           }}>
-          Minggu pertama operasi penuh setelah restart. Armada hampir kapasitas
+          Minggu Kedua operasi penuh di bulan september. Armada hampir kapasitas
           penuh (24 DT + 12 EXC), konsumsi stabil (+2,2% vs baseline), dan stok
           sudah dipulihkan lewat Stock-In 31 Agu–7 Sep.{" "}
           <span style={{ color: C.accentBright }}>
