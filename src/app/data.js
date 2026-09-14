@@ -39,7 +39,7 @@ export const WEEK_PREV_NORMAL = "31 Agu–5 Sep"; // baseline minggu penuh sebel
 // • LV/Support tetap mencatat last_hm=0 (tidak relevan untuk LV); tidak
 //   dihitung sebagai anomali first-refuel alat berat.
 export const KPI = {
-  totalWeek: 45279.36, // full week 7 hari, 225 transaksi
+  totalWeek: 45120, // full week 7 hari, 225 transaksi
   totalPostResume: 45279.36, // seluruh minggu operasi penuh
   fleetRateExclMPS: 6468.5, // avg L/hari 7–13 Sep
   normalOpsBaseline: 6330.1, // baseline 31 Agu–5 Sep (6 hari)
@@ -47,7 +47,7 @@ export const KPI = {
   dtFrHm: 23.18, // weighted, excl. DT-066 anomalous 7-Sep record
   dtFrKm: 1.358,
   excFrHm: 20.65,
-  currentStock: 21979.0, // EOD 13 Sep (ledger reconstructed)
+  currentStock: 22.138, // EOD 13 Sep (ledger reconstructed)
   runwayDaysLow: 3.0,
   runwayDaysHigh: 4.0,
 };
