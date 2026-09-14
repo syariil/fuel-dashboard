@@ -352,7 +352,7 @@ const ExecSummary = () => (
               Stok Saat Ini (EOD 13 Sep)
             </div>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.ink }}>
-              21,979{" "}
+              22,138.15{" "}
               <span style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>
                 L
               </span>
