@@ -21,440 +21,468 @@ export const C = {
 };
 
 export const COMPANY = "PT Tempopress Mining Indonesia";
-export const WEEK_NEW = "7–13 Sep";
-export const WEEK_PREV_NORMAL = "31 Agu–5 Sep"; // baseline minggu penuh sebelumnya
+export const WEEK_NEW = "14–20 Sep";
+export const WEEK_PREV_NORMAL = "7–13 Sep"; // baseline minggu penuh sebelumnya
 
 // ─────────────── DATA HASIL PERHITUNGAN (terverifikasi dari Excel) ───────────────
-// CATATAN: Minggu 7–13 Sep adalah minggu operasi penuh pertama setelah restart
-// akhir Agustus. Stock-In besar masuk 31 Agu–7 Sep (termasuk 22.000 L pada
-// 7 Sep), sehingga posisi stok aman (~22.000 L EOD 13 Sep). Armada DT aktif
-// 24 unit, EXC 12 unit — hampir kapasitas penuh.
+// CATATAN: Minggu 14–20 Sep adalah minggu operasi intensitas tinggi.
+// Konsumsi melonjak ke ~10.071 L/hari (+55,7% vs baseline 7–13 Sep).
+// Stok sempat hampir habis (≈54 L EOD 16 Sep) sebelum berturut-turut
+// Stock-In 9.000 (16 Sep, peminjaman BPSP), 5.000 (17 Sep), 23.000 (18 Sep),
+// dan 15.918 (20 Sep, kurang 82 L). EOD 20 Sep ≈ 4.557 L — runway <1 hari.
 //
-// Catatan kualitas data:
-// • DT-066 (7 Sep): Running HM hanya 1,0 jam untuk 338 L — hampir pasti
-//   baseline HM/KM belum ter-update setelah idle (first-refueling style).
-//   Record ini DIKECUALIKAN dari perhitungan fuel-ratio DT-066 dan armada.
-// • Beberapa DT lama (DT-004, DT-007, DT-008) menunjukkan FR L/HM sangat
-//   rendah (11–12) — perlu dicek apakah HM berjalan normal atau ada isu meter.
-// • LV/Support tetap mencatat last_hm=0 (tidak relevan untuk LV); tidak
-//   dihitung sebagai anomali first-refuel alat berat.
+// Catatan kualitas data / remark:
+// • DT-068 (15 Sep): Running HM = 1,0 & KM = 1 untuk 211,5 L — first-refueling
+//   style. DIKECUALIKAN dari FR.
+// • DT-005 (18 Sep): Running HM = 1,0 untuk 290 L — first-refueling style.
+//   Record ini DIKECUALIKAN dari FR; record 20 Sep (HM=13,7) tetap dipakai.
+// • Remark "FOR MPS" (19 Sep, 65,8 L) — transfer ke PT. MPS.
+// • Remark Stock-In: 16 Sep "Peminjaman" (BPSP 9.000 L); 20 Sep "Kurang 82 Liter".
+// • 238/329 record bertanda remark=OK; 90 kosong; 1 "FOR MPS".
 export const KPI = {
-  totalWeek: 45120, // full week 7 hari, 225 transaksi
-  totalPostResume: 45279.36, // seluruh minggu operasi penuh
-  fleetRateExclMPS: 6468.5, // avg L/hari 7–13 Sep
-  normalOpsBaseline: 6330.1, // baseline 31 Agu–5 Sep (6 hari)
-  wowVsNormal: 2.2,
-  dtFrHm: 23.18, // weighted, excl. DT-066 anomalous 7-Sep record
-  dtFrKm: 1.358,
-  excFrHm: 20.65,
-  currentStock: 22.138, // EOD 13 Sep (ledger reconstructed)
-  runwayDaysLow: 3.0,
-  runwayDaysHigh: 4.0,
+  totalWeek: 70499.4, // full week 7 hari, 329 transaksi
+  totalPostResume: 70499.4,
+  fleetRateExclMPS: 10071.3, // avg L/hari 14–20 Sep
+  normalOpsBaseline: 6468.5, // baseline 7–13 Sep
+  wowVsNormal: 55.7,
+  dtFrHm: 20.37, // weighted, excl. DT-068 & DT-005 (HM=1) anomalous records
+  dtFrKm: 1.203,
+  excFrHm: 19.47,
+  currentStock: 4556.8, // EOD 20 Sep (dari anchor user EOD 13 Sep = 22.138,15)
+  runwayDaysLow: 0.4,
+  runwayDaysHigh: 0.5,
 };
 
 export const CONSUMPTION_TREND = [
-  { period: "Restart\n(27-30 Agu)", rate: 4233.2 },
-  { period: "Baseline\n(31 Agu-5 Sep)", rate: 6330.1 },
-  { period: "Minggu Ini\n(7-13 Sep)", rate: 6468.5 },
+  { period: "Baseline\n(7-13 Sep)", rate: 6468.5 },
+  { period: "Minggu Ini\n(14-20 Sep)", rate: 10071.3 },
 ];
 
 export const CAT_COMPARE = [
-  { cat: "Produksi", new: 5795.08, base: 4358.68, wow: 32.96 },
-  { cat: "MHR", new: 548.7, base: 445.8, wow: 23.1 },
-  { cat: "Pendukung", new: 201.5, base: 183.8, wow: 9.7 },
+  { cat: "Produksi", new: 9234.3, base: 5718.3, wow: 61.5 },
+  { cat: "MHR", new: 672.2, base: 548.7, wow: 22.5 },
+  { cat: "Pendukung", new: 164.9, base: 201.5, wow: -18.2 },
 ];
 
 export const DAILY_NEW = [
   {
-    date: "7/9",
+    date: "14/9",
     day: "Sen",
-    label: "Operasi Penuh + Stock-In",
-    prod: 6407.7,
-    mhr: 745.0,
-    supp: 563.6,
-    total: 7716.3,
+    label: "Operasi Intensif",
+    prod: 9025.6,
+    mhr: 794.8,
+    supp: 77.2,
+    total: 9897.6,
   },
   {
-    date: "8/9",
+    date: "15/9",
     day: "Sel",
-    label: "Operasi Penuh",
-    prod: 7291.1,
-    mhr: 559.0,
-    supp: 61.1,
-    total: 7911.3,
+    label: "Operasi Intensif",
+    prod: 8788.0,
+    mhr: 551.9,
+    supp: 469.4,
+    total: 9809.2,
   },
   {
-    date: "9/9",
+    date: "16/9",
     day: "Rab",
-    label: "Operasi",
-    prod: 4184.1,
-    mhr: 807.2,
-    supp: 89.0,
-    total: 5080.3,
+    label: "Puncak + Stock-In Peminjaman",
+    prod: 10220.6,
+    mhr: 1012.3,
+    supp: 144.0,
+    total: 11376.9,
   },
   {
-    date: "10/9",
+    date: "17/9",
     day: "Kam",
-    label: "Operasi",
-    prod: 3980.4,
-    mhr: 265.9,
-    supp: 125.1,
-    total: 4371.5,
+    label: "Hari Rendah (hanya Produksi)",
+    prod: 4836.1,
+    mhr: 0.0,
+    supp: 0.0,
+    total: 4836.1,
   },
   {
-    date: "11/9",
+    date: "18/9",
     day: "Jum",
-    label: "Operasi",
-    prod: 4315.8,
-    mhr: 156.0,
-    supp: 232.7,
-    total: 4704.5,
+    label: "Puncak Minggu + Stock-In Besar",
+    prod: 11616.8,
+    mhr: 1100.3,
+    supp: 87.8,
+    total: 12804.9,
   },
   {
-    date: "12/9",
+    date: "19/9",
     day: "Sab",
     label: "Operasi Kuat",
-    prod: 7004.1,
-    mhr: 692.5,
-    supp: 232.8,
-    total: 7929.3,
+    prod: 9411.3,
+    mhr: 366.9,
+    supp: 144.9,
+    total: 9923.2,
   },
   {
-    date: "13/9",
+    date: "20/9",
     day: "Min",
-    label: "Operasi Kuat",
-    prod: 6844.8,
-    mhr: 614.9,
-    supp: 106.5,
-    total: 7566.2,
+    label: "Operasi Kuat + Stock-In",
+    prod: 10741.5,
+    mhr: 879.0,
+    supp: 231.0,
+    total: 11851.5,
   },
 ];
 
-// Armada DT — 24 unit aktif; DT-066 record 7 Sep (HM=1.0 / 338 L) dikecualikan dari FR
+// Armada DT — 26 unit tercatat; DT-068 (seluruh) & DT-005 record HM=1 dikecualikan dari FR
 export const DT_FLEET = [
-  { unit: "DT-028", frHm: 24.56, frKm: 1.308, fuel: 2006.9, records: 8 },
-  { unit: "DT-067", frHm: 25.84, frKm: 1.362, fuel: 1876.7, records: 8 },
-  { unit: "DT-069", frHm: 27.37, frKm: 1.572, fuel: 1874.8, records: 8 },
-  { unit: "DT-058", frHm: 23.4, frKm: 1.283, fuel: 1694.5, records: 6 },
-  { unit: "DT-030", frHm: 25.5, frKm: 1.308, fuel: 1639.3, records: 6 },
-  { unit: "DT-064", frHm: 25.38, frKm: 1.342, fuel: 1591.0, records: 7 },
-  { unit: "DT-029", frHm: 22.43, frKm: 1.204, fuel: 1585.6, records: 7 },
-  { unit: "DT-060", frHm: 24.13, frKm: 1.354, fuel: 1563.6, records: 6 },
-  { unit: "DT-063", frHm: 23.86, frKm: 1.27, fuel: 1553.2, records: 7 },
-  { unit: "DT-025", frHm: 23.53, frKm: 1.238, fuel: 1482.6, records: 5 },
-  { unit: "DT-062", frHm: 24.14, frKm: 1.345, fuel: 1465.1, records: 6 },
-  { unit: "DT-027", frHm: 23.7, frKm: 1.282, fuel: 1445.8, records: 6 },
-  { unit: "DT-024", frHm: 24.86, frKm: 1.327, fuel: 1407.0, records: 6 },
-  // DT-066: FR dihitung tanpa record 7 Sep (HM=1.0 anomali) — fuel/records di sini = 4 record bersih
-  { unit: "DT-066", frHm: 28.66, frKm: 1.645, fuel: 1040.15, records: 4 },
-  { unit: "DT-019", frHm: 23.41, frKm: 1.333, fuel: 1273.3, records: 6 },
-  { unit: "DT-022", frHm: 22.28, frKm: 1.278, fuel: 1229.6, records: 6 },
-  { unit: "DT-021", frHm: 23.75, frKm: 1.376, fuel: 1171.0, records: 4 },
-  { unit: "DT-020", frHm: 22.3, frKm: 1.26, fuel: 994.4, records: 5 },
-  { unit: "DT-065", frHm: 18.19, frKm: 1.295, fuel: 786.0, records: 4 },
-  { unit: "DT-008", frHm: 11.95, frKm: 1.767, fuel: 576.0, records: 2 },
-  { unit: "DT-004", frHm: 11.29, frKm: 1.705, fuel: 504.8, records: 4 },
-  { unit: "DT-023", frHm: 22.64, frKm: 1.198, fuel: 448.2, records: 2 },
-  { unit: "DT-007", frHm: 11.62, frKm: 1.531, fuel: 410.2, records: 2 },
-  { unit: "DT-018", frHm: 29.99, frKm: 1.588, fuel: 350.9, records: 1 },
+  { unit: "DT-021", frHm: 22.84, frKm: 1.2, fuel: 2579.1, records: 12 },
+  { unit: "DT-028", frHm: 23.88, frKm: 1.242, fuel: 2478.6, records: 10 },
+  { unit: "DT-030", frHm: 22.08, frKm: 1.181, fuel: 2398.4, records: 9 },
+  { unit: "DT-064", frHm: 24.39, frKm: 1.255, fuel: 2392.3, records: 9 },
+  { unit: "DT-058", frHm: 20.51, frKm: 1.137, fuel: 2375.2, records: 10 },
+  { unit: "DT-029", frHm: 22.14, frKm: 1.196, fuel: 2337.6, records: 10 },
+  { unit: "DT-020", frHm: 22.1, frKm: 1.255, fuel: 2329.1, records: 10 },
+  { unit: "DT-023", frHm: 24.77, frKm: 1.295, fuel: 2291.4, records: 9 },
+  { unit: "DT-069", frHm: 22.71, frKm: 1.15, fuel: 2291.0, records: 10 },
+  { unit: "DT-060", frHm: 22.53, frKm: 1.288, fuel: 2165.0, records: 8 },
+  { unit: "DT-024", frHm: 22.92, frKm: 1.176, fuel: 2134.1, records: 9 },
+  { unit: "DT-019", frHm: 22.13, frKm: 1.236, fuel: 2062.3, records: 9 },
+  { unit: "DT-067", frHm: 21.76, frKm: 1.092, fuel: 2045.1, records: 9 },
+  { unit: "DT-066", frHm: 20.45, frKm: 1.095, fuel: 2039.3, records: 10 },
+  { unit: "DT-062", frHm: 21.1, frKm: 1.163, fuel: 2035.8, records: 9 },
+  { unit: "DT-027", frHm: 21.94, frKm: 1.199, fuel: 1963.2, records: 8 },
+  { unit: "DT-063", frHm: 22.71, frKm: 1.237, fuel: 1934.7, records: 9 },
+  { unit: "DT-025", frHm: 20.62, frKm: 1.079, fuel: 1785.3, records: 7 },
+  { unit: "DT-065", frHm: 21.33, frKm: 1.146, fuel: 1348.0, records: 6 },
+  { unit: "DT-022", frHm: 23.08, frKm: 1.322, fuel: 1336.3, records: 5 },
+  { unit: "DT-011", frHm: 11.17, frKm: 1.589, fuel: 913.6, records: 5 },
+  { unit: "DT-004", frHm: 9.23, frKm: 1.348, fuel: 797.8, records: 5 },
+  { unit: "DT-008", frHm: 7.75, frKm: 1.332, fuel: 596.6, records: 4 },
+  { unit: "DT-007", frHm: 7.94, frKm: 0.996, fuel: 569.9, records: 3 },
+  // DT-005: hanya record 20 Sep (HM=13,7); record 18 Sep HM=1 dikecualikan
+  { unit: "DT-005", frHm: 14.96, frKm: 1.666, fuel: 205.0, records: 1 },
 ];
 
 export const EXC_FLEET = [
-  { unit: "EXC-026", frHm: 26.06, fuel: 1528.0, records: 8 },
-  { unit: "EXC-014", frHm: 26.68, fuel: 1430.0, records: 7 },
-  { unit: "EXC-024", frHm: 14.38, fuel: 1018.0, records: 7 },
-  { unit: "EXC-011", frHm: 17.65, fuel: 962.0, records: 6 },
-  { unit: "EXC-027", frHm: 30.21, fuel: 838.0, records: 3 },
-  { unit: "EXC-029", frHm: 28.15, fuel: 837.0, records: 3 },
-  { unit: "EXC-023", frHm: 15.26, fuel: 758.0, records: 5 },
-  { unit: "EXC-012", frHm: 17.62, fuel: 734.0, records: 4 },
-  { unit: "EXC-032", frHm: 19.69, fuel: 544.0, records: 4 },
-  { unit: "EXC-025", frHm: 14.39, fuel: 441.0, records: 3 },
-  { unit: "EXC-022", frHm: 17.66, fuel: 198.0, records: 1 },
-  { unit: "EXC-001", frHm: 15.94, fuel: 195.0, records: 1 },
+  { unit: "EXC-026", frHm: 26.97, fuel: 2861.0, records: 9 },
+  { unit: "EXC-014", frHm: 25.63, fuel: 2138.0, records: 6 },
+  { unit: "EXC-029", frHm: 26.89, fuel: 1940.0, records: 7 },
+  { unit: "EXC-027", frHm: 23.81, fuel: 1663.0, records: 6 },
+  { unit: "EXC-025", frHm: 15.93, fuel: 1341.0, records: 7 },
+  { unit: "EXC-023", frHm: 14.86, fuel: 1214.0, records: 8 },
+  { unit: "EXC-022", frHm: 17.5, fuel: 1188.0, records: 6 },
+  { unit: "EXC-011", frHm: 18.47, fuel: 1162.0, records: 6 },
+  { unit: "EXC-012", frHm: 18.95, fuel: 1160.0, records: 7 },
+  { unit: "EXC-032", frHm: 14.14, fuel: 1140.0, records: 8 },
+  { unit: "EXC-024", frHm: 13.05, fuel: 1089.0, records: 7 },
+  { unit: "EXC-020", frHm: 20.64, fuel: 805.0, records: 3 },
+  { unit: "EXC-001", frHm: 21.74, fuel: 400.0, records: 2 },
+  { unit: "EXC-006", frHm: 10.64, fuel: 336.0, records: 1 },
+  { unit: "EXC-002", frHm: 15.0, fuel: 297.0, records: 1 },
 ];
 
 export const MHR_DATA = [
-  { unit: "Motor Grader (MG-003)", qty: 1063.3, fr: 17.0 },
-  { unit: "Water Truck (WT-003)", qty: 930.7, fr: 10.6 },
-  { unit: "Motor Grader (MG-002)", qty: 675.8, fr: 16.0 },
-  { unit: "Compactor (CPT-003)", qty: 524.8, fr: 10.8 },
-  { unit: "Water Truck (WT-002)", qty: 517.8, fr: 7.9 },
-  { unit: "Compactor (CPT-004)", qty: 111.0, fr: 7.3 },
+  { unit: "Motor Grader (MG-003)", qty: 1316.9, fr: 16.9 },
+  { unit: "Water Truck (WT-003)", qty: 1152.6, fr: 11.0 },
+  { unit: "Compactor (CPT-003)", qty: 814.6, fr: 9.0 },
+  { unit: "Water Truck (WT-002)", qty: 679.2, fr: 7.8 },
+  { unit: "Motor Grader (MG-002)", qty: 574.5, fr: 15.0 },
+  { unit: "Compactor (CPT-004)", qty: 149.0, fr: 4.9 },
 ];
 
 export const SUPPORT_DATA = [
-  { unit: "Light Vehicle (gabungan)", qty: 675.7 },
+  { unit: "Fuel Truck (FT-001)", qty: 362.5 },
+  { unit: "Light Vehicle (gabungan)", qty: 579.3 },
   {
     unit: "PT. MPS",
-    qty: 84.7,
-    note: "Transfer kecil — beda dari bulk 5.005 L minggu restart",
+    qty: 65.8,
+    note: "Remark: FOR MPS — transfer ke PT. MPS (19 Sep)",
   },
-  { unit: "Fuel Truck / FT-001", qty: 50.3 },
-  { unit: "HUB", qty: 50.3 },
-  { unit: "Tower Lamp / lainnya", qty: 549.8 },
+  { unit: "Tower Lamp (TL-001/002/003)", qty: 146.7 },
 ];
 
 export const LOCATION_DATA = [
-  { location: "Fuel Station", records: 164, qty: 34790.4, pct: 76.8 },
-  { location: "ETO", records: 27, qty: 5006.0, pct: 11.1 },
-  { location: "EFO", records: 14, qty: 2900.0, pct: 6.4 },
-  { location: "Jetty", records: 20, qty: 2583.0, pct: 5.7 },
+  { location: "Fuel Station", records: 228, qty: 50058.7, pct: 71.0 },
+  { location: "EFO", records: 46, qty: 9332.7, pct: 13.2 },
+  { location: "ETO", records: 28, qty: 7378.0, pct: 10.5 },
+  { location: "Jetty", records: 25, qty: 3335.0, pct: 4.7 },
+  { location: "Mess TMI", records: 2, qty: 395.0, pct: 0.6 },
 ];
 
-export const LOCATION_COLORS = [C.accent, C.gold, C.good, C.amber];
+export const LOCATION_COLORS = [C.accent, C.gold, C.good, C.amber, C.muted];
 
-// Posisi stok (direkonstruksi dari ledger Stock-In + Stock-Out)
+// Posisi stok (dari anchor user EOD 13 Sep = 22.138,15 L + Stock-In − Stock-Out)
 export const STOCK_DATA = [
-  { date: "31/8", lastStock: 8190.0 },
-  { date: "1/9", lastStock: 21532.3 },
-  { date: "2/9", lastStock: 24825.2 },
-  { date: "3/9", lastStock: 18795.7 },
-  { date: "4/9", lastStock: 42501.3 },
-  { date: "5/9", lastStock: 45238.4 },
-  { date: "6/9", lastStock: 45258.4 },
-  { date: "7/9", lastStock: 59542.1 },
-  { date: "8/9", lastStock: 51630.9 },
-  { date: "9/9", lastStock: 46550.6 },
-  { date: "10/9", lastStock: 42179.1 },
-  { date: "11/9", lastStock: 37474.6 },
-  { date: "12/9", lastStock: 29545.3 },
-  { date: "13/9", lastStock: 21979.0 },
+  { date: "13/9", lastStock: 22138.2 },
+  { date: "14/9", lastStock: 12240.6 },
+  { date: "15/9", lastStock: 2431.3 },
+  { date: "16/9", lastStock: 54.4 },
+  { date: "17/9", lastStock: 218.3 },
+  { date: "18/9", lastStock: 10413.4 },
+  { date: "19/9", lastStock: 5490.2 },
+  { date: "20/9", lastStock: 7556.75 },
 ];
 
 // ─────────────── DATA NARASI / KONTEN HALAMAN ───────────────
 export const FINDINGS = [
   {
-    level: "GOOD",
-    title: "Operasi Penuh & Stok Terkendali",
-    body: "Konsumsi rata-rata 6.469 L/hari (+2,2% vs baseline 31 Agu–5 Sep). Stok EOD 13 Sep ≈ 21.979 L setelah Stock-In besar 31 Agu–7 Sep (termasuk 22.000 L pada 7 Sep). Runway ≈ 3–4 hari.",
+    level: "HIGH",
+    title: "Stok Kritis — Hampir Habis 16 Sep",
+    body: "Stok anjlok dari 22.138 L (EOD 13 Sep) ke ≈54 L (EOD 16 Sep). Diselamatkan Stock-In beruntun: 9.000 L (16 Sep peminjaman BPSP), 5.000 L (17 Sep), 23.000 L (18 Sep), 15.918 L (20 Sep). EOD 20 Sep hanya ≈4.557 L — runway <1 hari.",
     action:
-      "Pertahankan ritme Stock-In; pantau agar tidak kembali ke pola 'stok menipis dulu baru pesan'.",
+      "MENDESAK: pastikan Stock-In lanjutan segera. Jangan biarkan pola 'hampir habis baru datang' berulang.",
   },
   {
-    level: "GOOD",
-    title: "Armada Hampir Full Capacity",
-    body: "24 unit DT dan 12 unit EXC aktif minggu ini — lonjakan signifikan dibanding 15 DT / 6 EXC pada minggu restart (27–30 Agu). Fuel ratio DT weighted 23,18 L/HM masih dalam rentang wajar.",
-    action: "Tidak ada tindakan efisiensi mendesak pada level armada.",
+    level: "HIGH",
+    title: "Konsumsi Melonjak +55,7%",
+    body: "Rata-rata 10.071 L/hari vs baseline 6.469 L/hari. Produksi naik 61,5% (9.234 vs 5.718 L/hari). Armada 26 DT + 15 EXC — intensitas operasi tertinggi sejak pelacakan dimulai.",
+    action:
+      "Sesuaikan ROP dan jadwal Stock-In ke level konsumsi baru (~10.000 L/hari), bukan baseline lama.",
   },
   {
     level: "MEDIUM",
-    title: "First-Refueling / Baseline HM Anomali (DT-066)",
-    body: "DT-066 pada 7 Sep tercatat Running HM hanya 1,0 jam untuk 338 L (dan KM +1). Hampir pasti baseline HM/KM belum ter-update setelah unit kembali beroperasi. Record dikecualikan dari perhitungan FR.",
+    title: "First-Refueling Anomali (DT-068 & DT-005)",
+    body: "DT-068 (15 Sep): HM=1,0 / KM=1 untuk 211,5 L. DT-005 (18 Sep): HM=1,0 untuk 290 L. Keduanya first-refueling style — dikecualikan dari FR.",
     action:
-      "Pastikan setiap unit yang baru diaktifkan kembali mencatat Last Refueling HM/KM yang benar sebelum pengisian pertama.",
+      "Checklist wajib: update Last Refueling HM/KM sebelum pengisian pertama unit yang baru/idle lama.",
   },
   {
     level: "MEDIUM",
-    title: "DT dengan FR L/HM Sangat Rendah (11–12)",
-    body: "DT-004 (11,29), DT-007 (11,62), DT-008 (11,95) jauh di bawah rentang normal armada (~22–26 L/HM). Bisa indikasi meter HM bermasalah, idle berlebih, atau data input salah.",
+    title: "DT FR Rendah Persisten (4 unit)",
+    body: "DT-004 (9,23), DT-007 (7,94), DT-008 (7,75), DT-011 (11,17) L/HM — jauh di bawah rentang normal ~20–25. Sudah muncul minggu sebelumnya.",
     action:
-      "Cek fisik meter HM dan pola operasi ketiga unit; bandingkan dengan Running KM.",
-  },
-  {
-    level: "LOW",
-    title: "DT-018 & DT-066 (tanpa anomali hari-1) FR Tinggi",
-    body: "DT-018 (1 record) 29,99 L/HM; DT-066 (setelah exclude 7 Sep) ≈ 28,7 L/HM. Masih dalam zona pantauan, belum kritis.",
-    action: "Pantau minggu depan; jika konsisten tinggi, review kondisi unit.",
+      "Cek meter HM & pola operasi keempat unit. Bandingkan dengan Running KM.",
   },
   {
     level: "INFO",
-    title: "MHR Naik 23% vs Baseline",
-    body: "Konsumsi MHR 549 L/hari (+23% vs 446 L/hari baseline). Motor grader dan water truck aktif kuat — sejalan dengan intensitas produksi yang stabil.",
-    action: "Normal untuk fase operasi penuh; tidak memerlukan eskalasi.",
+    title: "Remark Stock-In & Transfer",
+    body: "16 Sep: peminjaman 9.000 L dari BPSP. 20 Sep: pengiriman SKA 15.918 L (kurang 82 L). 19 Sep: transfer PT. MPS 65,8 L (remark FOR MPS).",
+    action:
+      "Catat peminjaman BPSP sebagai utang stok; pantau kekurangan 82 L apakah diganti.",
+  },
+  {
+    level: "LOW",
+    title: "Hari 17 Sep Hanya Produksi",
+    body: "Konsumsi 4.836 L — terendah minggu ini; nol MHR dan Support. 21 record, semuanya kategori Produksi. Kemungkinan partial ops / hari terbatas.",
+    action: "Konfirmasi ke site apakah ada batasan operasi pada 17 Sep.",
   },
 ];
 
 export const DAILY_CARDS = [
   {
-    date: "7 Sep (Sen)",
-    total: 7716.3,
-    severity: "GOOD",
-    title: "Stock-In 22.000 L + Operasi Penuh",
+    date: "14 Sep (Sen)",
+    total: 9897.6,
+    severity: "MEDIUM",
+    title: "Operasi Intensif — Stok Mulai Turun Tajam",
     narrative:
-      "Hari pembuka minggu dengan konsumsi kuat (7.716 L) dan Stock-In besar 22.000 L dari PT. Central Oil. Stok melonjak ke ~59.500 L. Termasuk record anomali DT-066 (HM=1,0).",
+      "Konsumsi 9.898 L tanpa Stock-In. Stok turun dari 22.138 L ke ≈12.241 L dalam satu hari. Armada penuh beroperasi.",
     highlights: [
-      { label: "Stock-In", value: "22.000 L (PT. Central Oil)" },
-      { label: "Produksi", value: "6.408 L — armada DT/EXC aktif penuh" },
-      {
-        label: "Anomali",
-        value: "DT-066 HM=1,0 untuk 338 L (first-refuel style)",
-      },
+      { label: "Produksi", value: "9.026 L" },
+      { label: "Stok EOD", value: "≈ 12.241 L" },
+      { label: "Stock-In", value: "Nol" },
     ],
     actions:
-      "Catat dan kecualikan record DT-066 dari FR; pastikan baseline HM unit baru diaktifkan.",
+      "Pantau stok — laju penurunan ~10.000 L/hari tidak sustainable tanpa IN.",
   },
   {
-    date: "8 Sep (Sel)",
-    total: 7911.3,
-    severity: "GOOD",
-    title: "Hari Tertinggi Minggu Ini",
+    date: "15 Sep (Sel)",
+    total: 9809.2,
+    severity: "HIGH",
+    title: "Stok Menuju Titik Kritis + First-Refuel DT-068",
     narrative:
-      "Konsumsi puncak 7.911 L dengan produksi 7.291 L. Tidak ada Stock-In. Operasi stabil di level penuh.",
+      "Konsumsi 9.809 L. Stok EOD ≈ 2.431 L. DT-068 tercatat HM=1,0 untuk 211,5 L (first-refueling). Support tinggi karena LV.",
     highlights: [
-      { label: "Produksi", value: "7.291 L — hari produksi tertinggi" },
-      { label: "Stok EOD", value: "~51.631 L" },
+      { label: "Stok EOD", value: "≈ 2.431 L — mendekati habis" },
+      { label: "Anomali", value: "DT-068 HM=1,0 / 211,5 L" },
+      { label: "Support", value: "469 L (LV aktif)" },
     ],
-    actions: "Tidak ada tindakan khusus.",
+    actions: "Eskalasi Stock-In segera. Kecualikan DT-068 dari FR.",
   },
   {
-    date: "9 Sep (Rab)",
-    total: 5080.3,
-    severity: "GOOD",
-    title: "Konsumsi Menengah, MHR Tinggi",
+    date: "16 Sep (Rab)",
+    total: 11376.9,
+    severity: "HIGH",
+    title: "‼ Stok ≈54 L + Peminjaman BPSP 9.000 L",
     narrative:
-      "Total turun ke 5.080 L, namun MHR mencapai 807 L (tertinggi minggu ini) — aktivitas pemeliharaan jalan intensif.",
+      "Hari konsumsi tertinggi sejauh itu (11.377 L). Stok sempat menyentuh ≈54 L sebelum Stock-In peminjaman BPSP 9.000 L masuk. MHR puncak 1.012 L.",
     highlights: [
-      { label: "MHR", value: "807 L — puncak minggu" },
-      { label: "Produksi", value: "4.184 L" },
-    ],
-    actions: "Tidak ada tindakan khusus.",
-  },
-  {
-    date: "10 Sep (Kam)",
-    total: 4371.5,
-    severity: "GOOD",
-    title: "Hari Terendah Minggu Ini",
-    narrative:
-      "Konsumsi 4.372 L — terendah dalam 7 hari. MHR juga rendah (266 L). Pola fluktuasi harian normal.",
-    highlights: [
-      { label: "Total", value: "4.372 L — terendah minggu" },
-      { label: "Stok EOD", value: "~42.179 L" },
-    ],
-    actions: "Tidak ada tindakan khusus.",
-  },
-  {
-    date: "11 Sep (Jum)",
-    total: 4704.5,
-    severity: "INFO",
-    title: "Operasi Stabil + Entri PT. MPS Kecil",
-    narrative:
-      "Total 4.705 L. Ada entri PT. MPS 84,7 L (bukan bulk transfer besar seperti 28 Agu). Support relatif tinggi karena LV.",
-    highlights: [
-      { label: "PT. MPS", value: "84,7 L — transfer kecil, bukan bulk" },
-      { label: "Support", value: "233 L (termasuk LV)" },
-    ],
-    actions: "Tetap pisahkan pencatatan transfer vs konsumsi alat.",
-  },
-  {
-    date: "12 Sep (Sab)",
-    total: 7929.3,
-    severity: "GOOD",
-    title: "Operasi Kuat Akhir Pekan",
-    narrative:
-      "Hampir menyamai puncak Senin/Selasa: 7.929 L dengan produksi 7.004 L dan MHR 693 L. Armada tetap penuh.",
-    highlights: [
-      { label: "Produksi", value: "7.004 L" },
-      { label: "MHR", value: "693 L" },
-      { label: "Stok EOD", value: "~29.545 L" },
-    ],
-    actions: "Pantau laju penurunan stok menjelang akhir minggu.",
-  },
-  {
-    date: "13 Sep (Min)",
-    total: 7566.2,
-    severity: "INFO",
-    title: "Tutup Minggu — Stok ~22.000 L",
-    narrative:
-      "Konsumsi tetap kuat 7.566 L. Stok ditutup ≈ 21.979 L. Runway 3–4 hari pada laju saat ini. Belum ada Stock-In sejak 7 Sep.",
-    highlights: [
-      { label: "Stok EOD", value: "≈ 21.979 L" },
-      { label: "Runway", value: "Estimasi 3–4 hari" },
-      { label: "Stock-In sejak 7 Sep", value: "Nol" },
+      { label: "Stok terendah", value: "≈ 54 L EOD — hampir habis" },
+      { label: "Stock-In", value: "9.000 L peminjaman BPSP" },
+      { label: "MHR", value: "1.012 L — tertinggi minggu" },
     ],
     actions:
-      "Rencanakan Stock-In minggu depan sebelum stok mendekati ROP operasi normal.",
+      "Catat utang peminjaman BPSP. Pastikan pengiriman vendor menyusul.",
+  },
+  {
+    date: "17 Sep (Kam)",
+    total: 4836.1,
+    severity: "INFO",
+    title: "Hari Rendah — Hanya Produksi + Stock-In 5.000 L",
+    narrative:
+      "Hanya 21 record, semuanya Produksi (4.836 L). Nol MHR/Support. Stock-In 5.000 L dari PT. Rebetsya. Stok EOD ≈ 218 L — masih sangat tipis.",
+    highlights: [
+      { label: "Pola", value: "Hanya Produksi — partial ops?" },
+      { label: "Stock-In", value: "5.000 L (PT. Rebetsya)" },
+      { label: "Stok EOD", value: "≈ 218 L" },
+    ],
+    actions: "Konfirmasi status operasi 17 Sep ke site.",
+  },
+  {
+    date: "18 Sep (Jum)",
+    total: 12804.9,
+    severity: "MEDIUM",
+    title: "Puncak Minggu 12.805 L + Stock-In 23.000 L",
+    narrative:
+      "Konsumsi tertinggi minggu ini. Stock-In ganda: 8.000 L (Central Oil) + 15.000 L (Junama) = 23.000 L. Stok pulih ke ≈10.413 L. DT-005 first-refuel (HM=1,0 / 290 L).",
+    highlights: [
+      { label: "Produksi", value: "11.617 L — puncak" },
+      { label: "Stock-In", value: "23.000 L (2 vendor)" },
+      { label: "Anomali", value: "DT-005 HM=1,0 / 290 L" },
+    ],
+    actions: "Kecualikan record DT-005 (18 Sep) dari FR.",
+  },
+  {
+    date: "19 Sep (Sab)",
+    total: 9923.2,
+    severity: "HIGH",
+    title: "Stok-In 5000 L + Transfer MPS",
+    narrative:
+      "Konsumsi 9.923 L dan Stock-In 5000 L. Stok EOD ≈ 5490 L. Remark FOR MPS (65,8 L) — transfer ke PT. MPS.",
+    highlights: [
+      { label: "Stok EOD", value: "≈ 5490 L" },
+      { label: "Remark", value: "FOR MPS 65,8 L" },
+      { label: "Stock-In", value: "5000" },
+    ],
+    actions: "Stock-In mendesak. Pisahkan pencatatan transfer MPS.",
+  },
+  {
+    date: "20 Sep (Min)",
+    total: 11851.5,
+    severity: "HIGH",
+    title: "Stock-In 15.918 L (kurang 82 L) — Stok EOD ≈7.556 L",
+    narrative:
+      "Konsumsi 11.852 L. Stock-In PT. Sumber Karya Anugerah 15.918 L (remark: kurang 82 L). Stok ditutup ≈7.556 L — runway <1 hari pada laju ~10.000 L/hari.",
+    highlights: [
+      { label: "Stock-In", value: "15.918 L (kurang 82 L)" },
+      { label: "Stok EOD", value: "≈ 7.556 L" },
+      { label: "Runway", value: "< 1 hari" },
+    ],
+    actions:
+      "MENDESAK: jadwalkan Stock-In berikutnya segera. Pantau penggantian kekurangan 82 L.",
   },
 ];
 
 export const ANOMALIES = [
   {
     id: "ANO-01",
-    unit: "DT-066",
-    date: "7 Sep",
+    unit: "Seluruh Site",
+    date: "14-20 Sep",
     issue:
-      "First-refueling / baseline HM anomali: Running HM = 1,0 jam & Running KM = 1 untuk qty 338 L. Hampir pasti Last Refueling HM/KM belum di-update setelah unit kembali beroperasi. Record dikecualikan dari FR.",
+      "Stok hampir habis berulang: EOD 16 Sep ≈54 L, EOD 19 Sep ≈5490 L. EOD 20 Sep ≈7.556 L dengan runway <1 hari pada laju konsumsi ~10.000 L/hari.",
     status: "OPEN",
-    severity: "MEDIUM",
+    severity: "HIGH",
   },
   {
     id: "ANO-02",
-    unit: "DT-004 / DT-007 / DT-008",
-    date: "7-13 Sep",
+    unit: "DT-068",
+    date: "15 Sep",
     issue:
-      "Fuel ratio L/HM sangat rendah (11,3–12,0) dibanding rentang armada ~22–26. Kemungkinan meter HM bermasalah, idle tinggi, atau input data salah.",
+      "First-refueling: Running HM=1,0 & Running KM=1 untuk qty 211,5 L. Remark kosong. Record dikecualikan dari FR.",
     status: "OPEN",
     severity: "MEDIUM",
   },
   {
     id: "ANO-03",
-    unit: "DT-018",
-    date: "7 Sep",
+    unit: "DT-005",
+    date: "18 Sep",
     issue:
-      "Hanya 1 record, FR 29,99 L/HM — sampel tipis, pantau jika muncul lagi.",
+      "First-refueling: Running HM=1,0 untuk qty 290 L. Remark=OK. Record dikecualikan dari FR; record 20 Sep (HM=13,7) tetap dipakai.",
     status: "OPEN",
-    severity: "LOW",
+    severity: "MEDIUM",
   },
   {
     id: "ANO-04",
-    unit: "Seluruh Site",
-    date: "8-13 Sep",
+    unit: "DT-004 / DT-007 / DT-008 / DT-011",
+    date: "14-20 Sep",
     issue:
-      "Tidak ada Stock-In sejak 7 Sep. Stok turun dari ~59.500 L ke ~22.000 L dalam 6 hari operasi. Belum kritis, tetapi perlu dijadwalkan pengiriman berikutnya.",
+      "FR L/HM sangat rendah (7,8–11,2) — konsisten dengan minggu sebelumnya. Kemungkinan meter HM bermasalah atau pola idle.",
     status: "OPEN",
-    severity: "INFO",
+    severity: "MEDIUM",
   },
   {
     id: "ANO-05",
     unit: "PT. MPS",
-    date: "11 Sep",
-    issue:
-      "Entri 84,7 L atas nama PT. MPS — skala kecil, beda dari bulk 5.005 L minggu restart. Tetap disarankan kategori terpisah untuk transfer.",
+    date: "19 Sep",
+    issue: "Remark: FOR MPS — transfer 65,8 L ke PT. MPS. Bukan konsumsi alat.",
     status: "OPEN",
     severity: "LOW",
   },
   {
     id: "ANO-06",
-    unit: "LV (berbagai)",
-    date: "7-13 Sep",
+    unit: "Stock-In BPSP",
+    date: "16 Sep",
     issue:
-      "Light Vehicle rutin mencatat Last HM = 0 (field tidak relevan untuk LV). Bukan anomali operasional, hanya noise pencatatan.",
-    status: "RESOLVED",
+      "Remark: Peminjaman — 9.000 L dari BPSP. Perlu dicatat sebagai utang stok / pinjaman antar-site.",
+    status: "OPEN",
+    severity: "INFO",
+  },
+  {
+    id: "ANO-07",
+    unit: "Stock-In SKA",
+    date: "20 Sep",
+    issue:
+      "Remark: Kurang 82 Liter — pengiriman PT. Sumber Karya Anugerah 15.918 L (seharusnya 16.000?). Pantau apakah kekurangan diganti.",
+    status: "OPEN",
+    severity: "INFO",
+  },
+  {
+    id: "ANO-08",
+    unit: "Seluruh Site",
+    date: "17 Sep",
+    issue:
+      "Hanya 21 record, semuanya kategori Produksi — nol MHR dan Support. Pola partial ops / hari terbatas.",
+    status: "OPEN",
+    severity: "LOW",
+  },
+  {
+    id: "ANO-09",
+    unit: "Pencatatan Remark",
+    date: "14-20 Sep",
+    issue:
+      "Dari 329 transaksi: 238 remark=OK, 90 kosong, 1 FOR MPS. 90 record tanpa validasi remark perlu dilengkapi ke depan.",
+    status: "OPEN",
     severity: "LOW",
   },
 ];
 
 export const RESTART_INSIGHTS = [
   {
-    title: "Stok Sudah Pulih — Jaga Ritme Stock-In",
-    body: "Setelah krisis stok akhir Agustus, pengiriman 31 Agu–7 Sep berhasil menaikkan stok ke level aman. Namun sejak 7 Sep tidak ada lagi Stock-In; stok turun ~37.500 L dalam 6 hari.",
+    title: "ROP Harus Naik ke Level Konsumsi Baru",
+    body: "Konsumsi sekarang ~10.000 L/hari, hampir 1,6× baseline minggu lalu. ROP dan jadwal Stock-In masih seolah konsumsi 6.500 L/hari — akibatnya stok hampir habis dua kali dalam seminggu.",
     action:
-      "Jadwalkan Stock-In proaktif (jangan tunggu stok kritis). Target pertahankan buffer minimal 2–3 minggu operasi.",
+      "Set ROP minimal 3–4 hari buffer (= 30.000–40.000 L) dan picu Stock-In otomatis saat stok < ROP.",
   },
   {
-    title: "Armada Hampir Penuh — Efisiensi Tetap Baik",
-    body: "24 DT + 12 EXC aktif. FR DT weighted 23,18 L/HM sedikit di atas minggu restart (20,45), masih wajar untuk operasi penuh dan mix unit yang lebih beragam.",
+    title: "Peminjaman BPSP — Jangan Jadi Ketergantungan",
+    body: "9.000 L peminjaman BPSP pada 16 Sep menyelamatkan operasi, tetapi ini sinyal perencanaan suplai yang terlambat.",
     action:
-      "Dokumentasikan FR baseline operasi penuh ini sebagai acuan minggu-minggu berikutnya.",
+      "Catat sebagai utang; susun jadwal vendor tetap agar tidak mengandalkan pinjaman antar-site.",
   },
   {
-    title: "Prosedur First-Refueling Perlu Diperkuat",
-    body: "Kasus DT-066 (HM=1,0) menunjukkan risiko data saat unit diaktifkan kembali setelah idle. Tanpa Last HM/KM yang benar, FR menjadi tidak bermakna.",
+    title: "First-Refueling Masih Berulang",
+    body: "DT-068 dan DT-005 lagi-lagi masuk dengan HM≈1. Prosedur update Last HM/KM sebelum isi pertama belum konsisten dijalankan.",
     action:
-      "Checklist wajib: update Last Refueling HM/KM sebelum pengisian pertama unit yang baru kembali beroperasi.",
+      "Checklist wajib di fuel station: verifikasi Last HM/KM unit baru/idle sebelum nozzle dipasang.",
   },
   {
-    title: "Pantau Unit dengan FR Outlier",
-    body: "Tiga DT dengan FR ~11–12 L/HM dan satu dengan FR ~30 perlu dicek meter dan pola kerja. Outlier yang konsisten bisa menandakan masalah teknis.",
+    title: "Unit FR Rendah Perlu Intervensi Lapangan",
+    body: "Empat DT (004/007/008/011) FR 8–11 L/HM selama 2 minggu berturut-turut. Bukan fluktuasi — pola sistematis.",
     action:
-      "Review lapangan DT-004, DT-007, DT-008, dan pantau DT-018 / DT-066 minggu depan.",
+      "Inspeksi meter HM + review operator. Jika meter rusak, ganti; jika idle, evaluasi alokasi unit.",
   },
 ];
 
 export const CATEGORY_SHARE = [
-  { label: "Produksi", qty: 40027.9, color: C.accent },
-  { label: "MHR", qty: 3840.6, color: C.gold },
-  { label: "Pendukung", qty: 1410.8, color: C.muted },
+  { label: "Produksi", qty: 71484.87, color: C.accent },
+  { label: "MHR", qty: 5296.76, color: C.gold },
+  { label: "Pendukung", qty: 1218.21, color: C.muted },
 ];
 
 export const STOCK_TRANSITION = {
@@ -462,7 +490,7 @@ export const STOCK_TRANSITION = {
   endStandby: 27770,
   endRestart: 5507,
   weekDropPct: -80.2,
-  stockStartWeek: 45258.4, // EOD 6 Sep
-  stockEndWeek: 21979.0, // EOD 13 Sep
-  stockInThisWeek: 22000, // 7 Sep only
+  stockStartWeek: 22138.2, // EOD 13 Sep (anchor user)
+  stockEndWeek: 7556.8, // EOD 20 Sep
+  stockInThisWeek: 57918, // 9k+5k+8k+15k+15.918
 };
