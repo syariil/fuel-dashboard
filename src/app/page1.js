@@ -55,7 +55,7 @@ import {
   RESTART_INSIGHTS,
   CATEGORY_SHARE,
   STOCK_TRANSITION,
-} from "./data";
+} from "./analysis";
 
 // ─────────────── KOMPONEN UTILITAS ───────────────
 const Badge = ({ level }) => {
@@ -203,7 +203,8 @@ const ExecSummary = () => (
           textTransform: "uppercase",
           letterSpacing: 0.8,
         }}>
-        Kesimpulan Eksekutif — Minggu 7–13 Sep 2026 · Site BPSP (Operasi Penuh)
+        Kesimpulan Eksekutif — Minggu 14–20 Sep 2026 · Site BPSP (Operasi
+        Intensif)
       </p>
       <p
         style={{
@@ -213,19 +214,18 @@ const ExecSummary = () => (
           margin: 0,
           lineHeight: 1.5,
         }}>
-        Minggu Kedua operasi penuh dibulan September. Konsumsi rata-rata{" "}
-        <span style={{ color: C.accentBright }}>6.469 L/hari</span> — naik tipis{" "}
-        <span style={{ color: C.accentBright }}>+2,2%</span> vs baseline 31
-        Agu–5 Sep (6.330 L/hari). Armada hampir penuh: 24 DT dan 12 EXC aktif.
-        Fuel ratio DT weighted{" "}
-        <span style={{ color: C.accentBright }}>23,18 L/HM</span>. Stok EOD 13
-        Sep ≈ <span style={{ color: C.accentBright }}>21.979 L</span> (runway
-        3–4 hari) setelah Stock-In 22.000 L pada 7 Sep — lihat halaman Kualitas
-        Data untuk anomali first-refueling DT-066.
+        Minggu operasi intensitas tinggi. Konsumsi rata-rata{" "}
+        <span style={{ color: C.accentBright }}>10.071 L/hari</span> — lonjakan{" "}
+        <span style={{ color: "#FCA5A5" }}>+55,7%</span> vs baseline 7–13 Sep
+        (6.469 L/hari). Armada 26 DT + 15 EXC aktif. Fuel ratio DT weighted{" "}
+        <span style={{ color: C.accentBright }}>20,37 L/HM</span>. Stok EOD 20
+        Sep ≈ <span style={{ color: "#FCA5A5" }}>7.557 L</span> (runway &lt;1
+        hari) setelah sempat hampir habis (≈54 L pada 16 Sep) — lihat halaman
+        Kualitas Data untuk first-refueling DT-068 &amp; DT-005.
       </p>
     </div>
 
-    <SectionTitle sub="Tier 1 — Makro: konsumsi minggu ini dibanding baseline 31 Agu–5 Sep">
+    <SectionTitle sub="Tier 1 — Makro: konsumsi minggu ini dibanding baseline 7–13 Sep">
       Konsumsi & Status Operasi
     </SectionTitle>
     <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
@@ -257,13 +257,13 @@ const ExecSummary = () => (
             lineHeight: 1.1,
             marginTop: 4,
           }}>
-          45,279{" "}
+          70,499{" "}
           <span style={{ fontSize: 15, fontWeight: 600, color: "#B8C9D9" }}>
             L
           </span>
         </span>
         <span style={{ fontSize: 10, color: "#B8C9D9", marginTop: 8 }}>
-          225 transaksi · armada 24 DT + 12 EXC aktif
+          329 transaksi · armada 26 DT + 15 EXC aktif
         </span>
       </div>
       <div
@@ -288,10 +288,10 @@ const ExecSummary = () => (
                 fontWeight: 600,
                 textTransform: "uppercase",
               }}>
-              Tingkat Operasi (7–13 Sep)
+              Tingkat Operasi (14–20 Sep)
             </div>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.ink }}>
-              6,469{" "}
+              10,071{" "}
               <span style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>
                 L/hari
               </span>
@@ -322,7 +322,7 @@ const ExecSummary = () => (
               Fuel Ratio DT
             </div>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.ink }}>
-              23.18{" "}
+              20.37{" "}
               <span style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>
                 L/HM
               </span>
@@ -332,9 +332,9 @@ const ExecSummary = () => (
         <div
           style={{
             flex: 1,
-            background: C.card,
-            border: `1px solid ${C.border}`,
-            borderLeft: `4px solid ${C.good}`,
+            background: C.redLight,
+            border: `1px solid ${C.red}`,
+            borderLeft: `4px solid ${C.red}`,
             borderRadius: 6,
             padding: "10px 14px",
             display: "flex",
@@ -345,28 +345,28 @@ const ExecSummary = () => (
             <div
               style={{
                 fontSize: 10,
-                color: C.muted,
+                color: C.red,
                 fontWeight: 600,
                 textTransform: "uppercase",
               }}>
-              Stok Saat Ini (EOD 13 Sep)
+              Stok Saat Ini (EOD 20 Sep)
             </div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: C.ink }}>
-              22,138.15{" "}
-              <span style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: C.red }}>
+              7,557{" "}
+              <span style={{ fontSize: 11, fontWeight: 600, color: C.red }}>
                 L
               </span>
             </div>
           </div>
-          <span style={{ fontSize: 10, color: C.good, fontWeight: 800 }}>
-            ~3-4 hari
+          <span style={{ fontSize: 10, color: C.red, fontWeight: 800 }}>
+            &lt;1 hari
           </span>
         </div>
       </div>
     </div>
 
-    <SectionTitle sub="Konsumsi stabil di level operasi penuh, sedikit di atas baseline minggu sebelumnya">
-      Tren Konsumsi: Restart → Baseline → Minggu Ini
+    <SectionTitle sub="Konsumsi melonjak tajam vs baseline minggu sebelumnya">
+      Tren Konsumsi: Baseline → Minggu Ini
     </SectionTitle>
     <div
       style={{
@@ -411,13 +411,13 @@ const ExecSummary = () => (
           margin: "6px 0 0",
           fontStyle: "italic",
         }}>
-        Baseline = rata-rata 31 Agu–5 Sep (6 hari). Minggu ini = rata-rata 7–13
-        Sep (7 hari).
+        Baseline = rata-rata 7–13 Sep. Minggu ini = rata-rata 14–20 Sep (7
+        hari).
       </p>
     </div>
 
-    <SectionTitle sub="Tier 2 — Diagnostik: Produksi stabil; MHR naik 23%; Pendukung normal">
-      Perbandingan Kategori vs Baseline Operasi Normal
+    <SectionTitle sub="Tier 2 — Diagnostik: Produksi +61,5%; MHR +22,5%; Pendukung −18%">
+      Perbandingan Kategori vs Baseline Minggu Lalu
     </SectionTitle>
     <div
       style={{
@@ -486,8 +486,8 @@ const ExecSummary = () => (
           margin: "6px 0 0",
           fontStyle: "italic",
         }}>
-        Produksi nyaris datar (+0,3%). MHR naik karena aktivitas grader & water
-        truck yang lebih intensif.
+        Produksi lonjak tajam (+61,5%). MHR naik sejalan intensitas. Pendukung
+        turun tipis.
       </p>
     </div>
 
@@ -591,15 +591,15 @@ const OperationalDetail = () => {
             margin: "0 0 2px",
             textTransform: "uppercase",
           }}>
-          Detail Operasional — Minggu 7–13 Sep 2026 · Site BPSP
+          Detail Operasional — Minggu 14–20 Sep 2026 · Site BPSP
         </p>
         <p style={{ color: "#fff", fontSize: 13, fontWeight: 500, margin: 0 }}>
-          Armada hampir penuh: 24 unit DT dan 12 unit EXC aktif sepanjang minggu
-          operasi penuh 7–13 September.
+          Armada penuh: 26 unit DT dan 15 unit EXC aktif — intensitas operasi
+          tertinggi sejak pelacakan dimulai.
         </p>
       </div>
 
-      <SectionTitle sub="24 unit DT aktif — FR weighted 23,18 L/HM; outlier rendah (DT-004/007/008) dan first-refuel DT-066 ditandai">
+      <SectionTitle sub="26 unit DT aktif — FR weighted 20,37 L/HM; outlier rendah (DT-004/007/008/011) dan first-refuel DT-068 & DT-005 ditandai">
         Armada Produksi — Analisis Fuel Ratio DT (L/HM & L/KM)
       </SectionTitle>
       <div
@@ -807,7 +807,7 @@ const OperationalDetail = () => {
         </div>
       </div>
 
-      <SectionTitle sub="12 unit EXC aktif — FR weighted 20,65 L/HM, rentang 14–30 L/HM">
+      <SectionTitle sub="15 unit EXC aktif — FR weighted 19,47 L/HM, rentang 10–27 L/HM">
         Fuel Ratio Excavator
       </SectionTitle>
       <div
@@ -895,7 +895,7 @@ const OperationalDetail = () => {
           marginBottom: 14,
         }}>
         <div>
-          <SectionTitle sub="Motor grader & water truck aktif kuat — MHR +23% vs baseline">
+          <SectionTitle sub="Motor grader & water truck aktif — MHR +22,5% vs baseline">
             Detail Peralatan MHR
           </SectionTitle>
           <div
@@ -931,7 +931,7 @@ const OperationalDetail = () => {
           </div>
         </div>
         <div>
-          <SectionTitle sub="LV dominan; PT. MPS hanya 84,7 L (bukan bulk transfer)">
+          <SectionTitle sub="LV & FT dominan; PT. MPS 65,8 L (remark FOR MPS)">
             Detail Peralatan Pendukung
           </SectionTitle>
           <div
@@ -1035,11 +1035,11 @@ const DailyLog = () => {
             margin: "0 0 2px",
             textTransform: "uppercase",
           }}>
-          Daily Issue Deep Dive — Week 7–13 Sep 2026 · Site BPSP
+          Daily Issue Deep Dive — Week 14–20 Sep 2026 · Site BPSP
         </p>
         <p style={{ color: "#fff", fontSize: 13, fontWeight: 500, margin: 0 }}>
-          Operasi penuh stabil dengan Stock-In 22.000 L di hari pertama — ketuk
-          hari untuk detail lengkap.
+          Operasi intensif dengan stok hampir habis 16 Sep — ketuk hari untuk
+          detail lengkap.
         </p>
       </div>
 
@@ -1276,16 +1276,16 @@ const DataQuality = () => {
             margin: "0 0 2px",
             textTransform: "uppercase",
           }}>
-          Kualitas Data & Konteks — Minggu 7–13 Sep 2026 · Site BPSP
+          Kualitas Data & Konteks — Minggu 14–20 Sep 2026 · Site BPSP
         </p>
         <p style={{ color: "#fff", fontSize: 13, fontWeight: 500, margin: 0 }}>
-          Stok sudah pulih setelah Stock-In besar 31 Agu–7 Sep. Fokus minggu
-          ini: anomali first-refueling DT-066 dan unit FR outlier.
+          Stok sempat hampir habis (≈54 L pada 16 Sep). Fokus: first-refueling
+          DT-068 &amp; DT-005, remark FOR MPS, dan unit FR outlier.
         </p>
       </div>
 
-      <SectionTitle sub="Ledger direkonstruksi dari Stock-In + Stock-Out — stok aman setelah pengiriman 22.000 L pada 7 Sep">
-        Posisi Stok — Pemulihan & Penurunan Bertahap
+      <SectionTitle sub="Ledger dari anchor EOD 13 Sep + Stock-In − Stock-Out — stok hampir habis 16 Sep">
+        Posisi Stok — Krisis Berulang Minggu Ini
       </SectionTitle>
       <div
         style={{
@@ -1343,14 +1343,14 @@ const DataQuality = () => {
               borderRadius: 6,
               padding: "8px 10px",
             }}>
-            <div style={{ fontSize: 10, color: C.amber }}>
+            <div style={{ fontSize: 10, color: C.red }}>
               Perubahan Stok Minggu Ini
             </div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: C.ink }}>
-              −23.279 L
+            <div style={{ fontSize: 16, fontWeight: 800, color: C.red }}>
+              −14.581 L
             </div>
             <div style={{ fontSize: 10, color: C.muted }}>
-              45.258 L (6 Sep) → 21.979 L (13 Sep)
+              22.138 L (13 Sep) → 7.557 L (20 Sep)
             </div>
           </div>
           <div
@@ -1359,12 +1359,12 @@ const DataQuality = () => {
               borderRadius: 6,
               padding: "8px 10px",
             }}>
-            <div style={{ fontSize: 10, color: C.muted }}>Estimasi Runway</div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: C.good }}>
-              3-4 hari
+            <div style={{ fontSize: 10, color: C.red }}>Estimasi Runway</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: C.red }}>
+              &lt;1 hari
             </div>
             <div style={{ fontSize: 10, color: C.muted }}>
-              Pada tingkat konsumsi ~6.469 L/hari
+              Pada tingkat konsumsi ~10.071 L/hari
             </div>
           </div>
           <div
@@ -1377,10 +1377,10 @@ const DataQuality = () => {
               Stock-In Minggu Ini
             </div>
             <div style={{ fontSize: 16, fontWeight: 800, color: C.ink }}>
-              22.000 L
+              57.918 L
             </div>
             <div style={{ fontSize: 10, color: C.muted }}>
-              7 Sep (PT. Central Oil) — nol sejak itu
+              Termasuk peminjaman BPSP 9.000 L
             </div>
           </div>
         </div>
@@ -1394,7 +1394,7 @@ const DataQuality = () => {
           marginBottom: 14,
         }}>
         <div>
-          <SectionTitle sub="Fuel Station 77%; ETO/EFO/Jetty melayani EXC & unit lapangan">
+          <SectionTitle sub="Fuel Station 71%; EFO/ETO/Jetty melayani EXC & unit lapangan">
             Pengisian Bahan Bakar Berdasarkan Lokasi
           </SectionTitle>
           <div
@@ -1493,7 +1493,7 @@ const DataQuality = () => {
           </div>
         </div>
         <div>
-          <SectionTitle sub="Produksi ~88% dari total; MHR dan Pendukung proporsional">
+          <SectionTitle sub="Produksi ~92% dari total; intensitas produksi mendominasi">
             Pangsa Kategori Minggu Ini
           </SectionTitle>
           <div
@@ -1657,18 +1657,15 @@ const DataQuality = () => {
               margin: 0,
               lineHeight: 1.6,
             }}>
-            • DT-066 (7 Sep): Running HM = 1,0 jam & Running KM = 1 untuk 338 L
-            — dikecualikan dari perhitungan fuel-ratio unit dan armada
-            (first-refueling / baseline HM belum di-update).
+            • DT-068 (15 Sep) & DT-005 (18 Sep): Running HM = 1,0 —
+            first-refueling style, dikecualikan dari perhitungan fuel-ratio.
             <br />
-            • Baseline operasi = rata-rata harian 31 Agu–5 Sep (6 hari). Minggu
-            ini = rata-rata 7–13 Sep (7 hari). WoW dihitung dari perbandingan
-            kedua rata-rata tersebut.
+            • Baseline = rata-rata 7–13 Sep. Minggu ini = rata-rata 14–20 Sep.
+            WoW dari perbandingan kedua rata-rata tersebut.
             <br />
-            • Running HM dihitung dari (Now HM − Last HM) bila keduanya valid;
-            nilai yang terkorupsi format Excel di-decode sebelum dipakai.
-            <br />• Estimasi runway (3–4 hari) = stok EOD 13 Sep (21.979 L) /
-            konsumsi harian ~6.469 L. Stock-In terakhir 22.000 L pada 7 Sep.
+            • Running HM dihitung dari (Now HM − Last HM) bila keduanya valid.
+            <br />• Estimasi runway (&lt;1 hari) = stok EOD 20 Sep (≈7.557 L) /
+            konsumsi harian ~10.071 L. Stok sempat ≈54 L pada 16 Sep.
           </p>
         </div>
       </div>
@@ -1712,7 +1709,7 @@ const RestartTransition = () => {
             textTransform: "uppercase",
             letterSpacing: 0.8,
           }}>
-          Analisis Operasi Penuh — Minggu 7–13 Sep 2026 · Site BPSP
+          Analisis Operasi Intensif — Minggu 14–20 Sep 2026 · Site BPSP
         </p>
         <p
           style={{
@@ -1722,18 +1719,18 @@ const RestartTransition = () => {
             margin: 0,
             lineHeight: 1.5,
           }}>
-          Minggu Kedua operasi penuh di bulan september. Armada hampir kapasitas
-          penuh (24 DT + 12 EXC), konsumsi stabil (+2,2% vs baseline), dan stok
-          sudah dipulihkan lewat Stock-In 31 Agu–7 Sep.{" "}
-          <span style={{ color: C.accentBright }}>
-            Fokus ke depan: jaga ritme Stock-In dan perketat prosedur
-            first-refueling
+          Minggu intensitas tertinggi: 26 DT + 15 EXC, konsumsi +55,7% vs
+          baseline. Stok sempat hampir habis (≈54 L pada 16 Sep) dan
+          diselamatkan peminjaman BPSP + Stock-In vendor.{" "}
+          <span style={{ color: "#FCA5A5" }}>
+            Prioritas: naikkan ROP ke level ~10.000 L/hari dan pastikan Stock-In
+            proaktif
           </span>{" "}
-          agar data FR tetap andal saat unit diaktifkan kembali.
+          agar tidak mengulang krisis stok.
         </p>
       </div>
 
-      <SectionTitle sub="Restart akhir Agustus → baseline minggu lalu → operasi penuh minggu ini">
+      <SectionTitle sub="Baseline 7–13 Sep → lonjakan intensitas 14–20 Sep">
         Tingkat Konsumsi di Seluruh Periode Terlacak
       </SectionTitle>
       <div
@@ -1791,13 +1788,13 @@ const RestartTransition = () => {
             margin: "8px 0 0",
             fontWeight: 600,
           }}>
-          Konsumsi minggu ini (6.469 L/hari) mendarat sedikit di atas baseline
-          31 Agu–5 Sep (6.330 L/hari) — operasi penuh stabil dan terkendali.
+          Konsumsi minggu ini (10.071 L/hari) lonjak +55,7% vs baseline 7–13 Sep
+          (6.469 L/hari) — intensitas operasi tertinggi sejak pelacakan.
         </p>
       </div>
 
-      <SectionTitle sub="Stok sudah pulih; pantau laju penurunan sejak Stock-In terakhir 7 Sep">
-        Posisi Stok — Pemulihan Setelah Krisis Akhir Agustus
+      <SectionTitle sub="Stok hampir habis 16 Sep; EOD 20 Sep masih di bawah 1 hari runway">
+        Posisi Stok — Krisis & Pemulihan Parsial
       </SectionTitle>
       <div
         style={{
@@ -1815,7 +1812,7 @@ const RestartTransition = () => {
           }}>
           <div>
             <div style={{ fontSize: 10, color: C.muted, fontWeight: 600 }}>
-              EOD 6 Sep (awal minggu)
+              EOD 13 Sep (awal minggu)
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: C.ink }}>
               {STOCK_TRANSITION.stockStartWeek.toLocaleString()} L
@@ -1823,7 +1820,7 @@ const RestartTransition = () => {
           </div>
           <div>
             <div style={{ fontSize: 10, color: C.muted, fontWeight: 600 }}>
-              Stock-In 7 Sep
+              Stock-In minggu ini
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: C.good }}>
               +{STOCK_TRANSITION.stockInThisWeek.toLocaleString()} L
@@ -1831,9 +1828,9 @@ const RestartTransition = () => {
           </div>
           <div>
             <div style={{ fontSize: 10, color: C.muted, fontWeight: 600 }}>
-              EOD 13 Sep
+              EOD 20 Sep
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: C.ink }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.red }}>
               {STOCK_TRANSITION.stockEndWeek.toLocaleString()} L
             </div>
           </div>
@@ -1841,8 +1838,8 @@ const RestartTransition = () => {
             <div style={{ fontSize: 10, color: C.muted, fontWeight: 600 }}>
               Net minggu ini
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: C.amber }}>
-              −23.279 L
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.red }}>
+              −14.581 L
             </div>
           </div>
         </div>
@@ -1853,15 +1850,15 @@ const RestartTransition = () => {
             margin: "10px 0 0",
             lineHeight: 1.5,
           }}>
-          Stock-In 22.000 L pada 7 Sep menaikkan stok ke puncak ~59.500 L. Tanpa
-          pengiriman lanjutan, stok turun ke ~22.000 L dalam 6 hari operasi.
-          Belum kritis, tetapi ritme Stock-In perlu dijaga agar tidak mengulang
-          krisis akhir Agustus.
+          Stok anjlok dari 22.138 L ke ≈54 L dalam 3 hari (14–16 Sep),
+          diselamatkan peminjaman BPSP 9.000 L lalu Stock-In vendor beruntun.
+          EOD 20 Sep ≈7.557 L — runway masih &lt;1 hari pada laju ~10.000
+          L/hari.
         </p>
       </div>
 
-      <SectionTitle sub="Rekomendasi untuk menjaga operasi penuh tetap stabil dan data FR andal">
-        Insight Utama — Pelajaran Minggu Operasi Penuh
+      <SectionTitle sub="Rekomendasi agar intensitas tinggi tidak berujung krisis stok berulang">
+        Insight Utama — Pelajaran Minggu Operasi Intensif
       </SectionTitle>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
         {RESTART_INSIGHTS.map((f, i) => (
@@ -1927,7 +1924,7 @@ export default function App() {
     { label: "Detail Operasional", icon: Truck },
     { label: "Log Harian", icon: Activity },
     { label: "Kualitas Data", icon: AlertCircle },
-    { label: "Operasi Penuh", icon: Fuel },
+    { label: "Operasi Intensif", icon: Fuel },
   ];
 
   const PageComponent = [
@@ -1977,8 +1974,8 @@ export default function App() {
             Sistem Pemantauan Bahan Bakar — Site BPSP
           </div>
           <div style={{ fontSize: 11, color: "#B8C9D9", marginTop: 1 }}>
-            Periode: 7–13 September 2026 &nbsp;|&nbsp; Operasi penuh
-            &nbsp;|&nbsp; 225 transaksi
+            Periode: 14–20 September 2026 &nbsp;|&nbsp; Operasi intensif
+            &nbsp;|&nbsp; 329 transaksi
           </div>
         </div>
         <div style={{ textAlign: "right" }}>
@@ -1986,10 +1983,10 @@ export default function App() {
             LAPORAN MINGGUAN
           </div>
           <div style={{ fontSize: 13, fontWeight: 800, color: "#fff" }}>
-            M7–13 SEP 2026
+            M14–20 SEP 2026
           </div>
           <div style={{ fontSize: 10, color: "#B8C9D9" }}>
-            vs baseline 31 Agu–5 Sep
+            vs baseline 7–13 Sep
           </div>
         </div>
       </div>
