@@ -97,20 +97,13 @@ import {
   EXC_DAILY_MATRIX,
   WEEK_COMPARISON,
   DOW_COMPARISON,
+  BPSP_LOAN,
+  EXCLUDE_FROM_FLEET,
+  OPERATIONAL_MODE,
+  INTER_COMPANY,
 } from "./analysis";
 
-/* ═══════════════════ KONTEKS BISNIS & ATURAN OPERASIONAL ═══════════════════ */
-/**
- * Site BPSP hanya menjalankan 2 aktivitas utama:
- *   - HAULING  : pengangkutan material dengan Dump Truck (DT)
- *   - BARGING  : pemuatan ke tongkang dengan Excavator (EXC)
- *
- * Konsekuensi analitik:
- *   - Hari dengan "barging only" → konsumsi DT drop drastis (normal, bukan anomali)
- *   - FR Excavator normal 28–32 L/HM (bukan <28)
- *   - FR Dump Truck normal ~20-22 L/HM
- */
-
+/* ═══════════════ KONTEKS BISNIS & ATURAN OPERASIONAL ═══════════════ */
 const DAILY_ISSUES = [
   { date: "2026-09-21", issue: "n/a" },
   { date: "2026-09-22", issue: "n/a" },
@@ -175,14 +168,18 @@ const sevColor = (s) =>
       border: "border-l-emerald-600",
       dot: "bg-emerald-600",
     },
+    VIOLET: {
+      bg: "bg-violet-600",
+      text: "text-white",
+      border: "border-l-violet-600",
+      dot: "bg-violet-600",
+    },
   })[s] || {
     bg: "bg-slate-500",
     text: "text-white",
     border: "border-l-slate-500",
     dot: "bg-slate-500",
   };
-
-const isCurrWeek = (d) => d?.week === "curr";
 
 const DeltaChip = ({ value, inverse = false, suffix = "%" }) => {
   const good = inverse ? value < 0 : value > 0;
@@ -256,6 +253,7 @@ const KPICard = ({
     amber: "from-amber-500 to-amber-600",
     red: "from-red-500 to-red-600",
     slate: "from-slate-600 to-slate-700",
+    violet: "from-violet-500 to-violet-600",
   };
   return (
     <Card
@@ -326,7 +324,30 @@ const generateNarratives = () => {
   const prev = WEEK_COMPARISON.prev;
   const curr = WEEK_COMPARISON.curr;
 
-  // ── 1. Konteks bisnis: hauling + barging ────────────────────
+  // ── N-00 (BARU): BPSP Loan Ledger ───────────────────────────
+  out.push({
+    id: "N-00",
+    category: "BPSP Loan",
+    severity: "VIOLET",
+    title: `BPSP loan 9.000 L — siklus tertutup, net 0`,
+    why:
+      `Sheet stock in mencatat BPSP meminjamkan 9.000 L ke site pada 16 Sep ` +
+      `("peminjaman fuel"). Sheet stock out mencatat pengembalian bertahap: ` +
+      `20 Sep (2.000 L), 21 Sep (2.000 L), 23 Sep (2.000 L), 24 Sep (3.000 L) — ` +
+      `total 9.000 L. Net balance = 0 L.`,
+    impact:
+      `Selisih gross ledger curr vs prev week (−7,8%) MENYEMBUNYIKAN penurunan ` +
+      `sebenarnya. Setelah di-net, konsumsi fleet turun ` +
+      `${Math.abs(KPI.wowNet).toFixed(1)}% (bukan −7,8%). Angka net lebih akurat ` +
+      `untuk analisis armada & efisiensi.`,
+    actions: [
+      "Pisahkan kategori 'BPSP Loan' di master data (jangan campur Support)",
+      "Tampilkan dual view di dashboard: gross (ledger) + net (fleet)",
+      "Tambahkan validasi: entry BPSP harus punya pasangan in/out",
+    ],
+  });
+
+  // ── N-01: Konteks bisnis ────────────────────────────────────
   out.push({
     id: "N-01",
     category: "Konteks",
@@ -350,35 +371,35 @@ const generateNarratives = () => {
     ],
   });
 
-  // ── 2. Production drop 25-26 Sep karena barging only ────────
+  // ── N-02 (REVISI): Penurunan net karena mix operasi ─────────
   const d25 = DAILY.find((x) => x.date === "25/9");
   const d26 = DAILY.find((x) => x.date === "26/9");
-  const dtDrop25 = d25?.prod || 0;
-  const dtDrop26 = d26?.prod || 0;
+  const d27 = DAILY.find((x) => x.date === "27/9");
+  const bargingDaysTotal = (d26?.total || 0) + (d27?.total || 0);
   out.push({
     id: "N-02",
     category: "Produksi",
     severity: "GOOD",
-    title: `Penurunan 25–26 Sep = barging only (sesuai rencana, bukan anomali)`,
+    title: `Penurunan ${Math.abs(KPI.wowNet).toFixed(1)}% net = mix operasi, bukan efisiensi`,
     why:
-      `Sheet Daily Issue mencatat: 25 Sep "pengisian tertinggi 15000 L", ` +
-      `26 Sep "hanya barging". Kedua hari ini hanya menjalankan aktivitas barging ` +
-      `Konsumsi 25 Sep = ${fmt(d25?.total)} L dan 26 Sep = ${fmt(d26?.total)} L, ` +
-      `turun drastis dari rata-rata full-ops ~${fmt(curr.avgDaily)} L/hari.`,
+      `Setelah di-net dari BPSP loan, konsumsi fleet turun ` +
+      `${Math.abs(KPI.wowNet).toFixed(1)}% (${fmt(KPI.totalWeekNet)} L vs ${fmt(KPI.totalPrevWeekNet)} L). ` +
+      `Penyebab utama: (a) 26–27 Sep = barging only → DT stop total ` +
+      `(hanya ${fmt(d26?.total)} L & ${fmt(d27?.total)} L); (b) 25 Sep = partial ` +
+      `→ hauling sebagian off (${fmt(d25?.total)} L). Bila 3 hari tersebut di-exclude, ` +
+      `konsumsi hari FULL-OPS ≈ ${fmt((curr.total - bargingDaysTotal - (d25?.total || 0)) / 4)} L/hari — ` +
+      `hampir identik dengan prev week.`,
     impact:
-      `Penurunan konsumsi pada 2 hari ini WAJAR karena hanya DT barging yang running. ` +
-      `Bila kedua hari ini di-exclude, rata-rata konsumsi hari FULL-ops ` +
-      `mencapai ~${fmt((curr.total - (d25?.total || 0) - (d26?.total || 0)) / 5)} L/hari — ` +
-      `justru lebih tinggi dari minggu lalu. Jadi bukan tanda masalah operasi.`,
+      `Fleet TIDAK lebih efisien. Penurunan murni kalender operasi. ` +
+      `Benchmark efisiensi harus pakai baseline FULL-OPS saja.`,
     actions: [
-      "Dokumentasikan pola barging-only di dashboard untuk hindari salah interpretasi",
-      "Bandingkan konsumsi barging-only week-over-week, bukan melawan full-ops day",
-      "Update sheet Daily Issue dengan label 'HAULING' / 'BARGING' / 'BOTH' per hari",
+      "Update Daily Issue sheet dengan kolom 'mode operasi' (FULL/PARTIAL/BARGING)",
+      "Hitung FR benchmark hanya dari hari FULL-OPS",
     ],
   });
 
-  // ── 3. Support spike karena pengembalian BPSP ───────────────
-  const bpspEntries = DAILY.filter((x) => x.week === "curr").reduce(
+  // ── N-03: Support proporsional ──────────────────────────────
+  const suppCurr = DAILY.filter((x) => x.week === "curr").reduce(
     (s, x) => s + (x.supp || 0),
     0,
   );
@@ -386,24 +407,21 @@ const generateNarratives = () => {
     id: "N-03",
     category: "Support",
     severity: "INFO",
-    title: `Support naik ${d.supp.toFixed(1)}% karena pengembalian fuel ke BPSP`,
+    title: `Support naik ${d.supp.toFixed(1)}% sebagian besar karena BPSP loan return`,
     why:
-      `Lonjakan Support sebagian besar berasal dari pengembalian fuel ke BPSP ` +
-      `senilai 9.000 L (peminjaman sebelumnya pada 16 Sep 2026). Pengembalian ` +
-      `ini tercatat sebagai "Support" di kategori, sehingga angkanya melonjak. ` +
-      `Selain itu ada transfer ke MPS 500 L. Keduanya bukan konsumsi alat operasional.`,
+      `Konsumsi Support minggu ini ${fmt(suppCurr)} L vs minggu lalu ${fmt(prev.supp)} L. ` +
+      `Kenaikan ini sebagian besar karena pengembalian BPSP (7.000 L curr vs 2.000 L prev) ` +
+      `yang tercatat di kategori Support. Exclude BPSP, Support operasional murni turun.`,
     impact:
-      `Bila pengembalian BPSP (9.000 L) + transfer MPS (500 L) di-exclude, ` +
-      `Support "murni" operasional hanya ~${fmt(bpspEntries - 9500)} L — stabil ` +
-      `dibanding minggu lalu. Lonjakan ini adalah artefak accounting, bukan kenaikan beban operasional.`,
+      `Support murni (excl. BPSP) hanya ~${(((suppCurr - 7000) / (curr.total - 7000)) * 100).toFixed(1)}% ` +
+      `dari total konsumsi fleet net. Fokus efisiensi tetap pada Production (DT + EXC).`,
     actions: [
-      "Pisahkan kategori 'Support Operasional' vs 'BPSP Loan Return' vs 'Inter-site Transfer'",
-      "Catat loan return sebagai adjustment stok, bukan kategori konsumsi",
-      "Utang BPSP 9.000 L lunas dikembalikan",
+      "Pisahkan kategori 'Support Operasional' vs 'BPSP Loan Return'",
+      "Monitor konsumsi genset & tower lamp secara terpisah untuk efisiensi",
     ],
   });
 
-  // ── 4. EXC FR dalam rentang NORMAL ──────────────────────────
+  // ── N-04: EXC FR di bawah range normal ──────────────────────
   const excNormal = EXC_SCORECARD.filter(
     (u) =>
       u.frHm >= FR_THRESHOLD.EXC_NORMAL_MIN &&
@@ -418,72 +436,76 @@ const generateNarratives = () => {
   out.push({
     id: "N-04",
     category: "Excavator",
-    severity: "GOOD",
-    title: `FR Excavator Loading dalam rentang normal (${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM)`,
+    severity: "MEDIUM",
+    title: `FR Excavator aktual 14–22 L/HM — di bawah range 28–32 L/HM`,
     why:
-      `Untuk aktivitas barging, FR normal EXC berada di rentang ` +
-      `${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM. ` +
-      `${excNormal.length} unit berada di rentang ini (${excNormal.map((u) => u.unit).join(", ")}). ` +
-      `Sebagian unit > ${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM (${excOver.map((u) => `${u.unit}=${u.frHm}`).join(", ") || "tidak ada"}) ` +
-      `dan sebagian < ${FR_THRESHOLD.EXC_NORMAL_MIN} L/HM (${excUnder
+      `Hanya ${excNormal.length} unit dalam range normal (${excNormal.map((u) => u.unit).join(", ") || "—"}). ` +
+      `${excOver.length} unit > ${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM (${excOver.map((u) => `${u.unit}=${u.frHm}`).join(", ") || "—"}) ` +
+      `dan ${excUnder.length} unit < ${FR_THRESHOLD.EXC_NORMAL_MIN} L/HM (${excUnder
         .slice(0, 3)
         .map((u) => `${u.unit}=${u.frHm}`)
-        .join(", ")}).`,
+        .join(", ")}). ` +
+      `Seluruh fleet avg ${curr.excFrHm} L/HM, jauh di bawah range normal.`,
     impact:
-      `FR fleet rata-rata ${curr.excFrHm} L/HM masih dalam zona sehat. ` +
-      `Naik ${d.excFrHm.toFixed(1)}% dari minggu lalu — masih dalam toleransi. ` +
-      `Unit di bawah range (EXC-024/022/012) kemungkinan idle lebih banyak atau meter HM tidak akurat.`,
-    actions: [],
+      `Indikasi kuat HM meter EXC tidak akurat (idle tidak terdeteksi) ATAU range "normal" ` +
+      `28–32 L/HM perlu direvisi berdasarkan data aktual September 2026. ` +
+      `Benchmark FR EXC tidak valid sampai kalibrasi meter dilakukan.`,
+    actions: [
+      "Audit HM meter 5 unit EXC terendah (EXC-024, EXC-022, EXC-012, EXC-011, EXC-006)",
+      "Review ulang rentang FR normal EXC — kemungkinan 14–22 L/HM lebih realistis",
+      "Cross-check dengan log manual operator",
+    ],
   });
 
-  // ── 5. DT FR membaik ────────────────────────────────────────
+  // ── N-05: DT FR membaik ────────────────────────────────────
   if (d.dtFrHm < -3) {
     out.push({
       id: "N-05",
       category: "Dump Truck",
       severity: "GOOD",
-      title: `Efisiensi DT membaik ${Math.abs(d.dtFrHm).toFixed(1)}% — hauling terkendali`,
+      title: `Efisiensi DT membaik ${Math.abs(d.dtFrHm).toFixed(1)}% — tapi bukan karena efisiensi nyata`,
       why:
-        `FR DT turun dari ${prev.dtFrHm} ke ${curr.dtFrHm} L/HM meski hauling ` +
-        `berjalan intensif. Untuk aktivitas hauling, FR normal DT ~` +
-        `${FR_THRESHOLD.DT_NORMAL_MIN}-${FR_THRESHOLD.DT_NORMAL_MAX} L/HM. ` +
-        `Fleet rata-rata ${curr.dtFrHm} L/HM masih dalam zona sehat.`,
+        `FR DT turun dari ${prev.dtFrHm} ke ${curr.dtFrHm} L/HM. Untuk aktivitas hauling, ` +
+        `FR normal DT ~${FR_THRESHOLD.DT_NORMAL_MIN}-${FR_THRESHOLD.DT_NORMAL_MAX} L/HM. ` +
+        `Namun perlu dicatat: penurunan ini sebagian karena hari barging-only di mana DT idle.`,
       impact:
         `Penghematan implicit: ~${fmt((prev.dtFrHm - curr.dtFrHm) * (curr.dtQty / curr.dtFrHm))} L ` +
-        `bila volume HM sama dengan minggu lalu. Ini indikator manajemen muatan & rute yang baik.`,
+        `bila volume HM sama dengan minggu lalu. Perlu verifikasi apakah ini benar-benar efisiensi ` +
+        `atau artefak dari idle days.`,
       actions: [
-        "Dokumentasikan sebagai best practice minggu ini",
+        "Bandingkan FR DT hanya dari hari FULL-OPS",
         "Identifikasi unit DT dengan FR terbaik untuk benchmark internal",
       ],
     });
   }
 
-  // ── 6. Stock recovery ──────────────────────────────────────
-  const stockStart = STOCK_DATA.find((s) => s.date === "20/9")?.lastStock || 0;
-  const stockEnd = STOCK_DATA[STOCK_DATA.length - 1]?.lastStock || 0;
+  // ── N-06: Stock recovery ──────────────────────────────────
+  const stockStart = STOCK_SUMMARY.startStock || 0;
+  const stockEnd = STOCK_SUMMARY.endStock || 0;
+  const fullOpsAvg = (curr.total - bargingDaysTotal) / 5;
   out.push({
     id: "N-06",
     category: "Stok",
     severity: stockEnd < 10000 ? "MEDIUM" : "INFO",
     title: `Stok: ${fmt(stockStart)} → ${fmt(stockEnd)} L (net +${fmt(stockEnd - stockStart)} L)`,
     why:
-      `Awal minggu stok di ${fmt(stockStart)} L (di bawah safety stock). ` +
-      `Total Stock-In minggu ini ${fmt(STOCK_SUMMARY.totalIn)} L dari ` +
-      `${STOCK_SUMMARY.stockInEvents.length} pengiriman (termasuk pembayaran loan BPSP + vendor reguler). ` +
-      `Total konsumsi ${fmt(STOCK_SUMMARY.totalOut)} L, sehingga net perubahan ` +
+      `Awal minggu stok di ${fmt(stockStart)} L. ` +
+      `Total Stock-In minggu ini ${fmt(STOCK_SUMMARY.totalInCurrWeekRecorded)} L dari ` +
+      `${STOCK_SUMMARY.stockInEvents.length} pengiriman vendor. ` +
+      `Total konsumsi gross ${fmt(STOCK_SUMMARY.totalOutGross)} L, sehingga net perubahan ` +
       `+${fmt(stockEnd - stockStart)} L.`,
     impact:
-      `Runway saat ini ~${KPI.runwayDaysHigh} hari (di ambang aman). ` +
-      `Namun pola konsumsi hari FULL-ops ~${fmt((curr.total - (d25?.total || 0) - (d26?.total || 0)) / 5)} L/hari ` +
+      `Runway saat ini ~${KPI.runwayDaysHigh} hari (aman). ` +
+      `Pola konsumsi hari FULL-ops ~${fmt(fullOpsAvg)} L/hari ` +
       `perlu di-cover oleh jadwal Stock-In rutin.`,
     actions: [
-      `Set ROP minimal 3 hari konsumsi FULL-ops = ~${fmt(((curr.total - (d25?.total || 0) - (d26?.total || 0)) / 5) * 3)} L`,
+      `Set ROP minimal 3 hari konsumsi FULL-ops = ~${fmt(fullOpsAvg * 3)} L`,
       "Jadwalkan Stock-In 2×/minggu reguler, hindari pola reaktif",
       "Auto-alert ketika runway < 3 hari",
     ],
   });
 
-  // ── 7. Anomali first-refueling ─────────────────────────────
+  // ── N-07: First-refueling ──────────────────────────────────
   const firstRefuel = ANOMALIES.filter((a) =>
     a.issue.includes("First-refueling"),
   );
@@ -508,6 +530,27 @@ const generateNarratives = () => {
     });
   }
 
+  // ── N-08: Vendor short delivery ────────────────────────────
+  out.push({
+    id: "N-08",
+    category: "Vendor",
+    severity: "MEDIUM",
+    title: `3× vendor short delivery terdeteksi bulan ini`,
+    why:
+      `PT. CENTRAL OIL INDONESIA NICON: "Kurang 15 Liter" (27 Sep). ` +
+      `PT. REBETSYA ALTA MANDIRI: "Kurang 74 Liter" (21 Sep, diganti 22 Sep). ` +
+      `PT. SUMBER KARYA ANUGERAH: "Kurang 82 Liter" (20 Sep). ` +
+      `Total shortage bulan September: 171 L dari 5 vendor.`,
+    impact:
+      `Shortage kecil (< 0,1%) tapi konsisten. Bila tidak ditindak, vendor ` +
+      `cenderung mengulang. Stok ledger menjadi tidak akurat jika tidak direkonsiliasi.`,
+    actions: [
+      "Kirim surat peringatan resmi ke 3 vendor dengan data shortage",
+      "Tambahkan klausul penalty 2× shortage di PO berikutnya",
+      "Wajibkan timbangan ulang di lokasi sebelum unloading",
+    ],
+  });
+
   return out;
 };
 
@@ -515,8 +558,22 @@ const NARRATIVES = generateNarratives();
 
 /* ─────────────────────────── PAGE 1: EXECUTIVE ─────────────────────────── */
 function ExecutivePage() {
-  const { headline, riskLevel, keyPoints, dtEfficiency, costEstimate } =
-    EXECUTIVE;
+  const {
+    headline,
+    headlineGross,
+    riskLevel,
+    keyPoints,
+    dtEfficiency,
+    costEstimate,
+  } = EXECUTIVE;
+  const [view, setView] = useState("net");
+  const isNet = view === "net";
+
+  const total = isNet ? KPI.totalWeekNet : KPI.totalWeekGross;
+  const totalPrev = isNet ? KPI.totalPrevWeekNet : KPI.totalPrevWeekGross;
+  const wow = isNet ? KPI.wowNet : KPI.wowGross;
+  const fleetRate = isNet ? KPI.fleetRateNet : KPI.fleetRateGross;
+  const fleetRatePrev = isNet ? KPI.fleetRatePrevNet : KPI.fleetRatePrevGross;
 
   const riskCfg = {
     HIGH: {
@@ -553,10 +610,31 @@ function ExecutivePage() {
             <Activity size={24} className="text-sky-400" />
           </div>
           <div className="flex-1">
-            <div className="text-xs font-bold text-sky-400 uppercase tracking-widest mb-1">
-              Executive Summary — {WEEK_NEW}
+            <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+              <div className="text-xs font-bold text-sky-400 uppercase tracking-widest">
+                Executive Summary — {WEEK_NEW}
+              </div>
+              <div className="flex gap-1 bg-white/10 rounded-lg p-0.5">
+                {[
+                  { k: "net", label: "NET (Fleet)" },
+                  { k: "gross", label: "GROSS (Ledger)" },
+                ].map((v) => (
+                  <button
+                    key={v.k}
+                    onClick={() => setView(v.k)}
+                    className={`text-[10px] font-bold px-2.5 py-1 rounded transition-all ${
+                      view === v.k
+                        ? "bg-sky-500 text-white shadow-sm"
+                        : "text-slate-300 hover:text-white"
+                    }`}>
+                    {v.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <p className="text-lg font-semibold leading-relaxed">{headline}</p>
+            <p className="text-lg font-semibold leading-relaxed">
+              {isNet ? headline : headlineGross}
+            </p>
             <div className="flex flex-wrap gap-2 mt-4">
               {keyPoints.map((k, i) => (
                 <span
@@ -566,6 +644,12 @@ function ExecutivePage() {
                 </span>
               ))}
             </div>
+            {isNet && (
+              <div className="mt-3 text-[11px] text-sky-200/80 italic">
+                ℹ️ Net = exclude 7.000 L pengembalian BPSP loan dari gross
+                ledger {fmt(KPI.totalWeekGross)} L.
+              </div>
+            )}
           </div>
           <div
             className={`hidden lg:flex flex-col items-center justify-center px-4 py-3 rounded-xl ${riskCfg.bg} ${riskCfg.border} border`}>
@@ -581,9 +665,9 @@ function ExecutivePage() {
         </div>
       </Card>
 
-      {/* Operasional context bar */}
+      {/* Operational context bar */}
       <Card className="p-4 bg-gradient-to-r from-sky-50 to-indigo-50 border-sky-200">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-lg bg-sky-100 flex items-center justify-center">
               <Mountain size={16} className="text-sky-700" />
@@ -617,25 +701,121 @@ function ExecutivePage() {
         </div>
       </Card>
 
+      {/* BPSP LOAN LEDGER CARD */}
+      <Card className="p-5 border-l-4 border-l-violet-500 bg-violet-50/30">
+        <SectionTitle
+          icon={ArrowRight}
+          title="BPSP Loan Ledger — Inter-Company Transfer"
+          sub={BPSP_LOAN.note}
+        />
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">
+          <div className="p-3 rounded-lg bg-violet-100 border border-violet-200 col-span-2 md:col-span-1">
+            <div className="flex items-center gap-1.5 mb-1">
+              <ArrowDownRight size={12} className="text-violet-700" />
+              <span className="text-[10px] font-bold text-violet-700 uppercase">
+                16 Sep
+              </span>
+            </div>
+            <div className="text-lg font-extrabold text-slate-800">
+              +{fmt(BPSP_LOAN.borrowQty)} L
+            </div>
+            <div className="text-[10px] text-violet-700">Peminjaman fuel</div>
+          </div>
+
+          {BPSP_LOAN.repayments.map((r) => (
+            <div
+              key={r.date}
+              className={`p-3 rounded-lg border ${
+                r.week === "curr"
+                  ? "bg-amber-50 border-amber-200"
+                  : "bg-slate-50 border-slate-200"
+              }`}>
+              <div className="flex items-center gap-1.5 mb-1">
+                <ArrowUpRight
+                  size={12}
+                  className={
+                    r.week === "curr" ? "text-amber-700" : "text-slate-600"
+                  }
+                />
+                <span
+                  className={`text-[10px] font-bold uppercase ${
+                    r.week === "curr" ? "text-amber-700" : "text-slate-600"
+                  }`}>
+                  {r.date.split("-")[2]} Sep · {r.week}
+                </span>
+              </div>
+              <div className="text-lg font-extrabold text-slate-800">
+                −{fmt(r.qty)} L
+              </div>
+              <div className="text-[10px] text-slate-500">Pengembalian</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 mt-4">
+          <div className="p-3 rounded-lg bg-white border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">
+              Total Borrow
+            </div>
+            <div className="text-xl font-extrabold text-violet-700">
+              +{fmt(BPSP_LOAN.borrowQty)} L
+            </div>
+          </div>
+          <div className="p-3 rounded-lg bg-white border border-slate-200">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">
+              Total Repay
+            </div>
+            <div className="text-xl font-extrabold text-amber-700">
+              −{fmt(BPSP_LOAN.totalRepay)} L
+            </div>
+          </div>
+          <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+            <div className="text-[10px] font-bold text-emerald-700 uppercase">
+              Net Balance
+            </div>
+            <div className="text-xl font-extrabold text-emerald-700">0 L</div>
+            <div className="text-[10px] text-emerald-600">
+              Siklus tertutup ✓
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 p-3 rounded-lg bg-white border border-violet-200">
+          <div className="flex items-start gap-2">
+            <Info size={14} className="text-violet-600 mt-0.5 shrink-0" />
+            <div className="text-xs text-slate-700 leading-relaxed">
+              <strong>Dampak ke analisis:</strong> Repayment{" "}
+              <strong>curr week 7.000 L</strong> vs{" "}
+              <strong>prev week 2.000 L</strong>. Karena curr week mengembalikan
+              lebih banyak, selisih WoW gross (−7,8%){" "}
+              <strong>terdistorsi</strong>. Setelah dikurangi repayment,
+              konsumsi fleet turun{" "}
+              <strong>{Math.abs(KPI.wowNet).toFixed(1)}%</strong> — bukan −7,8%.
+            </div>
+          </div>
+        </div>
+      </Card>
+
       {/* KPI Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KPICard
           icon={Droplet}
-          label="Total Konsumsi"
-          value={fmt(KPI.totalWeek)}
+          label={isNet ? "Konsumsi Fleet Net" : "Konsumsi Gross Ledger"}
+          value={fmt(total)}
           unit="L"
-          trend={KPI.totalWow}
-          accent="sky"
-          sub={`${KPI.recordsCurr} transaksi`}
+          trend={wow}
+          accent={isNet ? "sky" : "slate"}
+          sub={isNet ? "Exclude BPSP loan return" : "As-recorded"}
         />
         <KPICard
           icon={Gauge}
           label="Rate Harian"
-          value={fmt(KPI.fleetRate)}
+          value={fmt(fleetRate)}
           unit="L/hari"
-          trend={KPI.wowVsPrev}
+          trend={wow}
           accent="amber"
-          sub={`Prev: ${fmt(KPI.fleetRatePrev)} L/hari`}
+          sub={`Prev: ${fmt(fleetRatePrev)} L/hari`}
         />
         <KPICard
           icon={Flame}
@@ -656,7 +836,7 @@ function ExecutivePage() {
         />
       </div>
 
-      {/* ═══════════ KEY FINDINGS — Ringkasan Naratif ═══════════ */}
+      {/* Key Findings */}
       <Card className="p-5 border-l-4 border-l-sky-500">
         <SectionTitle
           icon={Lightbulb}
@@ -672,7 +852,9 @@ function ExecutivePage() {
                   ? "bg-emerald-50 border-emerald-200"
                   : n.severity === "MEDIUM"
                     ? "bg-amber-50 border-amber-200"
-                    : "bg-sky-50 border-sky-200"
+                    : n.severity === "VIOLET"
+                      ? "bg-violet-50 border-violet-200"
+                      : "bg-sky-50 border-sky-200"
               }`}>
               <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                 {n.category}
@@ -688,7 +870,7 @@ function ExecutivePage() {
         </div>
       </Card>
 
-      {/* ═══════════ DAILY ISSUES ═══════════ */}
+      {/* Daily Issues */}
       <Card className="p-5">
         <SectionTitle
           icon={Calendar}
@@ -723,9 +905,7 @@ function ExecutivePage() {
                   )}
                 </div>
                 <div
-                  className={`text-xs font-bold ${
-                    isBarging ? "text-indigo-900" : "text-amber-900"
-                  }`}>
+                  className={`text-xs font-bold ${isBarging ? "text-indigo-900" : "text-amber-900"}`}>
                   {issue.issue}
                 </div>
               </div>
@@ -739,12 +919,12 @@ function ExecutivePage() {
         </p>
       </Card>
 
-      {/* ═══════════ PERBANDINGAN MINGGUAN ═══════════ */}
+      {/* Perbandingan mingguan */}
       <Card className="p-5">
         <SectionTitle
           icon={Calendar}
           title="Perbandingan Mingguan"
-          sub={`${WEEK_PREV} (prev) vs ${WEEK_NEW} (curr)`}
+          sub={`${WEEK_PREV} (prev) vs ${WEEK_NEW} (curr) — Gross & Net`}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
@@ -765,7 +945,10 @@ function ExecutivePage() {
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">
               {WEEK_COMPARISON.prev.records} rec · {WEEK_COMPARISON.prev.units}{" "}
-              unit · {WEEK_COMPARISON.prev.activeDays} hari aktif
+              unit · {WEEK_COMPARISON.prev.activeDays} hari
+            </div>
+            <div className="text-[10px] text-violet-700 mt-2 pt-2 border-t border-slate-200">
+              BPSP repay prev: −{fmt(WEEK_COMPARISON.prev.bpspRepay)} L
             </div>
           </div>
 
@@ -786,7 +969,10 @@ function ExecutivePage() {
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">
               {WEEK_COMPARISON.curr.records} rec · {WEEK_COMPARISON.curr.units}{" "}
-              unit · {WEEK_COMPARISON.curr.activeDays} hari aktif
+              unit · {WEEK_COMPARISON.curr.activeDays} hari
+            </div>
+            <div className="text-[10px] text-violet-700 mt-2 pt-2 border-t border-sky-200">
+              BPSP repay curr: −{fmt(WEEK_COMPARISON.curr.bpspRepay)} L
             </div>
           </div>
 
@@ -798,19 +984,11 @@ function ExecutivePage() {
               className={`text-3xl font-extrabold ${WEEK_COMPARISON.deltas.total > 0 ? "text-amber-400" : "text-emerald-400"}`}>
               {fmtPct(WEEK_COMPARISON.deltas.total)}
             </div>
-            <div className="text-[11px] text-slate-400 mb-2">Total WoW</div>
-            <div className="space-y-1.5 pt-2 border-t border-slate-700">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-slate-400">Avg/hari</span>
-                <DeltaChip value={WEEK_COMPARISON.deltas.avgDaily} />
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-slate-400">Records</span>
-                <DeltaChip value={WEEK_COMPARISON.deltas.records} />
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-slate-400">Unit aktif</span>
-                <DeltaChip value={WEEK_COMPARISON.deltas.units} />
+            <div className="text-[11px] text-slate-400 mb-2">Gross WoW</div>
+            <div className="bg-white/10 rounded p-2">
+              <div className="text-[10px] text-sky-300 uppercase">Net WoW</div>
+              <div className="text-xl font-extrabold text-emerald-400">
+                {fmtPct(WEEK_COMPARISON.deltas.totalNet)}
               </div>
             </div>
           </div>
@@ -907,7 +1085,7 @@ function ExecutivePage() {
         </div>
       </Card>
 
-      {/* ═══════════ TREN KONSUMSI 14 HARI ═══════════ */}
+      {/* Tren konsumsi */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <Card className="lg:col-span-2 p-5">
           <SectionTitle
@@ -939,10 +1117,10 @@ function ExecutivePage() {
                 />
               )}
               <ReferenceLine
-                y={KPI.fleetRatePrev}
+                y={KPI.fleetRatePrevNet}
                 stroke={C.muted}
                 strokeDasharray="4 4"
-                label={{ value: "Prev avg", fontSize: 10, fill: C.muted }}
+                label={{ value: "Prev net avg", fontSize: 10, fill: C.muted }}
               />
               <Area
                 type="monotone"
@@ -964,18 +1142,6 @@ function ExecutivePage() {
               />
             </ComposedChart>
           </ResponsiveContainer>
-          <div className="text-[10px] text-slate-400 mt-2 flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-1">
-              <span className="w-3 h-2 rounded-sm bg-slate-300/50" /> Prev week
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="w-3 h-2 rounded-sm bg-sky-300/40" /> Curr week
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Anchor size={10} className="text-indigo-600" /> Barging only
-              (25–26 Sep)
-            </span>
-          </div>
         </Card>
 
         <Card className="p-5">
@@ -989,10 +1155,10 @@ function ExecutivePage() {
               {costEstimate.idrText}
             </div>
             <div className="text-xs text-slate-500 mt-1">
-              untuk {fmtL(KPI.totalWeek)}
+              untuk {fmtL(total)}
             </div>
             <div className="mt-2 inline-flex">
-              <DeltaChip value={WEEK_COMPARISON.deltas.total} />
+              <DeltaChip value={wow} />
               <span className="text-[11px] text-slate-500 ml-2 self-center">
                 vs minggu lalu
               </span>
@@ -1032,7 +1198,7 @@ function ExecutivePage() {
         </Card>
       </div>
 
-      {/* ═══════════ DOW COMPARISON ═══════════ */}
+      {/* DOW */}
       <Card className="p-5">
         <SectionTitle
           icon={Calendar}
@@ -1074,7 +1240,7 @@ function ExecutivePage() {
           />
           <div className="space-y-4">
             {CATEGORY_BREAKDOWN.map((c) => {
-              const pct = (c.qty / KPI.totalWeek) * 100;
+              const pct = (c.qty / KPI.totalWeekGross) * 100;
               const colorMap = {
                 Production: C.accent,
                 MHR: C.gold,
@@ -1110,22 +1276,6 @@ function ExecutivePage() {
               );
             })}
           </div>
-          {CATEGORY_BREAKDOWN.find(
-            (c) => c.cat === "Support",
-          )?.subBreakdown.find((s) => s.jenis === "BPSP") && (
-            <div className="mt-3 p-2.5 rounded-lg bg-sky-50 border border-sky-200">
-              <p className="text-[10px] text-sky-800 leading-relaxed">
-                <strong>Catatan:</strong> Entry BPSP{" "}
-                {fmt(
-                  CATEGORY_BREAKDOWN.find(
-                    (c) => c.cat === "Support",
-                  )?.subBreakdown.find((s) => s.jenis === "BPSP")?.qty || 0,
-                )}{" "}
-                L adalah pengembalian fuel pinjaman sebelumnya, bukan konsumsi
-                alat.
-              </p>
-            </div>
-          )}
         </Card>
 
         <Card className="p-5">
@@ -1136,7 +1286,7 @@ function ExecutivePage() {
           />
           <div className="space-y-2.5">
             {LOCATION_BREAKDOWN.slice(0, 6).map((l, i) => {
-              const pct = (l.qty / KPI.totalWeek) * 100;
+              const pct = (l.qty / KPI.totalWeekGross) * 100;
               return (
                 <div key={l.location} className="flex items-center gap-3">
                   <div
@@ -1179,12 +1329,13 @@ function ExecutivePage() {
   );
 }
 
-/* ═══════════════════ PAGE 1B: DEEP ANALYSIS & ACTIONS ═══════════════════ */
+/* ═══════════════════ PAGE 1B: DEEP ANALYSIS ═══════════════════ */
 function AnalysisPage() {
   const [activeFilter, setActiveFilter] = useState("ALL");
 
   const categories = [
     "ALL",
+    "BPSP Loan",
     "Konteks",
     "Produksi",
     "Support",
@@ -1192,7 +1343,7 @@ function AnalysisPage() {
     "Dump Truck",
     "Stok",
     "Data Quality",
-    "Utilisasi",
+    "Vendor",
   ];
 
   const filtered =
@@ -1226,6 +1377,12 @@ function AnalysisPage() {
         icon: CheckCircle2,
         label: "BAIK",
       },
+      VIOLET: {
+        bg: "bg-violet-100",
+        text: "text-violet-700",
+        icon: ArrowRight,
+        label: "TRANSFER",
+      },
     })[s] || {
       bg: "bg-slate-100",
       text: "text-slate-600",
@@ -1241,9 +1398,14 @@ function AnalysisPage() {
       icon: AlertTriangle,
       items: [
         {
-          task: "Cek unit EXC FR > 34 L/HM (jika ada)",
-          why: `FR normal EXC ${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM. Di atas 34 = indikasi idle ekstrem atau meter HM bermasalah.`,
-          owner: "Maintenance + Ops",
+          task: "Rekonsiliasi BPSP loan ledger (16 Sep in, 20–24 Sep out)",
+          why: "Pastikan net balance 0 di master data. Ini menyembunyikan penurunan sebenarnya jika tidak di-net.",
+          owner: "Finance + Ops",
+        },
+        {
+          task: "Audit HM meter 5 unit EXC terendah",
+          why: `FR EXC aktual 14–22 L/HM di bawah range "normal" 28–32 L/HM. Kemungkinan sensor HM rusak.`,
+          owner: "Maintenance",
         },
       ],
     },
@@ -1258,6 +1420,11 @@ function AnalysisPage() {
           why: "Cegah pola 'stock-in panik' yang muncul 2 minggu berturut-turut.",
           owner: "Supply Chain",
         },
+        {
+          task: "Kirim surat peringatan ke 3 vendor dengan data shortage",
+          why: "Total 171 L shortage bulan Sept — perlu tindakan resmi.",
+          owner: "Procurement",
+        },
       ],
     },
     {
@@ -1267,19 +1434,19 @@ function AnalysisPage() {
       icon: Target,
       items: [
         {
-          task: "Pisahkan kategori BPSP Loan Return dari Support di master data",
-          why: "Agar Support mencerminkan konsumsi operasional murni (LV, Genset, dsb.)",
+          task: "Pisahkan kategori BPSP Loan & Inter-company dari Support",
+          why: "Agar Support mencerminkan konsumsi operasional murni.",
           owner: "Data Governance",
         },
         {
-          task: "Standarisasi penamaan unit (DT-xxx, EXC-xxx) + validasi sistem",
-          why: "Masih ada entri lama 'TMI xxx' style di sheet stock out.",
+          task: "Update Daily Issue sheet dengan kolom 'mode operasi' (FULL/PARTIAL/BARGING)",
+          why: "Baseline FR lebih akurat bila dipisah per mode operasi.",
           owner: "Data Governance",
         },
         {
-          task: "Pilot telematics / idle-time monitoring pada 5 DT top consumer",
-          why: "Identifikasi FR tinggi real-time, bukan reaktif mingguan.",
-          owner: "Technology",
+          task: "Standarisasi penamaan unit + validasi sistem",
+          why: "Masih ada entri lama 'TMI xxx' style & unit dengan FR invalid.",
+          owner: "Data Governance",
         },
       ],
     },
@@ -1309,7 +1476,6 @@ function AnalysisPage() {
 
   return (
     <div className="space-y-5">
-      {/* ═══════════ HEADER NARATIF ═══════════ */}
       <Card className="p-6 bg-gradient-to-br from-indigo-700 via-indigo-800 to-slate-900 border-0 text-white">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
@@ -1320,9 +1486,9 @@ function AnalysisPage() {
               Deep Analysis — Konteks & Insight Operasional
             </div>
             <p className="text-base font-medium leading-relaxed text-indigo-50">
-              Setiap insight di halaman ini sudah mempertimbangkan konteks
-              operasional harian sehingga Anda tidak salah membaca data sebagai
-              anomali.
+              Setiap insight sudah mempertimbangkan konteks operasional
+              (hauling/barging) dan BPSP loan ledger sehingga Anda tidak salah
+              membaca data sebagai anomali.
             </p>
             <div className="grid grid-cols-3 gap-3 mt-5">
               <div className="bg-white/10 backdrop-blur rounded-lg p-3">
@@ -1352,11 +1518,10 @@ function AnalysisPage() {
         </div>
       </Card>
 
-      {/* ═══════════ FILTER CHIPS ═══════════ */}
       <Card className="p-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wide mr-2">
-            Filter kategori:
+            Filter:
           </span>
           {categories.map((c) => {
             const count =
@@ -1380,7 +1545,6 @@ function AnalysisPage() {
         </div>
       </Card>
 
-      {/* ═══════════ NARRATIVE CARDS ═══════════ */}
       <div className="space-y-4">
         {filtered.map((n) => {
           const cfg = sevBadge(n.severity);
@@ -1458,7 +1622,6 @@ function AnalysisPage() {
         })}
       </div>
 
-      {/* ═══════════ ACTION PLAN (Prioritized) ═══════════ */}
       <Card className="p-5">
         <SectionTitle
           icon={Flag}
@@ -1518,7 +1681,6 @@ function AnalysisPage() {
         </div>
       </Card>
 
-      {/* ═══════════ METHODOLOGY NOTE ═══════════ */}
       <Card className="p-5 border-l-4 border-l-indigo-500 bg-indigo-50/30">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
@@ -1540,12 +1702,12 @@ function AnalysisPage() {
                 L/HM.
               </li>
               <li>
-                • <strong>Hari barging-only</strong> (25–26 Sep) menyebabkan
-                konsumsi drop drastis — dikecualikan dari baseline full-ops.
+                • <strong>BPSP loan:</strong> 9.000 L (16 Sep in) dikembalikan
+                20–24 Sep (2k+2k+2k+3k) — net 0, bukan konsumsi fleet.
               </li>
               <li>
-                • <strong>Pengembalian BPSP 9.000 L</strong> tercatat di Support
-                (bukan konsumsi alat) — di-exclude dari analisis efisiensi.
+                • <strong>Hari barging-only</strong> (26–27 Sep) menyebabkan
+                konsumsi drop — dikecualikan dari baseline full-ops.
               </li>
               <li>
                 • Narasi di-generate otomatis dari perbandingan metrik (bukan
@@ -1561,9 +1723,8 @@ function AnalysisPage() {
 
 /* ─────────────────────────── PAGE 2: OPERATIONS ─────────────────────────── */
 const UnitDayHeatmap = ({ matrix, unitLabel = "Unit" }) => {
-  if (!matrix?.rows?.length) {
+  if (!matrix?.rows?.length)
     return <p className="text-xs text-slate-400">Tidak ada data.</p>;
-  }
   const { dates, rows, maxQty } = matrix;
 
   const bgFor = (v) => {
@@ -1721,8 +1882,8 @@ function OperationsPage() {
             <span className="w-3 h-2 rounded-sm bg-sky-300/40" /> Curr week
           </span>
           <span className="inline-flex items-center gap-1">
-            <Anchor size={10} className="text-indigo-600" /> Barging only (25–26
-            Sep): konsumsi DT drop karena hauling off
+            <Anchor size={10} className="text-indigo-600" /> Barging only (26–27
+            Sep): konsumsi DT drop
           </span>
         </div>
       </Card>
@@ -1732,18 +1893,14 @@ function OperationsPage() {
           <SectionTitle
             icon={Gauge}
             title="Heatmap Pengisian Unit × Hari"
-            sub={`Top 15 unit · minggu ini (${DT_DAILY_MATRIX.daysBack || 0} hari) · warna lebih pekat = volume lebih tinggi`}
+            sub={`Top 15 unit · minggu ini (7 hari) · warna lebih pekat = volume lebih tinggi`}
           />
           <div className="flex gap-1">
             {["DT", "EXC"].map((t) => (
               <button
                 key={t}
                 onClick={() => setHeatTab(t)}
-                className={`text-xs font-bold px-3 py-1.5 rounded-lg ${
-                  heatTab === t
-                    ? "bg-sky-600 text-white"
-                    : "bg-slate-100 text-slate-600"
-                }`}>
+                className={`text-xs font-bold px-3 py-1.5 rounded-lg ${heatTab === t ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-600"}`}>
                 {t === "DT" ? "Dump Truck (Hauling)" : "Excavator (Barging)"}
               </button>
             ))}
@@ -1760,7 +1917,7 @@ function OperationsPage() {
           <SectionTitle
             icon={Truck}
             title="Rata-rata DT / Hari (Hauling)"
-            sub={`Volume, unit aktif, FR — target ${FR_THRESHOLD.DT_NORMAL_MIN}–${FR_THRESHOLD.DT_NORMAL_MAX} L/HM`}
+            sub={`Target ${FR_THRESHOLD.DT_NORMAL_MIN}–${FR_THRESHOLD.DT_NORMAL_MAX} L/HM`}
           />
           <div className="grid grid-cols-3 gap-3">
             {[
@@ -1813,7 +1970,7 @@ function OperationsPage() {
           <SectionTitle
             icon={Wrench}
             title="Rata-rata EXC / Hari (Barging)"
-            sub={`Volume, unit aktif, FR — target ${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM`}
+            sub={`Target ${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM`}
           />
           <div className="grid grid-cols-3 gap-3">
             {[
@@ -1904,7 +2061,7 @@ function OperationsPage() {
       </Card>
 
       <Card className="p-5">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <SectionTitle
             icon={Truck}
             title="Analisis per Kategori"
@@ -2129,7 +2286,6 @@ function UnitScorecardPage() {
       "Q4 (Boros)": "bg-red-100 text-red-700",
     })[q] || "bg-slate-100 text-slate-600";
 
-  // FR color threshold per category
   const frColor = (fr, cat) => {
     if (fr <= 0) return "text-slate-400";
     if (cat === "DT") {
@@ -2176,7 +2332,7 @@ function UnitScorecardPage() {
           label="Unit EXC aktif"
           value={EXC_SCORECARD.length}
           accent="amber"
-          sub={`Normal FR ${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM`}
+          sub={`Target FR ${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM`}
         />
         <KPICard
           icon={CheckCircle2}
@@ -2195,7 +2351,7 @@ function UnitScorecardPage() {
       </div>
 
       <Card className="p-5">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <SectionTitle
             icon={Gauge}
             title="Unit Scorecard"
@@ -2220,11 +2376,7 @@ function UnitScorecardPage() {
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`text-xs font-bold px-3 py-1.5 rounded-lg ${
-                    tab === t
-                      ? "bg-sky-600 text-white"
-                      : "bg-slate-100 text-slate-600"
-                  }`}>
+                  className={`text-xs font-bold px-3 py-1.5 rounded-lg ${tab === t ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-600"}`}>
                   {t === "DT" ? "Dump Truck" : "Excavator"}
                 </button>
               ))}
@@ -2327,14 +2479,14 @@ function UnitScorecardPage() {
         <p className="text-[11px] text-slate-500 mt-3 italic">
           {tab === "DT"
             ? `Kategori FR: merah < ${FR_THRESHOLD.DT_NORMAL_MIN} L/HM · hijau ${FR_THRESHOLD.DT_NORMAL_MIN}–${FR_THRESHOLD.DT_NORMAL_MAX} · amber > ${FR_THRESHOLD.DT_NORMAL_MAX}`
-            : `Kategori FR: merah < ${FR_THRESHOLD.EXC_NORMAL_MIN} L/HM · hijau ${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} · amber > ${FR_THRESHOLD.EXC_NORMAL_MAX}`}
+            : `Target FR: hijau ${FR_THRESHOLD.EXC_NORMAL_MIN}–${FR_THRESHOLD.EXC_NORMAL_MAX} L/HM. Catatan: banyak unit aktual di bawah range — perlu audit HM meter.`}
         </p>
       </Card>
     </div>
   );
 }
 
-/* ─────────────────────────── PAGE 4: ANOMALIES & QUALITY ─────────────────────────── */
+/* ─────────────────────────── PAGE 4: ANOMALIES ─────────────────────────── */
 function AnomaliesPage() {
   const [filter, setFilter] = useState("ALL");
   const filtered =
@@ -2378,6 +2530,46 @@ function AnomaliesPage() {
           danger={!!sevCounts.HIGH}
         />
       </div>
+
+      {/* BPSP LOAN EVENT LOG */}
+      <Card className="p-5 border-l-4 border-l-violet-500">
+        <SectionTitle
+          icon={ArrowRight}
+          title="BPSP Loan — Event Log"
+          sub="Inter-company transfer, net 0 — bukan konsumsi fleet"
+        />
+        <div className="space-y-2">
+          {STOCK_SUMMARY.bpspEvents.map((e, i) => (
+            <div
+              key={i}
+              className={`flex items-center gap-3 p-2.5 rounded-lg border ${
+                e.direction === "IN"
+                  ? "bg-violet-50 border-violet-200"
+                  : "bg-amber-50 border-amber-200"
+              }`}>
+              <div
+                className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                  e.direction === "IN" ? "bg-violet-100" : "bg-amber-100"
+                }`}>
+                {e.direction === "IN" ? (
+                  <ArrowDownRight size={14} className="text-violet-700" />
+                ) : (
+                  <ArrowUpRight size={14} className="text-amber-700" />
+                )}
+              </div>
+              <span className="text-xs font-bold text-slate-700 min-w-[60px]">
+                {e.date}
+              </span>
+              <span className="text-xs text-slate-600 flex-1">{e.note}</span>
+              <span
+                className={`text-sm font-extrabold ${e.direction === "IN" ? "text-violet-700" : "text-amber-700"}`}>
+                {e.direction === "IN" ? "+" : "−"}
+                {fmt(e.qty)} L
+              </span>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       <Card className="p-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -2524,6 +2716,9 @@ function AnomaliesPage() {
 
 /* ─────────────────────────── PAGE 5: FORECAST & STOCK ─────────────────────────── */
 function ForecastPage() {
+  const [stockView, setStockView] = useState("net");
+  const isNet = stockView === "net";
+
   const combinedData = [
     ...FORECAST.history.map((d) => ({ ...d, isForecast: false })),
     ...FORECAST.forecast.map((d) => ({ ...d, actual: null, isForecast: true })),
@@ -2533,7 +2728,6 @@ function ForecastPage() {
   const currDays = DAILY.filter((d) => d.week === "curr").length;
   const totalDays = prevDays + currDays;
 
-  // Full-ops average (exclude barging-only days)
   const bargingOnlyDates = DAILY_ISSUES.filter((i) =>
     i.issue.toLowerCase().includes("barging"),
   ).map((i) => i.date);
@@ -2543,6 +2737,13 @@ function ForecastPage() {
   const fullOpsAvg = fullOpsDays.length
     ? fullOpsDays.reduce((s, d) => s + d.total, 0) / fullOpsDays.length
     : 0;
+
+  const totalIn = isNet
+    ? STOCK_SUMMARY.totalInVendorOnly
+    : STOCK_SUMMARY.totalInRecorded;
+  const totalOut = isNet
+    ? STOCK_SUMMARY.totalOutFleetNet
+    : STOCK_SUMMARY.totalOutGross;
 
   return (
     <div className="space-y-5">
@@ -2556,16 +2757,16 @@ function ForecastPage() {
         />
         <KPICard
           icon={TrendingUp}
-          label="Total Stock-In"
-          value={fmt(STOCK_SUMMARY.totalIn)}
+          label={isNet ? "Total Stock-In (Vendor)" : "Total Stock-In (Ledger)"}
+          value={fmt(totalIn)}
           unit="L"
           accent="emerald"
-          sub="Termasuk loan BPSP return"
+          sub={isNet ? "Exclude BPSP loan 9.000 L" : "Termasuk loan BPSP"}
         />
         <KPICard
           icon={TrendingDown}
-          label="Total Konsumsi"
-          value={fmt(STOCK_SUMMARY.totalOut)}
+          label={isNet ? "Konsumsi Net" : "Konsumsi Gross"}
+          value={fmt(totalOut)}
           unit="L"
           accent="amber"
         />
@@ -2581,11 +2782,27 @@ function ForecastPage() {
       </div>
 
       <Card className="p-5">
-        <SectionTitle
-          icon={Warehouse}
-          title="Pergerakan Stok & Konsumsi"
-          sub={`Ledger ${totalDays} hari (prev + curr week)`}
-        />
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <SectionTitle
+            icon={Warehouse}
+            title="Pergerakan Stok & Konsumsi"
+            sub={`Ledger ${totalDays} hari (prev + curr week)`}
+          />
+          <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5">
+            {["net", "gross"].map((v) => (
+              <button
+                key={v}
+                onClick={() => setStockView(v)}
+                className={`text-[10px] font-bold px-2.5 py-1 rounded ${
+                  stockView === v
+                    ? "bg-white shadow-sm text-sky-600"
+                    : "text-slate-600"
+                }`}>
+                {v === "net" ? "NET (Fleet)" : "GROSS (Ledger)"}
+              </button>
+            ))}
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={280}>
           <ComposedChart
             data={STOCK_DATA.map((d, i) => ({
@@ -2625,7 +2842,38 @@ function ForecastPage() {
           </ComposedChart>
         </ResponsiveContainer>
         <div className="text-[11px] text-slate-500 mt-2 italic">
-          Zona merah = level stok kritis (&lt;5.000 L).
+          Zona merah = level stok kritis (&lt;5.000 L). View:{" "}
+          <strong>{isNet ? "NET (exclude BPSP)" : "GROSS (ledger)"}</strong>.
+        </div>
+      </Card>
+
+      {/* BPSP stock events timeline */}
+      <Card className="p-5 border-l-4 border-l-violet-500 bg-violet-50/20">
+        <SectionTitle
+          icon={ArrowRight}
+          title="BPSP Loan Events di Stock Ledger"
+          sub="16 Sep in + 20–24 Sep out — net 0"
+        />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mt-2">
+          {STOCK_SUMMARY.bpspEvents.map((e, i) => (
+            <div
+              key={i}
+              className={`p-3 rounded-lg border ${
+                e.direction === "IN"
+                  ? "bg-violet-100 border-violet-200"
+                  : "bg-amber-50 border-amber-200"
+              }`}>
+              <div className="text-[10px] font-bold uppercase text-slate-600 mb-1">
+                {e.date}
+              </div>
+              <div
+                className={`text-base font-extrabold ${e.direction === "IN" ? "text-violet-700" : "text-amber-700"}`}>
+                {e.direction === "IN" ? "+" : "−"}
+                {fmt(e.qty)} L
+              </div>
+              <div className="text-[10px] text-slate-500">{e.note}</div>
+            </div>
+          ))}
         </div>
       </Card>
 
@@ -2633,7 +2881,7 @@ function ForecastPage() {
         <SectionTitle
           icon={LineIcon}
           title="Forecast 7 Hari ke Depan"
-          sub={`Proyeksi linear regression dari ${totalDays} hari (prev + curr week)`}
+          sub={`Proyeksi linear regression dari ${totalDays} hari`}
         />
         <ResponsiveContainer width="100%" height={280}>
           <ComposedChart data={combinedData}>
@@ -2680,8 +2928,7 @@ function ForecastPage() {
               (hauling + barging), rata-rata konsumsi ~{fmt(fullOpsAvg)} L/hari.
               Bila konsumsi tetap di level ini dan stok EOD{" "}
               {fmt(KPI.currentStock)} L, runway ~{KPI.runwayDaysHigh.toFixed(1)}{" "}
-              hari tanpa Stock-In tambahan. Forecast di atas menggunakan blended
-              average (termasuk hari barging-only).
+              hari tanpa Stock-In tambahan.
             </div>
           </div>
         </div>
@@ -2691,7 +2938,7 @@ function ForecastPage() {
         <SectionTitle
           icon={Package}
           title="Riwayat Stock-In Minggu Ini"
-          sub={`Total ${fmt(STOCK_SUMMARY.totalIn)} L dari ${STOCK_SUMMARY.stockInEvents.length} pengiriman`}
+          sub={`Total ${fmt(STOCK_SUMMARY.totalInCurrWeekRecorded)} L dari ${STOCK_SUMMARY.stockInEvents.length} pengiriman vendor`}
         />
         {STOCK_SUMMARY.stockInEvents.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -2704,6 +2951,9 @@ function ForecastPage() {
                 </div>
                 <div className="text-lg font-extrabold text-slate-800">
                   +{fmt(e.qty)} L
+                </div>
+                <div className="text-[10px] text-slate-500 truncate">
+                  {e.vendor}
                 </div>
               </div>
             ))}
