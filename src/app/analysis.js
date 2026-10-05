@@ -138,7 +138,7 @@ export const KPI = {
 
 export const EXECUTIVE = {
   headline:
-    "Konsumsi fleet minggu ini 60.940 L (turun 5,3% vs base week fleet 64.373 L). " +
+    "Konsumsi fleet minggu ini 61.070 L (turun 5,3% vs base week fleet 64.373 L). " +
     "Gross ledger turun 15,2% (61.070 vs 72.012 L) karena base week mengandung 7.000 L BPSP repay. " +
     "Current week lebih stabil FULL-ops (kecuali 2 Okt pergantian shift).",
   headlineGross:
@@ -150,7 +150,6 @@ export const EXECUTIVE = {
     "📉 Fleet turun −5,3% (gross −15,2% terdistorsi BPSP repay base week)",
     "📈 Stok naik: 65.529 → 111.463 L (runway ~12 hari @ FULL-ops)",
     "⚠️ 2 anomali HM kritis (EXC-001 meter jump, EXC-002 HM 72,4 jam)",
-    "🚩 Vendor short delivery: BUMI ENERGI −11 L (3 Okt)",
   ],
   dtEfficiency: {
     avg: 18.3,
@@ -1789,9 +1788,9 @@ export const CATEGORY_BREAKDOWN = [
   },
   {
     cat: "Support",
-    qty: 1458.0,
-    records: 22,
-    units: 11,
+    qty: 1588.02,
+    records: 23,
+    units: 12,
     frHm: 16.36,
     avgPerRec: 63.5,
     subBreakdown: [
@@ -1800,6 +1799,7 @@ export const CATEGORY_BREAKDOWN = [
       { jenis: "TOWER LAMP", qty: 112.0, units: 3 },
       { jenis: "GENSET", qty: 99.0, units: 1 },
       { jenis: "MANHOUL", qty: 126.7, units: 1 },
+      { jenis: "HUB", qty: 130.02, units: 1 },
     ],
   },
 ];
