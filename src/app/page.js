@@ -323,18 +323,16 @@ const generateNarratives = () => {
     id: "N-00",
     category: "Konteks Operasional",
     severity: "INFO",
-    title: "Base week (21–27 Sep) terdistorsi pola mode operasional",
+    title: "Base week (21–27 Sep) terdistorsi mode operasional + BPSP repay",
     why:
-      `Base week punya 2 hari BARGING_ONLY (26–27 Sep) + 1 PARTIAL (25 Sep). ` +
-      `Current week hanya 1 PARTIAL (2 Okt). Akibatnya gross turun −15,2% ` +
-      `meski hari FULL-ops current week relatif stabil.`,
-    impact:
-      `Perbandingan WoW gross tidak apple-to-apple. Baseline yang benar ` +
-      `adalah rata-rata hari FULL-ops saja.`,
+      `Base week punya 2 hari BARGING_ONLY (26–27 Sep) + 1 PARTIAL (25 Sep) ` +
+      `dan mengandung 7.000 L BPSP repay (bukan konsumsi fleet). ` +
+      `Current week hanya 1 PARTIAL (2 Okt).`,
+    impact: `Perbandingan gross WoW (−15,2%). ` + `Bandingkan fleet (−5,3%).`,
     actions: [
       "Filter perbandingan hanya hari FULL-ops",
-      "Catat mode operasional setiap hari di Daily Issue",
-      "Gunakan baseline FULL-ops untuk target efisiensi",
+      "Pisahkan interco (BPSP/HUB/MPS) dari metrik fleet",
+      "Gunakan baseline FULL-ops (~9.276 L/hari) untuk target efisiensi",
     ],
   });
 
@@ -344,23 +342,23 @@ const generateNarratives = () => {
   );
   const fullOpsAvg = fullOpsDays.length
     ? fullOpsDays.reduce((s, x) => s + x.total, 0) / fullOpsDays.length
-    : 0;
+    : KPI.fullOpsAvg;
   out.push({
     id: "N-02",
     category: "Produksi",
     severity: "MEDIUM",
-    title: `Konsumsi gross turun −${Math.abs(KPI.wowGross).toFixed(1)}% — sebagian besar karena mode base week`,
+    title: `Fleet turun −${Math.abs(KPI.wowFleet).toFixed(1)}% — gross −${Math.abs(KPI.wowGross).toFixed(1)}% terdistorsi BPSP`,
     why:
-      `Total current ${fmt(KPI.totalWeekGross)} L vs base ${fmt(KPI.totalPrevWeekGross)} L. ` +
-      `Rata-rata hari FULL-ops current = ${fmt(fullOpsAvg)} L/hari. ` +
-      `DT qty turun −4,4%, EXC turun −9,1%. FR DT tetap sehat di 18,38 L/HM.`,
+      `Fleet current ${fmt(KPI.totalWeekFleet)} L vs base ${fmt(KPI.totalPrevWeekFleet)} L (−5,3%). ` +
+      `Gross current ${fmt(KPI.totalWeekGross)} L vs base ${fmt(KPI.totalPrevWeekGross)} L (−15,2%). ` +
+      `Rata-rata FULL-ops current = ${fmt(fullOpsAvg)} L/hari. ` +
+      `DT qty −3,5%, EXC −28,5%. FR DT sehat di ${KPI.dtFrHm} L/HM.`,
     impact:
-      `Penurunan konsumsi BUKAN sinyal efisiensi, tapi perbedaan pola operasional. ` +
-      `Fokus: pastikan FR tetap dalam range normal.`,
+      `Penurunan gross BUKAN sinyal efisiensi besar — 7.000 L adalah BPSP repay. ` +
+      `Fleet turun moderat; fokus jaga FR dalam range normal.`,
     actions: [
       "Korelasikan dengan target produksi (BCM/ton) per mode",
       "Monitor FR per unit — jangan sampai turun qty = naik FR",
-      "Benchmark internal dari operator terbaik (DT-044: FR 7,78 L/HM)",
     ],
   });
 
@@ -369,13 +367,13 @@ const generateNarratives = () => {
     id: "N-03",
     category: "Support",
     severity: "INFO",
-    title: `Support ${fmt(curr.supp)} L (~${((curr.supp / curr.total) * 100).toFixed(1)}% total)`,
+    title: `Support ${fmt(curr.supp)} L (~${((curr.supp / curr.fleet) * 100).toFixed(1)}% fleet)`,
     why:
-      `Support (FT + LV + Tower Lamp + Genset + HUB) current ${fmt(curr.supp)} L. ` +
-      `Termasuk HUB transfer 130 L (1 Okt). Proporsi kecil, tidak signifikan.`,
-    impact: `Fokus efisiensi tetap pada Production (DT + EXC).`,
+      `Support operasional (FT + LV + Tower Lamp + Genset) = ${fmt(curr.supp)} L. ` +
+      `HUB transfer 130 L (1 Okt) dipisah ke Inter-company, bukan Support.`,
+    impact: `Proporsi kecil. Fokus efisiensi tetap pada Production (DT + EXC).`,
     actions: [
-      "Pisahkan kategori 'Support Operasional' vs 'Site Transfer'",
+      "Pisahkan kategori Support Operasional vs Site Transfer",
       "Monitor genset & tower lamp terpisah",
     ],
   });
@@ -385,12 +383,12 @@ const generateNarratives = () => {
     id: "N-04",
     category: "Excavator",
     severity: "HIGH",
-    title: `FR Excavator: anomali meter + unit 215 di bawah range`,
+    title: `FR Excavator: 2 anomali meter kritis`,
     why:
-      `EXC-001 (4 Okt): HM_diff 1.219 jam (rollover) → FR 0,12 tidak valid. ` +
-      `EXC-002 (1 Okt): HM_diff 72,4 jam → FR 2,82 tidak valid. ` +
+      `EXC-001 (3–4 Okt): HM meter jump 329,6 → 1550 antar refuel. ` +
+      `EXC-002 (1 Okt): HM_diff 72,4 jam → FR tidak valid. ` +
       `EXC 215 series mayoritas 14–17 L/HM (di bawah range 18–22). ` +
-      `EXC-026 (360) = 29,68 L/HM (dalam range).`,
+      `EXC-026 (360) = 29,68 L/HM (dalam range 28–32).`,
     impact:
       `Benchmark FR EXC 215 tidak valid sampai kalibrasi meter. ` +
       `Cost analysis & maintenance scheduling bisa salah.`,
@@ -410,13 +408,13 @@ const generateNarratives = () => {
     why:
       `FR DT current ${curr.dtFrHm} L/HM (dalam range ${FR_THRESHOLD.DT_NORMAL_MIN}–${FR_THRESHOLD.DT_NORMAL_MAX}). ` +
       `Top efisien: DT-044 (7,78), DT-011 (8,53), DT-008 (8,54). ` +
-      `Top boros: DT-062 (21,28), DT-028 (21,27), DT-064 (20,81).`,
+      `Top boros: DT-028 (21,27), DT-064 (20,81), DT-025 (20,33).`,
     impact:
       `Fleet DT sehat. Gap efisiensi terbaik vs terburuk ~2,7×. ` +
       `Peluang penghematan dari coaching Q4: ~10–15% konsumsi unit boros.`,
     actions: [
       "Benchmark internal dari operator DT-044",
-      "Coaching untuk unit Q4 (DT-028, DT-062, DT-064)",
+      "Coaching untuk unit Q4 (DT-028, DT-064, DT-025)",
       "Review pola driving/idling untuk outlier",
     ],
   });
@@ -429,12 +427,12 @@ const generateNarratives = () => {
     title: `Stok: ${fmt(STOCK_SUMMARY.startStock)} → ${fmt(STOCK_SUMMARY.endStock)} L (net +${fmt(STOCK_SUMMARY.netChange)} L)`,
     why:
       `Total Stock-In current week ${fmt(STOCK_SUMMARY.totalInCurrWeekRecorded)} L dari 6 pengiriman. ` +
-      `Total konsumsi ${fmt(STOCK_SUMMARY.totalOutGross)} L. Net +${fmt(STOCK_SUMMARY.netChange)} L. ` +
-      `Stok terendah 29 Sep (63.795 L), puncak 3 Okt (122.330 L).`,
+      `Total konsumsi gross ${fmt(STOCK_SUMMARY.totalOutGross)} L. Net +${fmt(STOCK_SUMMARY.netChange)} L. ` +
+      `Stok terendah 29 Sep (${fmt(STOCK_SUMMARY.minStock)} L), puncak 3 Okt (122.328 L).`,
     impact:
       `Runway saat ini ~${KPI.runwayDaysHigh.toFixed(1)} hari (aman). ` +
       `Pola konsumsi FULL-ops ~${fmt(fullOpsAvg)} L/hari. ` +
-      `Tidak ada stock-in 4 Okt menciptakan sedikit risiko untuk 5–6 Okt jika konsumsi tinggi.`,
+      `Tidak ada stock-in 4 Okt — monitor 5–6 Okt jika konsumsi tinggi.`,
     actions: [
       `Set ROP minimal 3 hari full-ops = ~${fmt(fullOpsAvg * 3)} L`,
       "Jadwalkan Stock-In 2×/minggu reguler",
@@ -447,11 +445,10 @@ const generateNarratives = () => {
     id: "N-07",
     category: "Data Quality",
     severity: "HIGH",
-    title: `4 anomali HM kritis terdeteksi — SOP perlu diperbaiki`,
+    title: `2 anomali HM kritis — SOP perlu diperbaiki`,
     why:
-      `DT-062 (4 Okt): HM_diff=0, qty 188 L. ` +
-      `EXC-001 (4 Okt): HM_diff=1.219 jam (rollover). ` +
-      `EXC-002 (1 Okt): HM_diff=72,4 jam. ` +
+      `EXC-001: meter jump 329→1550 antar refuel (3–4 Okt). ` +
+      `EXC-002: HM_diff=72,4 jam (1 Okt). ` +
       `EXC-031 first-refueling FR 50 L/HM.`,
     impact: `FR unit-unit ini tidak akurat. Cost analysis overstated, maintenance scheduling bisa salah.`,
     actions: [
@@ -460,6 +457,17 @@ const generateNarratives = () => {
       "Kalibrasi ulang HM meter EXC-001 & EXC-002",
       "SOP khusus untuk unit baru (first-refueling)",
     ],
+  });
+
+  // ── N-02: Penurunan konsumsi ───────────────────────────────
+  out.push({
+    id: "N-08",
+    category: "Produksi",
+    severity: "MEDIUM",
+    title: `Di mana uang fuel benar-benar terbakar?`,
+    why: `90,5% fleet = Production. Di dalamnya DT ~40,2 kL dan EXC ~15,0 kL. Satu poin perbaikan FR di DT Q4 berdampak lebih besar daripada mengutak-atik Support (hanya 2,2%).`,
+    impact: ``,
+    actions: [""],
   });
 
   return out;
@@ -480,11 +488,11 @@ function ExecutivePage() {
   const [view, setView] = useState("net");
   const isNet = view === "net";
 
-  const total = isNet ? KPI.totalWeekNet : KPI.totalWeekGross;
-  const totalPrev = isNet ? KPI.totalPrevWeekNet : KPI.totalPrevWeekGross;
-  const wow = isNet ? KPI.wowNet : KPI.wowGross;
-  const fleetRate = isNet ? KPI.fleetRateNet : KPI.fleetRateGross;
-  const fleetRatePrev = isNet ? KPI.fleetRatePrevNet : KPI.fleetRatePrevGross;
+  const total = isNet ? KPI.totalWeekFleet : KPI.totalWeekGross;
+  const totalPrev = isNet ? KPI.totalPrevWeekFleet : KPI.totalPrevWeekGross;
+  const wow = isNet ? KPI.wowFleet : KPI.wowGross;
+  const fleetRate = isNet ? KPI.fleetRateFleet : KPI.fleetRateGross;
+  const fleetRatePrev = isNet ? KPI.fleetRatePrevFleet : KPI.fleetRatePrevGross;
 
   const riskCfg = {
     HIGH: {
@@ -527,7 +535,7 @@ function ExecutivePage() {
               </div>
               <div className="flex gap-1 bg-white/10 rounded-lg p-0.5">
                 {[
-                  { k: "net", label: "NET (Fleet)" },
+                  { k: "net", label: "FLEET (Ops)" },
                   { k: "gross", label: "GROSS (Ledger)" },
                 ].map((v) => (
                   <button
@@ -557,8 +565,8 @@ function ExecutivePage() {
             </div>
             {isNet && (
               <div className="mt-3 text-[11px] text-sky-200/80 italic">
-                ℹ️ Net = exclude BPSP loan return. Current week tidak ada BPSP.
-                Base week net = 58.012 L.
+                ℹ️ Fleet = exclude interco (BPSP / HUB / MPS / ALKON). Current
+                week interco hanya HUB 130 L. Base week fleet = 64.373 L.
               </div>
             )}
           </div>
@@ -636,7 +644,7 @@ function ExecutivePage() {
               Repay Base Week
             </div>
             <div className="text-xl font-extrabold text-slate-800">
-              −{fmt(BPSP_LOAN.totalRepay)} L
+              −{fmt(BPSP_LOAN.repayInBaseWeek)} L
             </div>
           </div>
           <div className="p-3 rounded-lg bg-white border border-slate-200">
@@ -658,9 +666,9 @@ function ExecutivePage() {
             <div className="text-xs text-slate-700 leading-relaxed">
               <strong>Dampak:</strong> Base week punya 7.000 L BPSP repay yang
               menggelembungkan gross. Current week 0 L.{" "}
-              <strong>Angka net</strong> menunjukkan realitas: konsumsi fleet
-              NAIK
-              <strong> +{KPI.wowNet.toFixed(1)}%</strong>, bukan turun −6,05%.
+              <strong>Fleet (exclude interco)</strong> turun{" "}
+              <strong>{KPI.wowFleet.toFixed(1)}%</strong> — jauh lebih moderat
+              daripada gross −15,2%. Gunakan fleet / FULL-ops untuk baseline.
             </div>
           </div>
         </div>
@@ -670,12 +678,12 @@ function ExecutivePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KPICard
           icon={Droplet}
-          label={isNet ? "Konsumsi Fleet Net" : "Konsumsi Gross Ledger"}
+          label={isNet ? "Konsumsi Fleet (Ops)" : "Konsumsi Gross Ledger"}
           value={fmt(total)}
           unit="L"
           trend={wow}
           accent={isNet ? "sky" : "slate"}
-          sub={isNet ? "Tanpa BPSP" : "As-recorded"}
+          sub={isNet ? "Exclude interco" : "As-recorded"}
         />
         <KPICard
           icon={Gauge}
@@ -862,10 +870,12 @@ function ExecutivePage() {
             </div>
             <div className="text-[11px] text-slate-400 mb-2">Gross WoW</div>
             <div className="bg-white/10 rounded p-2">
-              <div className="text-[10px] text-sky-300 uppercase">Net WoW</div>
+              <div className="text-[10px] text-sky-300 uppercase">
+                Fleet WoW
+              </div>
               <div
-                className={`text-xl font-extrabold ${WEEK_COMPARISON.deltas.totalNet > 0 ? "text-amber-400" : "text-emerald-400"}`}>
-                {fmtPct(WEEK_COMPARISON.deltas.totalNet)}
+                className={`text-xl font-extrabold ${WEEK_COMPARISON.deltas.fleet > 0 ? "text-amber-400" : "text-emerald-400"}`}>
+                {fmtPct(WEEK_COMPARISON.deltas.fleet)}
               </div>
             </div>
           </div>

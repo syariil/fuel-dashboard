@@ -1,12 +1,13 @@
-// AUTO-GENERATED — Analisis Fuel Site BPSP
-// Source: fuel.xlsx + Stock Ledger (user provided)
+// AUTO-GENERATED — Analisis Fuel Site BPSP (CORRECTED)
+// Source: fuel.xlsx stock-out + stock-in (verified 2026-10-05)
 // Base week (prev): 2026-09-21 → 2026-09-27
 // Curr week (new):  2026-09-28 → 2026-10-04
-// BPSP loan CLOSED — semua angka GROSS (tidak ada netting)
+//
+// DEFINISI METRIK (konsisten di seluruh file):
+//   GROSS  = semua transaksi stock-out (termasuk BPSP repay, HUB, MPS)
+//   FLEET  = konsumsi unit operasional (exclude BPSP, HUB, MPS, ALKON WT)
+// BPSP loan CLOSED (borrow 9.000 L 16 Sep, repay total 9.000 L selesai 24 Sep)
 
-// ═══════════════════════════════════════════════════════════════
-// Color palette
-// ═══════════════════════════════════════════════════════════════
 export const C = {
   bg: "#FFFFFF",
   card: "#FFFFFF",
@@ -40,10 +41,6 @@ export const PERIOD_PREV_END = "2026-09-27";
 export const PERIOD_CURR_START = "2026-09-28";
 export const PERIOD_CURR_END = "2026-10-04";
 
-// ═══════════════════════════════════════════════════════════════
-// FR THRESHOLD
-// DT: 18-24 L/HM | EXC 360: 28-32 | EXC 215: 18-22
-// ═══════════════════════════════════════════════════════════════
 export const FR_THRESHOLD = {
   DT_NORMAL_MIN: 18,
   DT_NORMAL_MAX: 24,
@@ -55,9 +52,6 @@ export const FR_THRESHOLD = {
   EXC_215_NORMAL_MAX: 22,
 };
 
-// ═══════════════════════════════════════════════════════════════
-// OPERATIONAL MODE
-// ═══════════════════════════════════════════════════════════════
 export const OPERATIONAL_MODE = [
   { isoDate: "2026-09-21", mode: "FULL", note: "" },
   { isoDate: "2026-09-22", mode: "FULL", note: "" },
@@ -79,45 +73,56 @@ export const OPERATIONAL_MODE = [
   { isoDate: "2026-10-04", mode: "FULL", note: "" },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// BPSP LOAN — CLOSED (tidak di-net lagi)
-// ═══════════════════════════════════════════════════════════════
 export const BPSP_LOAN = {
-  note: "BPSP loan cycle sudah CLOSED. Tidak ada loan baru di current week. Semua angka konsumsi = GROSS (as-recorded).",
+  note: "BPSP loan cycle CLOSED. Borrow 9.000 L (16 Sep), repay total 9.000 L (20–24 Sep). Tidak ada loan baru di current week.",
   borrowDate: "2026-09-16",
   borrowQty: 9000,
-  repayments: [],
+  repayments: [
+    { date: "2026-09-20", qty: 2000 },
+    { date: "2026-09-21", qty: 2000 },
+    { date: "2026-09-23", qty: 2000 },
+    { date: "2026-09-24", qty: 3000 },
+  ],
   totalRepay: 9000,
+  repayInBaseWeek: 7000,
+  repayInCurrWeek: 0,
   netBalance: 0,
 };
 
 export const EXCLUDE_FROM_FLEET = ["BPSP", "HUB", "MPS", "PT. MPS", "ALKON WT"];
 
 // ═══════════════════════════════════════════════════════════════
-// KPI — GROSS (BPSP closed)
+// KPI — GROSS (semua transaksi) & FLEET (exclude interco)
 // ═══════════════════════════════════════════════════════════════
 export const KPI = {
-  totalWeekGross: 61079.9,
+  // Gross ledger
+  totalWeekGross: 61070.3,
   totalPrevWeekGross: 72012.4,
-  wowGross: -15.18,
+  wowGross: -15.19,
 
-  // Alias for compatibility (net = gross karena BPSP closed)
-  totalWeekNet: 61079.9,
-  totalPrevWeekNet: 72012.4,
-  wowNet: -15.18,
+  // Fleet only (exclude BPSP/HUB/MPS/ALKON)
+  totalWeekFleet: 60940.3,
+  totalPrevWeekFleet: 64373.3,
+  wowFleet: -5.33,
 
-  fleetRateGross: 8725.7,
+  // Alias legacy (net ≈ fleet karena BPSP closed di curr)
+  totalWeekNet: 60940.3,
+  totalPrevWeekNet: 64373.3,
+  wowNet: -5.33,
+
+  fleetRateGross: 8724.3,
   fleetRatePrevGross: 10287.5,
-  fleetRateNet: 8725.7,
-  fleetRatePrevNet: 10287.5,
+  fleetRateFleet: 8705.8,
+  fleetRatePrevFleet: 9196.2,
 
-  dtFrHm: 18.38,
+  dtFrHm: 18.3,
   dtFrKm: 1.09,
-  excFrHm: 18.85, // cleaned (exclude EXC-001/002 anomaly)
+  excFrHm: 20.61, // cleaned (exclude EXC-002 HM anomaly)
 
-  currentStock: 111455.5,
+  currentStock: 111463.1,
   runwayDaysLow: 10.2,
   runwayDaysHigh: 12.8,
+  fullOpsAvg: 9275.6,
 
   activeDaysCurr: 7,
   activeDaysPrev: 7,
@@ -127,30 +132,28 @@ export const KPI = {
   recordsPrev: 342,
 
   estCostIdr: 0,
-  bpspNote: "BPSP loan CLOSED. Tidak ada netting. Semua angka gross.",
+  bpspNote:
+    "BPSP loan CLOSED. Gross = as-recorded. Fleet = exclude interco (BPSP/HUB/MPS).",
 };
 
-// ═══════════════════════════════════════════════════════════════
-// EXECUTIVE SUMMARY
-// ═══════════════════════════════════════════════════════════════
 export const EXECUTIVE = {
   headline:
-    "Konsumsi fleet minggu ini 61.080 L (turun 15,2% vs base week 72.012 L). " +
-    "Penurunan utama karena base week punya 2 hari BARGING_ONLY + 1 PARTIAL, " +
-    "sedangkan current week lebih stabil FULL-ops (kecuali 2 Okt PARTIAL).",
+    "Konsumsi fleet minggu ini 60.940 L (turun 5,3% vs base week fleet 64.373 L). " +
+    "Gross ledger turun 15,2% (61.070 vs 72.012 L) karena base week mengandung 7.000 L BPSP repay. " +
+    "Current week lebih stabil FULL-ops (kecuali 2 Okt pergantian shift).",
   headlineGross:
-    "Gross ledger turun 15,2% WoW (61.080 L vs 72.012 L). " +
-    "Base week terdistorsi pola operasional (Sab-Min barging only). " +
-    "Current week lebih representatif untuk baseline FULL-ops.",
+    "Gross ledger turun 15,2% WoW (61.070 L vs 72.012 L). " +
+    "7.000 L dari penurunan adalah BPSP repay di base week (bukan konsumsi fleet). " +
+    "Fleet like-for-like turun 5,3% — sebagian karena mode operasional base week (2 hari BARGING_ONLY).",
   riskLevel: "MEDIUM",
   keyPoints: [
-    "📉 Konsumsi gross turun −15,2% (base week distorsi mode operasional)",
-    "📈 Stok naik signifikan: 65.529 → 111.455 L (runway ~12 hari)",
-    "⚠️ 4 anomali HM kritis (DT-062, EXC-001, EXC-002)",
+    "📉 Fleet turun −5,3% (gross −15,2% terdistorsi BPSP repay base week)",
+    "📈 Stok naik: 65.529 → 111.463 L (runway ~12 hari @ FULL-ops)",
+    "⚠️ 2 anomali HM kritis (EXC-001 meter jump, EXC-002 HM 72,4 jam)",
     "🚩 Vendor short delivery: BUMI ENERGI −11 L (3 Okt)",
   ],
   dtEfficiency: {
-    avg: 18.38,
+    avg: 18.3,
     best: { unit: "DT-044", frHm: 7.78 },
     worst: { unit: "DT-028", frHm: 21.27 },
   },
@@ -162,7 +165,8 @@ export const EXECUTIVE = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// DAILY — 14 hari (dari ledger + raw)
+// DAILY — GROSS totals (sum of all stock-out)
+// prod/mhr/supp = FLEET breakdown only
 // ═══════════════════════════════════════════════════════════════
 export const DAILY = [
   // ── Base week (21-27 Sep) ────────────────────────────────
@@ -173,11 +177,13 @@ export const DAILY = [
     dayIdx: 0,
     week: "prev",
     prod: 10946.5,
-    mhr: 694.4,
-    supp: 203.2,
-    total: 11844.1,
+    mhr: 688.4,
+    supp: 70.2,
+    interco: 2139.0,
+    total: 13844.1,
+    fleet: 11705.1,
     records: 60,
-    units: 38,
+    units: 35,
     mode: "FULL",
   },
   {
@@ -189,7 +195,9 @@ export const DAILY = [
     prod: 9179.8,
     mhr: 898.7,
     supp: 137.0,
-    total: 10215.6,
+    interco: 0,
+    total: 10215.5,
+    fleet: 10215.5,
     records: 58,
     units: 39,
     mode: "FULL",
@@ -203,9 +211,11 @@ export const DAILY = [
     prod: 12579.0,
     mhr: 878.4,
     supp: 410.9,
-    total: 13868.3,
+    interco: 2000.0,
+    total: 15868.3,
+    fleet: 13868.3,
     records: 76,
-    units: 49,
+    units: 48,
     mode: "FULL",
   },
   {
@@ -217,9 +227,11 @@ export const DAILY = [
     prod: 12099.3,
     mhr: 407.5,
     supp: 107.7,
-    total: 12614.5,
+    interco: 3000.0,
+    total: 15614.5,
+    fleet: 12614.5,
     records: 66,
-    units: 45,
+    units: 44,
     mode: "FULL",
   },
   {
@@ -229,11 +241,13 @@ export const DAILY = [
     dayIdx: 4,
     week: "prev",
     prod: 4633.5,
-    mhr: 579.2,
+    mhr: 579.1,
     supp: 54.3,
-    total: 5266.9,
+    interco: 500.0,
+    total: 5766.9,
+    fleet: 5266.9,
     records: 26,
-    units: 23,
+    units: 22,
     mode: "PARTIAL",
   },
   {
@@ -245,7 +259,9 @@ export const DAILY = [
     prod: 2363.8,
     mhr: 320.4,
     supp: 180.2,
+    interco: 0,
     total: 2864.4,
+    fleet: 2864.4,
     records: 19,
     units: 18,
     mode: "BARGING_ONLY",
@@ -259,13 +275,15 @@ export const DAILY = [
     prod: 7127.4,
     mhr: 645.1,
     supp: 66.0,
+    interco: 0,
     total: 7838.6,
+    fleet: 7838.6,
     records: 37,
     units: 32,
     mode: "BARGING_ONLY",
   },
 
-  // ── Current week (28 Sep - 4 Okt) — dari ledger ──────────
+  // ── Current week (28 Sep - 4 Okt) ────────────────────────
   {
     date: "28/9",
     isoDate: "2026-09-28",
@@ -275,7 +293,9 @@ export const DAILY = [
     prod: 6070.7,
     mhr: 897.4,
     supp: 286.3,
+    interco: 0,
     total: 7254.4,
+    fleet: 7254.4,
     records: 37,
     units: 32,
     mode: "FULL",
@@ -289,7 +309,9 @@ export const DAILY = [
     prod: 8129.9,
     mhr: 250.0,
     supp: 116.8,
-    total: 8496.7,
+    interco: 0,
+    total: 8496.8,
+    fleet: 8496.8,
     records: 42,
     units: 38,
     mode: "FULL",
@@ -301,9 +323,11 @@ export const DAILY = [
     dayIdx: 2,
     week: "curr",
     prod: 9357.0,
-    mhr: 1105.3,
-    supp: 274.3,
+    mhr: 1232.0,
+    supp: 147.6,
+    interco: 0,
     total: 10736.6,
+    fleet: 10736.6,
     records: 53,
     units: 40,
     mode: "FULL",
@@ -316,10 +340,12 @@ export const DAILY = [
     week: "curr",
     prod: 7997.3,
     mhr: 374.3,
-    supp: 355.3,
-    total: 8726.9,
+    supp: 225.3,
+    interco: 130.0,
+    total: 8727.0,
+    fleet: 8596.9,
     records: 49,
-    units: 39,
+    units: 38,
     mode: "FULL",
   },
   {
@@ -331,7 +357,9 @@ export const DAILY = [
     prod: 5068.6,
     mhr: 274.1,
     supp: 73.9,
+    interco: 0,
     total: 5416.6,
+    fleet: 5416.6,
     records: 26,
     units: 25,
     mode: "PARTIAL",
@@ -345,7 +373,9 @@ export const DAILY = [
     prod: 8695.4,
     mhr: 878.7,
     supp: 0.0,
-    total: 9574.1,
+    interco: 0,
+    total: 9574.0,
+    fleet: 9574.0,
     records: 46,
     units: 37,
     mode: "FULL",
@@ -356,19 +386,18 @@ export const DAILY = [
     day: "Min",
     dayIdx: 6,
     week: "curr",
-    prod: 9844.0,
-    mhr: 547.5,
+    prod: 9834.2,
+    mhr: 547.7,
     supp: 483.1,
-    total: 10874.6,
+    interco: 0,
+    total: 10865.0,
+    fleet: 10865.0,
     records: 55,
     units: 39,
     mode: "FULL",
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// FORECAST
-// ═══════════════════════════════════════════════════════════════
 export const FORECAST = {
   history: [
     {
@@ -376,40 +405,40 @@ export const FORECAST = {
       isoDate: "2026-09-21",
       day: "Sen",
       week: "prev",
-      actual: 11844.1,
-      ma7: 11844.1,
+      actual: 13844.1,
+      ma7: 13844.1,
     },
     {
       date: "22/9",
       isoDate: "2026-09-22",
       day: "Sel",
       week: "prev",
-      actual: 10215.6,
-      ma7: 11029.8,
+      actual: 10215.5,
+      ma7: 12029.8,
     },
     {
       date: "23/9",
       isoDate: "2026-09-23",
       day: "Rab",
       week: "prev",
-      actual: 13868.3,
-      ma7: 11976.0,
+      actual: 15868.3,
+      ma7: 13309.3,
     },
     {
       date: "24/9",
       isoDate: "2026-09-24",
       day: "Kam",
       week: "prev",
-      actual: 12614.5,
-      ma7: 12135.6,
+      actual: 15614.5,
+      ma7: 13885.6,
     },
     {
       date: "25/9",
       isoDate: "2026-09-25",
       day: "Jum",
       week: "prev",
-      actual: 5266.9,
-      ma7: 10761.9,
+      actual: 5766.9,
+      ma7: 12261.9,
     },
     {
       date: "26/9",
@@ -417,7 +446,7 @@ export const FORECAST = {
       day: "Sab",
       week: "prev",
       actual: 2864.4,
-      ma7: 9445.6,
+      ma7: 10695.6,
     },
     {
       date: "27/9",
@@ -425,7 +454,7 @@ export const FORECAST = {
       day: "Min",
       week: "prev",
       actual: 7838.6,
-      ma7: 9216.1,
+      ma7: 10287.5,
     },
     {
       date: "28/9",
@@ -433,15 +462,15 @@ export const FORECAST = {
       day: "Sen",
       week: "curr",
       actual: 7254.4,
-      ma7: 8631.8,
+      ma7: 9346.1,
     },
     {
       date: "29/9",
       isoDate: "2026-09-29",
       day: "Sel",
       week: "curr",
-      actual: 8496.7,
-      ma7: 8386.3,
+      actual: 8496.8,
+      ma7: 9100.6,
     },
     {
       date: "30/9",
@@ -449,15 +478,15 @@ export const FORECAST = {
       day: "Rab",
       week: "curr",
       actual: 10736.6,
-      ma7: 7938.9,
+      ma7: 8367.5,
     },
     {
       date: "1/10",
       isoDate: "2026-10-01",
       day: "Kam",
       week: "curr",
-      actual: 8726.9,
-      ma7: 7404.9,
+      actual: 8727.0,
+      ma7: 7383.5,
     },
     {
       date: "2/10",
@@ -465,23 +494,23 @@ export const FORECAST = {
       day: "Jum",
       week: "curr",
       actual: 5416.6,
-      ma7: 7333.4,
+      ma7: 7333.5,
     },
     {
       date: "3/10",
       isoDate: "2026-10-03",
       day: "Sab",
       week: "curr",
-      actual: 9574.1,
-      ma7: 8291.8,
+      actual: 9574.0,
+      ma7: 8292.0,
     },
     {
       date: "4/10",
       isoDate: "2026-10-04",
       day: "Min",
       week: "curr",
-      actual: 10874.6,
-      ma7: 8725.7,
+      actual: 10865.0,
+      ma7: 8724.3,
     },
   ],
   forecast: [
@@ -495,76 +524,71 @@ export const FORECAST = {
   ],
 };
 
-// ═══════════════════════════════════════════════════════════════
-// WEEK COMPARISON (GROSS)
-// ═══════════════════════════════════════════════════════════════
 export const WEEK_COMPARISON = {
   prev: {
     label: "21–27 Sep",
     total: 72012.4,
-    totalNet: 72012.4,
+    fleet: 64373.3,
     avgDaily: 10287.5,
+    avgFleetDaily: 9196.2,
     records: 342,
     units: 65,
     activeDays: 7,
     prod: 58929.3,
-    mhr: 4423.7,
-    supp: 1159.3,
-    dtQty: 42000.0,
-    excQty: 16500.0,
+    mhr: 4417.6,
+    supp: 1026.3,
+    interco: 7639.0,
+    dtQty: 41613.9,
+    excQty: 20982.0,
     dtFrHm: 18.5,
-    excFrHm: 19.2,
-    bpspRepay: 0,
+    excFrHm: 21.2,
+    bpspRepay: 7000,
   },
   curr: {
     label: "28 Sep–4 Okt",
-    total: 61079.9,
-    totalNet: 61079.9,
-    avgDaily: 8725.7,
+    total: 61070.3,
+    fleet: 60940.3,
+    avgDaily: 8724.3,
+    avgFleetDaily: 8705.8,
     records: 308,
     units: 55,
     activeDays: 7,
-    prod: 55163.0,
-    mhr: 4327.3,
-    supp: 1589.7,
-    dtQty: 40159.0,
-    excQty: 15004.0,
-    dtFrHm: 18.38,
-    excFrHm: 18.85,
+    prod: 55153.2,
+    mhr: 4454.1,
+    supp: 1333.0,
+    interco: 130.0,
+    dtQty: 40159.2,
+    excQty: 14994.0,
+    dtFrHm: 18.3,
+    excFrHm: 20.61,
     bpspRepay: 0,
   },
   deltas: {
-    total: -15.18,
-    totalNet: -15.18,
-    avgDaily: -15.18,
+    total: -15.19,
+    fleet: -5.33,
+    avgDaily: -15.19,
     records: -9.9,
     units: -15.4,
-    prod: -6.39,
-    mhr: -2.18,
-    supp: 37.1,
-    dtQty: -4.4,
-    excQty: -9.1,
-    dtFrHm: -0.65,
-    excFrHm: -1.82,
+    prod: -6.41,
+    mhr: 0.83,
+    supp: 29.9,
+    dtQty: -3.5,
+    excQty: -28.5,
+    dtFrHm: -1.08,
+    excFrHm: -2.78,
   },
 };
 
-// ═══════════════════════════════════════════════════════════════
-// DOW COMPARISON
-// ═══════════════════════════════════════════════════════════════
 export const DOW_COMPARISON = [
-  { day: "Sen", dayIdx: 0, prev: 11844.1, curr: 7254.4, delta: -38.8 },
-  { day: "Sel", dayIdx: 1, prev: 10215.6, curr: 8496.7, delta: -16.8 },
-  { day: "Rab", dayIdx: 2, prev: 13868.3, curr: 10736.6, delta: -22.6 },
-  { day: "Kam", dayIdx: 3, prev: 12614.5, curr: 8726.9, delta: -30.8 },
-  { day: "Jum", dayIdx: 4, prev: 5266.9, curr: 5416.6, delta: 2.8 },
-  { day: "Sab", dayIdx: 5, prev: 2864.4, curr: 9574.1, delta: 234.3 },
-  { day: "Min", dayIdx: 6, prev: 7838.6, curr: 10874.6, delta: 38.7 },
+  { day: "Sen", dayIdx: 0, prev: 13844.1, curr: 7254.4, delta: -47.6 },
+  { day: "Sel", dayIdx: 1, prev: 10215.5, curr: 8496.8, delta: -16.8 },
+  { day: "Rab", dayIdx: 2, prev: 15868.3, curr: 10736.6, delta: -32.3 },
+  { day: "Kam", dayIdx: 3, prev: 15614.5, curr: 8727.0, delta: -44.1 },
+  { day: "Jum", dayIdx: 4, prev: 5766.9, curr: 5416.6, delta: -6.1 },
+  { day: "Sab", dayIdx: 5, prev: 2864.4, curr: 9574.0, delta: 234.2 },
+  { day: "Min", dayIdx: 6, prev: 7838.6, curr: 10865.0, delta: 38.6 },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// DAILY FLEET TREND (DT vs EXC)
-// ═══════════════════════════════════════════════════════════════
 export const DAILY_FLEET_TREND = [
   {
     date: "21/9",
@@ -655,90 +679,87 @@ export const DAILY_FLEET_TREND = [
     isoDate: "2026-09-28",
     day: "Sen",
     week: "curr",
-    dtQty: 5495.0,
-    excQty: 1287.0,
-    dtUnits: 22,
-    excUnits: 8,
-    dtFrHm: 20.22,
-    excFrHm: 18.9,
+    dtQty: 4723.7,
+    excQty: 1347.0,
+    dtUnits: 18,
+    excUnits: 7,
+    dtFrHm: 18.35,
+    excFrHm: 21.74,
   },
   {
     date: "29/9",
     isoDate: "2026-09-29",
     day: "Sel",
     week: "curr",
-    dtQty: 7276.0,
-    excQty: 2209.0,
+    dtQty: 6025.9,
+    excQty: 2104.0,
     dtUnits: 24,
     excUnits: 9,
-    dtFrHm: 19.81,
-    excFrHm: 24.24,
+    dtFrHm: 16.98,
+    excFrHm: 21.04,
   },
   {
     date: "30/9",
     isoDate: "2026-09-30",
     day: "Rab",
     week: "curr",
-    dtQty: 7588.0,
-    excQty: 2933.0,
-    dtUnits: 24,
-    excUnits: 12,
-    dtFrHm: 19.39,
-    excFrHm: 24.84,
+    dtQty: 6384.0,
+    excQty: 2973.0,
+    dtUnits: 22,
+    excUnits: 9,
+    dtFrHm: 19.03,
+    excFrHm: 20.19,
   },
   {
     date: "1/10",
     isoDate: "2026-10-01",
     day: "Kam",
     week: "curr",
-    dtQty: 6991.0,
-    excQty: 2250.0,
-    dtUnits: 21,
-    excUnits: 13,
-    dtFrHm: 19.22,
-    excFrHm: 22.14,
+    dtQty: 5793.3,
+    excQty: 2204.0,
+    dtUnits: 20,
+    excUnits: 10,
+    dtFrHm: 18.82,
+    excFrHm: 21.7,
   },
   {
     date: "2/10",
     isoDate: "2026-10-02",
     day: "Jum",
     week: "curr",
-    dtQty: 4110.0,
-    excQty: 1233.0,
-    dtUnits: 12,
-    excUnits: 7,
-    dtFrHm: 18.6,
-    excFrHm: 19.76,
+    dtQty: 3953.6,
+    excQty: 1115.0,
+    dtUnits: 16,
+    excUnits: 5,
+    dtFrHm: 16.14,
+    excFrHm: 18.2,
   },
   {
     date: "3/10",
     isoDate: "2026-10-03",
     day: "Sab",
     week: "curr",
-    dtQty: 7217.0,
-    excQty: 2357.0,
-    dtUnits: 23,
+    dtQty: 5880.4,
+    excQty: 2815.0,
+    dtUnits: 21,
     excUnits: 11,
-    dtFrHm: 19.71,
-    excFrHm: 22.62,
+    dtFrHm: 17.17,
+    excFrHm: 21.87,
   },
   {
     date: "4/10",
     isoDate: "2026-10-04",
     day: "Min",
     week: "curr",
-    dtQty: 6794.0,
-    excQty: 4080.0,
-    dtUnits: 24,
-    excUnits: 12,
-    dtFrHm: 19.6,
-    excFrHm: 21.11,
+    dtQty: 7398.2,
+    excQty: 2436.0,
+    dtUnits: 20,
+    excUnits: 9,
+    dtFrHm: 21.07,
+    excFrHm: 21.2,
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// DT DAILY MATRIX (heatmap — current week)
-// ═══════════════════════════════════════════════════════════════
 export const DT_DAILY_MATRIX = {
   units: [
     "DT-025",
@@ -764,7 +785,7 @@ export const DT_DAILY_MATRIX = {
       total: 2195.5,
       values: [
         { date: "28/9", qty: 185.6 },
-        { date: "29/9", qty: 239.9 },
+        { date: "29/9", qty: 239.8 },
         { date: "30/9", qty: 373.5 },
         { date: "1/10", qty: 384.1 },
         { date: "2/10", qty: 278.7 },
@@ -779,7 +800,7 @@ export const DT_DAILY_MATRIX = {
         { date: "28/9", qty: 218.4 },
         { date: "29/9", qty: 257.7 },
         { date: "30/9", qty: 409.8 },
-        { date: "1/10", qty: 417.0 },
+        { date: "1/10", qty: 416.9 },
         { date: "2/10", qty: 209.1 },
         { date: "3/10", qty: 190.7 },
         { date: "4/10", qty: 420.3 },
@@ -800,7 +821,7 @@ export const DT_DAILY_MATRIX = {
     },
     {
       unit: "DT-030",
-      total: 2086.3,
+      total: 2086.2,
       values: [
         { date: "28/9", qty: 474.8 },
         { date: "29/9", qty: 227.0 },
@@ -852,7 +873,7 @@ export const DT_DAILY_MATRIX = {
     },
     {
       unit: "DT-073",
-      total: 1889.1,
+      total: 1889.2,
       values: [
         { date: "28/9", qty: 196.2 },
         { date: "29/9", qty: 0 },
@@ -860,20 +881,20 @@ export const DT_DAILY_MATRIX = {
         { date: "1/10", qty: 360.9 },
         { date: "2/10", qty: 190.8 },
         { date: "3/10", qty: 214.2 },
-        { date: "4/10", qty: 454.4 },
+        { date: "4/10", qty: 454.6 },
       ],
     },
     {
       unit: "DT-024",
       total: 1858.5,
       values: [
-        { date: "28/9", qty: 267.5 },
+        { date: "28/9", qty: 267.4 },
         { date: "29/9", qty: 219.0 },
         { date: "30/9", qty: 235.6 },
         { date: "1/10", qty: 239.0 },
         { date: "2/10", qty: 287.3 },
-        { date: "3/10", qty: 244.5 },
-        { date: "4/10", qty: 365.7 },
+        { date: "3/10", qty: 244.4 },
+        { date: "4/10", qty: 365.6 },
       ],
     },
     {
@@ -893,26 +914,26 @@ export const DT_DAILY_MATRIX = {
       unit: "DT-020",
       total: 1830.3,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 345.7 },
-        { date: "30/9", qty: 339.4 },
-        { date: "1/10", qty: 182.9 },
-        { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 429.3 },
-        { date: "4/10", qty: 533.0 },
+        { date: "28/9", qty: 414.6 },
+        { date: "29/9", qty: 220.0 },
+        { date: "30/9", qty: 198.2 },
+        { date: "1/10", qty: 391.2 },
+        { date: "2/10", qty: 301.1 },
+        { date: "3/10", qty: 305.2 },
+        { date: "4/10", qty: 0 },
       ],
     },
     {
       unit: "DT-065",
       total: 1779.8,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 344.5 },
-        { date: "30/9", qty: 201.7 },
-        { date: "1/10", qty: 144.5 },
-        { date: "2/10", qty: 285.2 },
-        { date: "3/10", qty: 306.4 },
-        { date: "4/10", qty: 497.5 },
+        { date: "28/9", qty: 195.0 },
+        { date: "29/9", qty: 194.7 },
+        { date: "30/9", qty: 251.1 },
+        { date: "1/10", qty: 237.6 },
+        { date: "2/10", qty: 211.7 },
+        { date: "3/10", qty: 261.1 },
+        { date: "4/10", qty: 428.5 },
       ],
     },
     {
@@ -955,13 +976,10 @@ export const DT_DAILY_MATRIX = {
       ],
     },
   ],
-  maxQty: 533,
+  maxQty: 474.8,
   daysBack: 7,
 };
 
-// ═══════════════════════════════════════════════════════════════
-// EXC DAILY MATRIX
-// ═══════════════════════════════════════════════════════════════
 export const EXC_DAILY_MATRIX = {
   units: [
     "EXC-026",
@@ -977,6 +995,7 @@ export const EXC_DAILY_MATRIX = {
     "EXC-012",
     "EXC-006",
     "EXC-011",
+    "EXC-002",
     "EXC-022",
     "EXC-031",
   ],
@@ -986,12 +1005,12 @@ export const EXC_DAILY_MATRIX = {
       unit: "EXC-026",
       total: 2809,
       values: [
-        { date: "28/9", qty: 254 },
-        { date: "29/9", qty: 0 },
-        { date: "30/9", qty: 510 },
-        { date: "1/10", qty: 269 },
+        { date: "28/9", qty: 335 },
+        { date: "29/9", qty: 275 },
+        { date: "30/9", qty: 619 },
+        { date: "1/10", qty: 459 },
         { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "3/10", qty: 456 },
         { date: "4/10", qty: 665 },
       ],
     },
@@ -1000,11 +1019,11 @@ export const EXC_DAILY_MATRIX = {
       total: 2247,
       values: [
         { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 249 },
-        { date: "30/9", qty: 0 },
-        { date: "1/10", qty: 450 },
-        { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "29/9", qty: 434 },
+        { date: "30/9", qty: 437 },
+        { date: "1/10", qty: 248 },
+        { date: "2/10", qty: 410 },
+        { date: "3/10", qty: 268 },
         { date: "4/10", qty: 450 },
       ],
     },
@@ -1012,12 +1031,12 @@ export const EXC_DAILY_MATRIX = {
       unit: "EXC-029",
       total: 1700,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 483 },
-        { date: "30/9", qty: 0 },
+        { date: "28/9", qty: 210 },
+        { date: "29/9", qty: 254 },
+        { date: "30/9", qty: 340 },
         { date: "1/10", qty: 0 },
-        { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "2/10", qty: 210 },
+        { date: "3/10", qty: 313 },
         { date: "4/10", qty: 373 },
       ],
     },
@@ -1025,12 +1044,12 @@ export const EXC_DAILY_MATRIX = {
       unit: "EXC-032",
       total: 1465,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 0 },
-        { date: "30/9", qty: 268 },
-        { date: "1/10", qty: 0 },
+        { date: "28/9", qty: 150 },
+        { date: "29/9", qty: 236 },
+        { date: "30/9", qty: 377 },
+        { date: "1/10", qty: 185 },
         { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "3/10", qty: 258 },
         { date: "4/10", qty: 259 },
       ],
     },
@@ -1038,25 +1057,25 @@ export const EXC_DAILY_MATRIX = {
       unit: "EXC-024",
       total: 1413,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 0 },
-        { date: "30/9", qty: 0 },
-        { date: "1/10", qty: 0 },
-        { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "28/9", qty: 121 },
+        { date: "29/9", qty: 189 },
+        { date: "30/9", qty: 340 },
+        { date: "1/10", qty: 160 },
+        { date: "2/10", qty: 122 },
+        { date: "3/10", qty: 270 },
         { date: "4/10", qty: 211 },
       ],
     },
     {
       unit: "EXC-023",
-      total: 1191,
+      total: 1341,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 0 },
-        { date: "30/9", qty: 0 },
-        { date: "1/10", qty: 0 },
-        { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "28/9", qty: 110 },
+        { date: "29/9", qty: 248 },
+        { date: "30/9", qty: 250 },
+        { date: "1/10", qty: 142 },
+        { date: "2/10", qty: 223 },
+        { date: "3/10", qty: 183 },
         { date: "4/10", qty: 185 },
       ],
     },
@@ -1064,10 +1083,10 @@ export const EXC_DAILY_MATRIX = {
       unit: "EXC-030",
       total: 957,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 0 },
-        { date: "30/9", qty: 0 },
-        { date: "1/10", qty: 0 },
+        { date: "28/9", qty: 231 },
+        { date: "29/9", qty: 200 },
+        { date: "30/9", qty: 260 },
+        { date: "1/10", qty: 266 },
         { date: "2/10", qty: 0 },
         { date: "3/10", qty: 0 },
         { date: "4/10", qty: 0 },
@@ -1077,12 +1096,12 @@ export const EXC_DAILY_MATRIX = {
       unit: "EXC-027",
       total: 878,
       values: [
-        { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 0 },
-        { date: "30/9", qty: 0 },
+        { date: "28/9", qty: 190 },
+        { date: "29/9", qty: 118 },
+        { date: "30/9", qty: 130 },
         { date: "1/10", qty: 0 },
         { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "3/10", qty: 440 },
         { date: "4/10", qty: 0 },
       ],
     },
@@ -1093,9 +1112,9 @@ export const EXC_DAILY_MATRIX = {
         { date: "28/9", qty: 0 },
         { date: "29/9", qty: 0 },
         { date: "30/9", qty: 0 },
-        { date: "1/10", qty: 250 },
+        { date: "1/10", qty: 0 },
         { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "3/10", qty: 250 },
         { date: "4/10", qty: 152 },
       ],
     },
@@ -1106,9 +1125,9 @@ export const EXC_DAILY_MATRIX = {
         { date: "28/9", qty: 0 },
         { date: "29/9", qty: 0 },
         { date: "30/9", qty: 0 },
-        { date: "1/10", qty: 0 },
+        { date: "1/10", qty: 172 },
         { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "3/10", qty: 135 },
         { date: "4/10", qty: 91 },
       ],
     },
@@ -1118,10 +1137,10 @@ export const EXC_DAILY_MATRIX = {
       values: [
         { date: "28/9", qty: 0 },
         { date: "29/9", qty: 0 },
-        { date: "30/9", qty: 0 },
+        { date: "30/9", qty: 220 },
         { date: "1/10", qty: 0 },
         { date: "2/10", qty: 0 },
-        { date: "3/10", qty: 0 },
+        { date: "3/10", qty: 92 },
         { date: "4/10", qty: 0 },
       ],
     },
@@ -1130,10 +1149,10 @@ export const EXC_DAILY_MATRIX = {
       total: 300,
       values: [
         { date: "28/9", qty: 0 },
-        { date: "29/9", qty: 0 },
+        { date: "29/9", qty: 150 },
         { date: "30/9", qty: 0 },
         { date: "1/10", qty: 0 },
-        { date: "2/10", qty: 0 },
+        { date: "2/10", qty: 150 },
         { date: "3/10", qty: 0 },
         { date: "4/10", qty: 0 },
       ],
@@ -1152,8 +1171,21 @@ export const EXC_DAILY_MATRIX = {
       ],
     },
     {
+      unit: "EXC-002",
+      total: 204,
+      values: [
+        { date: "28/9", qty: 0 },
+        { date: "29/9", qty: 0 },
+        { date: "30/9", qty: 0 },
+        { date: "1/10", qty: 204 },
+        { date: "2/10", qty: 0 },
+        { date: "3/10", qty: 0 },
+        { date: "4/10", qty: 0 },
+      ],
+    },
+    {
       unit: "EXC-022",
-      total: 210,
+      total: 200,
       values: [
         { date: "28/9", qty: 0 },
         { date: "29/9", qty: 0 },
@@ -1161,7 +1193,7 @@ export const EXC_DAILY_MATRIX = {
         { date: "1/10", qty: 0 },
         { date: "2/10", qty: 0 },
         { date: "3/10", qty: 150 },
-        { date: "4/10", qty: 60 },
+        { date: "4/10", qty: 50 },
       ],
     },
     {
@@ -1182,9 +1214,6 @@ export const EXC_DAILY_MATRIX = {
   daysBack: 7,
 };
 
-// ═══════════════════════════════════════════════════════════════
-// DT SCORECARD — Current week
-// ═══════════════════════════════════════════════════════════════
 export const DT_SCORECARD = [
   {
     unit: "DT-025",
@@ -1196,7 +1225,7 @@ export const DT_SCORECARD = [
     kmTotal: 2009.0,
     firstRefuel: false,
     quartile: "Q4 (Boros)",
-    percentile: 89.7,
+    percentile: 88.0,
   },
   {
     unit: "DT-028",
@@ -1208,7 +1237,7 @@ export const DT_SCORECARD = [
     kmTotal: 1916.0,
     firstRefuel: false,
     quartile: "Q4 (Boros)",
-    percentile: 96.6,
+    percentile: 96.0,
   },
   {
     unit: "DT-058",
@@ -1220,19 +1249,19 @@ export const DT_SCORECARD = [
     kmTotal: 1952.0,
     firstRefuel: false,
     quartile: "Q3",
-    percentile: 62.1,
+    percentile: 56.0,
   },
   {
     unit: "DT-030",
     frHm: 19.12,
     frKm: 1.042,
-    fuel: 2086.3,
+    fuel: 2086.2,
     records: 9,
     hmTotal: 109.1,
     kmTotal: 2002.0,
     firstRefuel: false,
-    quartile: "Q3",
-    percentile: 55.2,
+    quartile: "Q2",
+    percentile: 48.0,
   },
   {
     unit: "DT-027",
@@ -1243,8 +1272,8 @@ export const DT_SCORECARD = [
     hmTotal: 110.4,
     kmTotal: 2016.0,
     firstRefuel: false,
-    quartile: "Q2",
-    percentile: 31.0,
+    quartile: "Q1 (Efisien)",
+    percentile: 20.0,
   },
   {
     unit: "DT-063",
@@ -1255,8 +1284,8 @@ export const DT_SCORECARD = [
     hmTotal: 104.0,
     kmTotal: 1951.0,
     firstRefuel: false,
-    quartile: "Q2",
-    percentile: 37.9,
+    quartile: "Q1 (Efisien)",
+    percentile: 24.0,
   },
   {
     unit: "DT-060",
@@ -1267,20 +1296,20 @@ export const DT_SCORECARD = [
     hmTotal: 93.7,
     kmTotal: 1599.0,
     firstRefuel: false,
-    quartile: "Q3",
-    percentile: 79.3,
+    quartile: "Q4 (Boros)",
+    percentile: 80.0,
   },
   {
     unit: "DT-073",
     frHm: 19.8,
-    frKm: 1.101,
-    fuel: 1889.1,
+    frKm: 1.102,
+    fuel: 1889.2,
     records: 9,
     hmTotal: 95.4,
     kmTotal: 1715.0,
-    firstRefuel: true,
+    firstRefuel: false,
     quartile: "Q3",
-    percentile: 69.0,
+    percentile: 60.0,
   },
   {
     unit: "DT-024",
@@ -1292,7 +1321,7 @@ export const DT_SCORECARD = [
     kmTotal: 1646.0,
     firstRefuel: false,
     quartile: "Q3",
-    percentile: 58.6,
+    percentile: 52.0,
   },
   {
     unit: "DT-029",
@@ -1304,7 +1333,7 @@ export const DT_SCORECARD = [
     kmTotal: 1648.0,
     firstRefuel: false,
     quartile: "Q3",
-    percentile: 72.4,
+    percentile: 64.0,
   },
   {
     unit: "DT-020",
@@ -1315,8 +1344,8 @@ export const DT_SCORECARD = [
     hmTotal: 90.4,
     kmTotal: 1589.0,
     firstRefuel: false,
-    quartile: "Q3",
-    percentile: 82.8,
+    quartile: "Q4 (Boros)",
+    percentile: 84.0,
   },
   {
     unit: "DT-065",
@@ -1328,7 +1357,7 @@ export const DT_SCORECARD = [
     kmTotal: 1702.0,
     firstRefuel: false,
     quartile: "Q2",
-    percentile: 48.3,
+    percentile: 40.0,
   },
   {
     unit: "DT-067",
@@ -1340,7 +1369,7 @@ export const DT_SCORECARD = [
     kmTotal: 1718.0,
     firstRefuel: false,
     quartile: "Q3",
-    percentile: 75.9,
+    percentile: 72.0,
   },
   {
     unit: "DT-064",
@@ -1352,7 +1381,7 @@ export const DT_SCORECARD = [
     kmTotal: 1545.0,
     firstRefuel: false,
     quartile: "Q4 (Boros)",
-    percentile: 93.1,
+    percentile: 92.0,
   },
   {
     unit: "DT-070",
@@ -1362,21 +1391,21 @@ export const DT_SCORECARD = [
     records: 9,
     hmTotal: 86.8,
     kmTotal: 1566.0,
-    firstRefuel: true,
+    firstRefuel: false,
     quartile: "Q2",
-    percentile: 44.8,
+    percentile: 36.0,
   },
   {
     unit: "DT-062",
-    frHm: 21.28,
+    frHm: 18.93,
     frKm: 1.034,
     fuel: 1612.7,
     records: 8,
-    hmTotal: 75.8,
+    hmTotal: 85.2,
     kmTotal: 1559.0,
     firstRefuel: false,
-    quartile: "Q4 (Boros)",
-    percentile: 100.0,
+    quartile: "Q2",
+    percentile: 44.0,
   },
   {
     unit: "DT-023",
@@ -1388,7 +1417,7 @@ export const DT_SCORECARD = [
     kmTotal: 1418.0,
     firstRefuel: false,
     quartile: "Q3",
-    percentile: 65.5,
+    percentile: 68.0,
   },
   {
     unit: "DT-069",
@@ -1400,7 +1429,7 @@ export const DT_SCORECARD = [
     kmTotal: 1577.0,
     firstRefuel: false,
     quartile: "Q2",
-    percentile: 41.4,
+    percentile: 32.0,
   },
   {
     unit: "DT-066",
@@ -1411,8 +1440,8 @@ export const DT_SCORECARD = [
     hmTotal: 75.4,
     kmTotal: 1357.0,
     firstRefuel: false,
-    quartile: "Q3",
-    percentile: 79.3,
+    quartile: "Q4 (Boros)",
+    percentile: 76.0,
   },
   {
     unit: "DT-021",
@@ -1424,7 +1453,7 @@ export const DT_SCORECARD = [
     kmTotal: 1156.0,
     firstRefuel: false,
     quartile: "Q2",
-    percentile: 34.5,
+    percentile: 28.0,
   },
   {
     unit: "DT-019",
@@ -1436,7 +1465,7 @@ export const DT_SCORECARD = [
     kmTotal: 1019.0,
     firstRefuel: false,
     quartile: "Q1 (Efisien)",
-    percentile: 24.1,
+    percentile: 16.0,
   },
   {
     unit: "DT-022",
@@ -1448,7 +1477,7 @@ export const DT_SCORECARD = [
     kmTotal: 954.0,
     firstRefuel: false,
     quartile: "Q1 (Efisien)",
-    percentile: 17.2,
+    percentile: 12.0,
   },
   {
     unit: "DT-005",
@@ -1460,7 +1489,7 @@ export const DT_SCORECARD = [
     kmTotal: 396.0,
     firstRefuel: true,
     quartile: "Q1 (Efisien)",
-    percentile: 6.9,
+    percentile: 4.0,
   },
   {
     unit: "DT-004",
@@ -1470,9 +1499,9 @@ export const DT_SCORECARD = [
     records: 2,
     hmTotal: 39.6,
     kmTotal: 274.0,
-    firstRefuel: false,
+    firstRefuel: true,
     quartile: "Q1 (Efisien)",
-    percentile: 10.3,
+    percentile: 8.0,
   },
   {
     unit: "DT-044",
@@ -1482,7 +1511,7 @@ export const DT_SCORECARD = [
     records: 2,
     hmTotal: 38.1,
     kmTotal: 293.0,
-    firstRefuel: false,
+    firstRefuel: true,
     quartile: "Q1 (Efisien)",
     percentile: 0.0,
   },
@@ -1494,51 +1523,48 @@ export const DT_SCORECARD = [
     records: 1,
     hmTotal: 15.7,
     kmTotal: 236.0,
-    firstRefuel: false,
+    firstRefuel: true,
     quartile: "Q1 (Efisien)",
-    percentile: 27.6,
+    percentile: 24.0,
   },
   {
     unit: "DT-007",
     frHm: 10.17,
-    frKm: 1.29,
+    frKm: 1.293,
     fuel: 248.3,
     records: 1,
     hmTotal: 24.4,
     kmTotal: 192.0,
-    firstRefuel: false,
+    firstRefuel: true,
     quartile: "Q1 (Efisien)",
-    percentile: 13.8,
+    percentile: 8.0,
   },
   {
     unit: "DT-011",
     frHm: 8.53,
-    frKm: 1.1,
+    frKm: 1.433,
     fuel: 192.0,
     records: 1,
     hmTotal: 22.5,
-    kmTotal: 175.0,
-    firstRefuel: false,
+    kmTotal: 134.0,
+    firstRefuel: true,
     quartile: "Q1 (Efisien)",
-    percentile: 3.4,
+    percentile: 4.0,
   },
   {
     unit: "DT-008",
     frHm: 8.54,
-    frKm: 1.52,
+    frKm: 1.609,
     fuel: 140.0,
     records: 1,
     hmTotal: 16.4,
-    kmTotal: 92.0,
-    firstRefuel: false,
+    kmTotal: 87.0,
+    firstRefuel: true,
     quartile: "Q1 (Efisien)",
-    percentile: 6.9,
+    percentile: 4.0,
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// EXC SCORECARD — Current week
-// ═══════════════════════════════════════════════════════════════
 export const EXC_SCORECARD = [
   {
     unit: "EXC-026",
@@ -1602,12 +1628,12 @@ export const EXC_SCORECARD = [
   },
   {
     unit: "EXC-023",
-    model: "SANY 360",
-    frHm: 15.97,
+    model: "SANY 215",
+    frHm: 15.59,
     frKm: 0,
-    fuel: 1191,
-    records: 7,
-    hmTotal: 74.6,
+    fuel: 1341,
+    records: 8,
+    hmTotal: 86.0,
     firstRefuel: false,
     quartile: "Q1 (Efisien)",
     percentile: 31.2,
@@ -1639,14 +1665,14 @@ export const EXC_SCORECARD = [
   {
     unit: "EXC-001",
     model: "XCMG 215",
-    frHm: 0.33,
+    frHm: 22.84,
     frKm: 0,
     fuel: 402,
     records: 2,
-    hmTotal: 1228.7,
+    hmTotal: 17.6,
     firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 6.2,
+    quartile: "Q3",
+    percentile: 62.5,
   },
   {
     unit: "EXC-025",
@@ -1699,9 +1725,9 @@ export const EXC_SCORECARD = [
   {
     unit: "EXC-022",
     model: "SANY 215",
-    frHm: 16.15,
+    frHm: 15.38,
     frKm: 0,
-    fuel: 210,
+    fuel: 200,
     records: 2,
     hmTotal: 13.0,
     firstRefuel: false,
@@ -1723,124 +1749,116 @@ export const EXC_SCORECARD = [
   {
     unit: "EXC-002",
     model: "XCMG 215",
-    frHm: 2.82,
+    frHm: 0,
     frKm: 0,
     fuel: 204,
     records: 1,
-    hmTotal: 72.4,
+    hmTotal: 0,
     firstRefuel: false,
     quartile: "Q1 (Efisien)",
-    percentile: 6.2,
+    percentile: 0,
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// CATEGORY BREAKDOWN
-// ═══════════════════════════════════════════════════════════════
 export const CATEGORY_BREAKDOWN = [
   {
     cat: "Production",
-    qty: 55163.0,
+    qty: 55153.2,
     records: 258,
     units: 45,
-    frHm: 18.38,
+    frHm: 18.95,
     avgPerRec: 213.8,
     subBreakdown: [
-      { jenis: "DUMP TRUCK", qty: 40159.0, units: 29 },
-      { jenis: "EXCAVATOR", qty: 15004.0, units: 16 },
+      { jenis: "DUMP TRUCK", qty: 40159.2, units: 29 },
+      { jenis: "EXCAVATOR", qty: 14994.0, units: 16 },
     ],
   },
   {
     cat: "MHR",
-    qty: 4327.3,
+    qty: 4338.1,
     records: 27,
-    units: 8,
-    frHm: 10.45,
-    avgPerRec: 160.3,
+    units: 7,
+    frHm: 8.98,
+    avgPerRec: 159.1,
     subBreakdown: [
-      { jenis: "COMPACTOR", qty: 832.1, units: 2 },
-      { jenis: "MANHOUL", qty: 126.7, units: 1 },
-      { jenis: "MOTOR GRADER", qty: 1540.1, units: 2 },
       { jenis: "WATER TRUCK", qty: 1615.7, units: 2 },
+      { jenis: "MOTOR GRADER", qty: 1540.3, units: 2 },
+      { jenis: "COMPACTOR", qty: 832.1, units: 2 },
       { jenis: "WHEEL LOADER", qty: 339.4, units: 1 },
     ],
   },
   {
     cat: "Support",
-    qty: 1589.7,
-    records: 23,
+    qty: 1458.0,
+    records: 22,
     units: 11,
-    frHm: 4.85,
-    avgPerRec: 69.1,
+    frHm: 16.36,
+    avgPerRec: 63.5,
     subBreakdown: [
-      { jenis: "FUEL TRUCK", qty: 463.8, units: 1 },
-      { jenis: "HUB", qty: 130.0, units: 1 },
-      { jenis: "TOWER LAMP", qty: 112.0, units: 3 },
       { jenis: "TOYOTA HILUX", qty: 658.2, units: 5 },
+      { jenis: "FUEL TRUCK", qty: 463.8, units: 1 },
+      { jenis: "TOWER LAMP", qty: 112.0, units: 3 },
       { jenis: "GENSET", qty: 99.0, units: 1 },
+      { jenis: "MANHOUL", qty: 126.7, units: 1 },
     ],
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// LOCATION BREAKDOWN
-// ═══════════════════════════════════════════════════════════════
 export const LOCATION_BREAKDOWN = [
   {
     location: "Fuel Station",
-    qty: 44860.9,
+    qty: 44861.3,
     records: 228,
-    units: 48,
+    units: 43,
     avgPerRec: 196.8,
-    catMix: { MHR: 3300.0, Production: 40000.0, Support: 1560.0 },
+    catMix: {
+      MHR: 3450.1,
+      Production: 40159.2,
+      Support: 1122.0,
+      Interco: 130.0,
+    },
   },
   {
     location: "ETO",
-    qty: 7494.0,
+    qty: 7484.0,
     records: 29,
-    units: 13,
-    avgPerRec: 258.4,
-    catMix: { MHR: 1000.0, Production: 6470.0, Support: 24.0 },
+    units: 10,
+    avgPerRec: 258.1,
+    catMix: { MHR: 750.0, Production: 6672.0, Support: 62.0 },
   },
   {
     location: "Jetty",
     qty: 4903.0,
     records: 28,
-    units: 8,
+    units: 7,
     avgPerRec: 175.1,
-    catMix: { Production: 4903.0 },
+    catMix: { Production: 4886.0, Support: 17.0 },
   },
   {
     location: "EFO",
     qty: 3423.0,
     records: 20,
-    units: 10,
+    units: 8,
     avgPerRec: 171.2,
-    catMix: { Production: 3423.0 },
+    catMix: { Production: 3136.0, MHR: 254.0, Support: 33.0 },
   },
   {
     location: "Mess / Mess TMI",
     qty: 399.0,
     records: 3,
-    units: 2,
+    units: 3,
     avgPerRec: 133.0,
-    catMix: { Support: 399.0 },
+    catMix: { Support: 99.0, Production: 300.0 },
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// SHIFT ANALYSIS
-// ═══════════════════════════════════════════════════════════════
 export const SHIFT_ANALYSIS = [
-  { shift: "DS", qty: 59666.3, records: 302, units: 54, avgPerRec: 197.6 },
+  { shift: "DS", qty: 59656.7, records: 302, units: 54, avgPerRec: 197.5 },
   { shift: "NS", qty: 1413.6, records: 6, units: 6, avgPerRec: 235.6 },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// OPERATORS
-// ═══════════════════════════════════════════════════════════════
 export const OPERATORS = [
-  { operator: "Rusdin", refuels: 21, qty: 4264.0, avgPerRec: 203.0, units: 12 },
+  { operator: "Rusdin", refuels: 21, qty: 4264.0, avgPerRec: 203.0, units: 13 },
   {
     operator: "Robi Menden",
     refuels: 8,
@@ -1860,7 +1878,7 @@ export const OPERATORS = [
     refuels: 9,
     qty: 1847.9,
     avgPerRec: 205.3,
-    units: 2,
+    units: 1,
   },
   {
     operator: "Yudin Sappogo",
@@ -1888,7 +1906,7 @@ export const OPERATORS = [
     refuels: 7,
     qty: 1525.1,
     avgPerRec: 217.9,
-    units: 2,
+    units: 1,
   },
   {
     operator: "I Kadek Dwi Frendita",
@@ -1906,59 +1924,49 @@ export const OPERATORS = [
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// ANOMALIES
-// ═══════════════════════════════════════════════════════════════
 export const ANOMALIES = [
   {
     id: "ANO-01",
     type: "UNIT",
-    unit: "DT-062",
-    date: "4 Okt",
-    issue: "HM NOT FOUND: HM_diff=0 jam, qty 188 L diisi tanpa increment HM",
+    unit: "EXC-001",
+    date: "3–4 Okt",
+    issue:
+      "HM METER JUMP: 3 Okt last=329,6→now=338,9; 4 Okt last=1550→now=1558,3 (lompatan ~1.211 jam antar refuel). FR tidak valid sampai kalibrasi.",
     severity: "HIGH",
     status: "OPEN",
   },
   {
     id: "ANO-02",
     type: "UNIT",
-    unit: "EXC-001",
-    date: "4 Okt",
+    unit: "EXC-002",
+    date: "1 Okt",
     issue:
-      "HM NOT TRACKING: HM_diff=1.219,4 jam (rollover/reset meter) — FR 0,12 L/HM tidak valid",
+      "HM NOT MATCH: HM_diff=72,4 jam tidak wajar untuk refuel harian — FR 2,82 L/HM tidak valid. Audit meter segera.",
     severity: "HIGH",
     status: "OPEN",
   },
   {
     id: "ANO-03",
     type: "UNIT",
-    unit: "EXC-002",
+    unit: "EXC-031",
     date: "1 Okt",
     issue:
-      "HM NOT MATCH: HM_diff=72,4 jam tidak wajar untuk refuel harian — FR 2,82 L/HM",
-    severity: "HIGH",
+      "First-refueling: HM_diff=2 jam, qty 100 L → FR 50 L/HM (outlier). Exclude dari ranking FR.",
+    severity: "MEDIUM",
     status: "OPEN",
   },
   {
     id: "ANO-04",
-    type: "UNIT",
-    unit: "EXC-031",
-    date: "1 Okt",
-    issue: "First-refueling: HM_diff=2 jam, qty 100 L → FR 50 L/HM (outlier)",
+    type: "VENDOR",
+    unit: "PT. BUMI ENERGI SEJATI",
+    date: "3 Okt",
+    issue:
+      "Short delivery: KURANG 11 LITER (dari 30.000 L → tercatat 29.989 L)",
     severity: "MEDIUM",
     status: "OPEN",
   },
   {
     id: "ANO-05",
-    type: "VENDOR",
-    unit: "PT. BUMI ENERGI SEJATI",
-    date: "3 Okt",
-    issue: "Short delivery: KURANG 11 LITER (dari 30.000 L)",
-    severity: "MEDIUM",
-    status: "OPEN",
-  },
-  {
-    id: "ANO-06",
     type: "MODE",
     unit: "ALL",
     date: "2 Okt",
@@ -1968,83 +1976,70 @@ export const ANOMALIES = [
     status: "OPEN",
   },
   {
+    id: "ANO-06",
+    type: "STOCK",
+    unit: "STOCK-IN",
+    date: "4 Okt",
+    issue:
+      "Tidak ada stock-in — bertepatan konsumsi tinggi (10.865 L). Runway tetap aman (~12 hari).",
+    severity: "MEDIUM",
+    status: "OPEN",
+  },
+  {
     id: "ANO-07",
     type: "UNIT",
-    unit: "DT-073",
+    unit: "DT-028 / DT-064 / DT-025",
     date: "28 Sep–4 Okt",
-    issue: "First-refueling + FR tinggi berkelanjutan (19,80 L/HM)",
+    issue:
+      "Q4 Boros: FR ≥ 20,3 L/HM (masih dalam range normal 18–24, tapi top outlier fleet)",
     severity: "MEDIUM",
     status: "OPEN",
   },
   {
     id: "ANO-08",
-    type: "UNIT",
-    unit: "DT-070",
-    date: "28 Sep–4 Okt",
-    issue: "First-refueling + FR tinggi berkelanjutan (18,89 L/HM)",
-    severity: "MEDIUM",
-    status: "OPEN",
-  },
-  {
-    id: "ANO-09",
-    type: "STOCK",
-    unit: "STOCK-IN",
-    date: "4 Okt",
-    issue: "Tidak ada stock-in — bertepatan konsumsi tinggi (10.875 L)",
-    severity: "MEDIUM",
-    status: "OPEN",
-  },
-  {
-    id: "ANO-10",
-    type: "UNIT",
-    unit: "DT-028 / DT-062 / DT-064",
-    date: "28 Sep–4 Okt",
+    type: "INTERCO",
+    unit: "HUB",
+    date: "1 Okt",
     issue:
-      "Q4 Boros: FR > 20,8 L/HM (di atas upper normal 24? masih dalam range tapi top outlier)",
-    severity: "MEDIUM",
-    status: "OPEN",
+      "Site transfer 130 L (bukan konsumsi fleet). Sudah di-exclude dari metrik fleet.",
+    severity: "INFO",
+    status: "CLOSED",
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// DATA QUALITY
-// ═══════════════════════════════════════════════════════════════
 export const DATA_QUALITY = {
   totalRecords: 308,
-  missingHM: 2,
+  missingHM: 0,
   missingKM: 126,
-  zeroOrNegHM: 4,
-  hmOver50: 2,
+  zeroOrNegHM: 0,
+  hmOver50: 1,
   zeroOrNegKM: 126,
   missingOperator: 0,
   missingLocation: 0,
   bulkRows: 0,
   remarkFilled: 308,
-  completePct: 99.4,
+  completePct: 99.7,
 };
 
-// ═══════════════════════════════════════════════════════════════
-// STOCK SUMMARY — dari ledger user
-// ═══════════════════════════════════════════════════════════════
 export const STOCK_SUMMARY = {
-  startStock: 65529.4, // EOD 27 Sep / start 28 Sep
-  endStock: 111455.5, // EOD 4 Okt
-  minStock: 63795.3,
+  startStock: 65529.4,
+  endStock: 111465.27,
+  minStock: 63793.3,
   minStockDate: "29/9",
 
-  totalInRecorded: 106996.0,
-  totalInCurrWeekRecorded: 106996.0,
-  totalOutGross: 61079.9,
+  totalInRecorded: 107006.0,
+  totalInCurrWeekRecorded: 107006.0,
+  totalOutGross: 61070.3,
 
   bpspLoanIn: 0,
-  bpspRepayOutPrev: 0,
+  bpspRepayOutPrev: 7000,
   bpspRepayOutCurr: 0,
-  totalInVendorOnly: 106996.0,
-  totalInCurrWeekVendorOnly: 106996.0,
-  totalOutFleetNet: 61079.9,
+  totalInVendorOnly: 107006.0,
+  totalInCurrWeekVendorOnly: 107006.0,
+  totalOutFleetNet: 60940.3,
 
-  netChange: 45926.1,
-  netChangeFleet: 45926.1,
+  netChange: 45933.7,
+  netChangeFleet: 46063.7,
 
   stockInEvents: [
     {
@@ -2088,9 +2083,6 @@ export const STOCK_SUMMARY = {
   bpspEvents: [],
 };
 
-// ═══════════════════════════════════════════════════════════════
-// STOCK DATA — EOD daily (dari ledger)
-// ═══════════════════════════════════════════════════════════════
 export const STOCK_DATA = [
   { date: "21/9", lastStock: 63913.4 },
   { date: "22/9", lastStock: 63771.9 },
@@ -2098,33 +2090,30 @@ export const STOCK_DATA = [
   { date: "24/9", lastStock: 98318.1 },
   { date: "25/9", lastStock: 102551.2 },
   { date: "26/9", lastStock: 112686.8 },
-  { date: "27/9", lastStock: 125819.3 },
-  { date: "28/9", lastStock: 67292.0 },
-  { date: "29/9", lastStock: 63795.3 },
-  { date: "30/9", lastStock: 68058.6 },
-  { date: "1/10", lastStock: 79331.7 },
-  { date: "2/10", lastStock: 93915.1 },
-  { date: "3/10", lastStock: 122330.1 },
-  { date: "4/10", lastStock: 111455.5 },
+  { date: "27/9", lastStock: 65529.4 },
+  { date: "28/9", lastStock: 67290.0 },
+  { date: "29/9", lastStock: 63793.3 },
+  { date: "30/9", lastStock: 68056.6 },
+  { date: "1/10", lastStock: 79329.7 },
+  { date: "2/10", lastStock: 93913.1 },
+  { date: "3/10", lastStock: 122328.1 },
+  { date: "4/10", lastStock: 111463.1 },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// VENDORS
-// ═══════════════════════════════════════════════════════════════
 export const VENDORS = [
-  {
-    vendor: "PT. CENTRAL OIL INDONESIA NICON",
-    deliveries: 4,
-    totalQty: 47015.0,
-    avgQty: 11753.8,
-    remarks: ["DONE", "ganti kurang 15 liter"],
-  },
   {
     vendor: "PT. BUMI ENERGI SEJATI",
     deliveries: 2,
     totalQty: 49989.0,
     avgQty: 24994.5,
     remarks: ["DONE", "KURANG 11 LITER"],
+  },
+  {
+    vendor: "PT. CENTRAL OIL INDONESIA NICON",
+    deliveries: 3,
+    totalQty: 37015.0,
+    avgQty: 12338.3,
+    remarks: ["ganti kurang 15 liter tanggal 27 sept", "DONE", "DONE"],
   },
   {
     vendor: "PT. JUNAMA INTI KARMA",
@@ -2135,11 +2124,8 @@ export const VENDORS = [
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// INTER-COMPANY
-// ═══════════════════════════════════════════════════════════════
 export const INTER_COMPANY = {
-  note: "BPSP loan sudah CLOSED. Entry HUB 130 L (1 Okt) = site transfer.",
+  note: "BPSP loan CLOSED. Entry HUB 130 L (1 Okt) = site transfer. MPS 500 L (25 Sep) di base week = interco.",
   events: [
     {
       date: "2026-10-01",
