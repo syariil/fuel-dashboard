@@ -106,17 +106,13 @@ import {
 
 /* ═══════════════ KONTEKS BISNIS & ATURAN OPERASIONAL ═══════════════ */
 const DAILY_ISSUES = [
-  { date: "2026-09-28", mode: "FULL", issue: "n/a" },
-  { date: "2026-09-29", mode: "FULL", issue: "n/a" },
-  { date: "2026-09-30", mode: "FULL", issue: "n/a" },
-  { date: "2026-10-01", mode: "FULL", issue: "n/a" },
-  {
-    date: "2026-10-02",
-    mode: "PARTIAL",
-    issue: "pergantian shift — unit malam off 22:00",
-  },
-  { date: "2026-10-03", mode: "FULL", issue: "n/a" },
-  { date: "2026-10-04", mode: "FULL", issue: "n/a" },
+  { date: "2026-10-05", mode: "FULL", issue: "n/a" },
+  { date: "2026-10-06", mode: "FULL", issue: "n/a" },
+  { date: "2026-10-07", mode: "FULL", issue: "n/a" },
+  { date: "2026-10-08", mode: "FULL", issue: "n/a" },
+  { date: "2026-10-09", mode: "FULL", issue: "n/a" },
+  { date: "2026-10-10", mode: "FULL", issue: "n/a" },
+  { date: "2026-10-11", mode: "FULL", issue: "n/a" },
 ];
 
 /* ─────────────────────────── HELPERS ─────────────────────────── */
@@ -312,162 +308,221 @@ const ChartTooltip = ({ active, payload, label }) => {
 };
 
 /* ═══════════════════ NARRATIVE GENERATOR ═══════════════════ */
+/* ═══════════════════ NARRATIVE GENERATOR (EXPANDED) ═══════════════════ */
 const generateNarratives = () => {
   const out = [];
   const d = WEEK_COMPARISON.deltas;
   const prev = WEEK_COMPARISON.prev;
   const curr = WEEK_COMPARISON.curr;
 
-  // ── N-00: Mode operasional base week ─────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-00: KONTEKS BASE WEEK
+  // ═══════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════
+  // N-01: MPS MOBILISASI (KLARIFIKASI PENTING)
+  // ═══════════════════════════════════════════════════════════
   out.push({
-    id: "N-00",
-    category: "Konteks Operasional",
-    severity: "INFO",
-    title: "Base week (21–27 Sep) terdistorsi mode operasional + BPSP repay",
+    id: "N-01",
+    category: "Inter-Company",
+    severity: "VIOLET",
+    title: "MPS 1.558 L = mobilisasi unit PT. MPS menuju site BPSP",
     why:
-      `Base week punya 2 hari BARGING_ONLY (26–27 Sep) + 1 PARTIAL (25 Sep) ` +
-      `dan mengandung 7.000 L BPSP repay (bukan konsumsi fleet). ` +
-      `Current week hanya 1 PARTIAL (2 Okt).`,
-    impact: `Perbandingan gross WoW (−15,2%). ` + `Bandingkan fleet (−5,3%).`,
-    actions: [
-      "Filter perbandingan hanya hari FULL-ops",
-      "Pisahkan interco (BPSP/HUB/MPS) dari metrik fleet",
-      "Gunakan baseline FULL-ops (~9.276 L/hari) untuk target efisiensi",
-    ],
+      `16 entry MPS (5–10 Okt) total 1.558 L adalah konsumsi unit milik PT. MPS yang ` +
+      `sedang bermobilisasi menuju site BPSP — bukan konsumsi fleet operasional BPSP. ` +
+      `Entry mencakup DT-004, DT-009, DT-011, DT-015, DT-022, DT-023, DT-029, DT-030, DT-035, ` +
+      `DT-044, MG-002, WHL-001, EXC-004, EXC-014, LV-001, LV-002. ` +
+      `Base week hanya mencatat HUB 130 L.`,
+    impact:
+      `Jika dicampur ke fleet, fleet akan ter-overstate ~1,9%. ` +
+      `Klarifikasi penting: angka fleet 82.773 L SUDAH exclude MPS 1.558 L. ` +
+      `Namun tracking mobilisasi MPS tetap penting untuk verifikasi klaim biaya antar-PT.`,
+    actions: [""],
   });
 
-  // ── N-02: Penurunan konsumsi ───────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-02: KENAIKAN PRODUKSI INTENSIF
+  // ═══════════════════════════════════════════════════════════
   const fullOpsDays = DAILY.filter(
     (x) => x.week === "curr" && x.mode === "FULL",
   );
   const fullOpsAvg = fullOpsDays.length
-    ? fullOpsDays.reduce((s, x) => s + x.total, 0) / fullOpsDays.length
+    ? fullOpsDays.reduce((s, x) => s + x.fleet, 0) / fullOpsDays.length
     : KPI.fullOpsAvg;
+
   out.push({
     id: "N-02",
     category: "Produksi",
     severity: "MEDIUM",
-    title: `Fleet turun −${Math.abs(KPI.wowFleet).toFixed(1)}% — gross −${Math.abs(KPI.wowGross).toFixed(1)}% terdistorsi BPSP`,
+    title: `Fleet naik +35,5% WoW — volume DT +68,6%, EXC +18,6%`,
     why:
-      `Fleet current ${fmt(KPI.totalWeekFleet)} L vs base ${fmt(KPI.totalPrevWeekFleet)} L (−5,3%). ` +
-      `Gross current ${fmt(KPI.totalWeekGross)} L vs base ${fmt(KPI.totalPrevWeekGross)} L (−15,2%). ` +
-      `Rata-rata FULL-ops current = ${fmt(fullOpsAvg)} L/hari. ` +
-      `DT qty −3,5%, EXC −28,5%. FR DT sehat di ${KPI.dtFrHm} L/HM.`,
+      `Fleet current ${fmt(KPI.totalWeekFleet)} L vs base ${fmt(KPI.totalPrevWeekFleet)} L (+35,5%). ` +
+      `Gross current ${fmt(KPI.totalWeekGross)} L vs base ${fmt(KPI.totalPrevWeekGross)} L (+37,7%). ` +
+      `Driver utama: DT qty 40.159 → 67.704 L (+68,6%) — jauh lebih besar dari EXC (14.994 → 17.788 L, +18,6%). ` +
+      `Rata-rata FULL-ops current = ${fmt(fullOpsAvg)} L/hari. FR DT masih sehat di ${KPI.dtFrHm} L/HM.`,
     impact:
-      `Penurunan gross BUKAN sinyal efisiensi besar — 7.000 L adalah BPSP repay. ` +
-      `Fleet turun moderat; fokus jaga FR dalam range normal.`,
+      `Kenaikan drastis pada DT mengindikasikan intensifikasi hauling — kemungkinan ada penambahan trip, ` +
+      `percepatan siklus, atau unit baru masuk operasi (8 first-refueling terdeteksi). ` +
+      `Tanpa korelasi dengan target produksi (BCM/ton), ada risiko over-fueling.`,
     actions: [
-      "Korelasikan dengan target produksi (BCM/ton) per mode",
-      "Monitor FR per unit — jangan sampai turun qty = naik FR",
+      "Cross-check dengan laporan produksi harian (BCM/ton) periode 5–11 Okt",
+      "Identifikasi apakah ada penambahan trip atau perubahan rute hauling",
+      "Monitor FR per unit DT — jangan sampai volume naik = FR naik",
+      "Audit 8 unit first-refueling (DT-071/072/074/075/076) — pastikan HM meter akurat",
     ],
   });
 
-  // ── N-03: Support ──────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-03: SUPPORT EFISIEN
+  // ═══════════════════════════════════════════════════════════
   out.push({
     id: "N-03",
     category: "Support",
-    severity: "INFO",
-    title: `Support ${fmt(curr.supp)} L (~${((curr.supp / curr.fleet) * 100).toFixed(1)}% fleet)`,
+    severity: "GOOD",
+    title: `Support turun −11,1% meski produksi naik +36,9% — efisiensi non-produksi`,
     why:
-      `Support operasional (FT + LV + Tower Lamp + Genset) = ${fmt(curr.supp)} L. ` +
-      `HUB transfer 130 L (1 Okt) dipisah ke Inter-company, bukan Support.`,
-    impact: `Proporsi kecil. Fokus efisiensi tetap pada Production (DT + EXC).`,
+      `Support current 1.185 L (~1,4% fleet) vs base 1.333 L (−11,1%). ` +
+      `MHR naik +31,9% (4.454 → 5.875 L) sejalan dengan aktivitas produksi. ` +
+      `Breakdown Support current: Hilux 590 L, Fuel Truck 258 L, Manhoul 104 L, Tower Lamp 82 L, ` +
+      `Genset 99 L, HUB 51 L.`,
+    impact:
+      `Proporsi Support menurun saat produksi naik — tanda manajemen support yang baik. ` +
+      `Tidak ada indikasi pemborosan di kategori non-produksi.`,
     actions: [
-      "Pisahkan kategori Support Operasional vs Site Transfer",
-      "Monitor genset & tower lamp terpisah",
+      "Pertahankan pola support minimal — benchmark untuk minggu depan",
+      "Fokus optimasi tetap pada Production (DT & EXC = 91% total fleet)",
+      "Catat Genset 99 L — monitor jika ada kegiatan malam ekstra",
     ],
   });
 
-  // ── N-04: EXC FR ───────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-04: EXC FR NAIK — PERLU AUDIT
+  // ═══════════════════════════════════════════════════════════
   out.push({
     id: "N-04",
     category: "Excavator",
     severity: "HIGH",
-    title: `FR Excavator: 2 anomali meter kritis`,
+    title: `EXC FR naik +17,9% (20,61 → 24,3 L/HM) — perlu audit meter & driving`,
     why:
-      `EXC-001 (3–4 Okt): HM meter jump 329,6 → 1550 antar refuel. ` +
-      `EXC-002 (1 Okt): HM_diff 72,4 jam → FR tidak valid. ` +
-      `EXC 215 series mayoritas 14–17 L/HM (di bawah range 18–22). ` +
-      `EXC-026 (360) = 29,68 L/HM (dalam range 28–32).`,
+      `FR EXC rata-rata naik dari 20,61 ke 24,3 L/HM. ` +
+      `EXC-026 (SANY 360) konsumsi 3.770 L dengan FR 29,72 L/HM (dalam range 28–32, tapi top). ` +
+      `EXC-031 (SY215C): 1 entry FR outlier 63,7 L/HM (5 Okt, HM_diff 3 jam). ` +
+      `EXC-028 first-refueling: 240 L dengan HM_diff 2 jam → FR 120 L/HM (outlier). ` +
+      `EXC-001 (XCMG 215) FR 14,64 L/HM — di bawah range normal.`,
     impact:
-      `Benchmark FR EXC 215 tidak valid sampai kalibrasi meter. ` +
-      `Cost analysis & maintenance scheduling bisa salah.`,
+      `Kenaikan FR EXC +17,9% signifikan. Jika bukan karena perubahan jenis pekerjaan (mis. ` +
+      `barging lebih berat, tanah lebih keras), ada indikasi masalah teknis (injeksi, filter) ` +
+      `atau driving behaviour. EXC-026 sebagai top consumer perlu benchmark khusus.`,
     actions: [
-      "Audit HM meter EXC-001 & EXC-002 segera",
-      "Cross-check log manual operator untuk EXC 215",
-      "Revisi range normal berdasarkan data aktual setelah kalibrasi",
+      "Audit HM meter EXC-026 (top consumer) & EXC-001 (outlier bawah)",
+      "Cek pola driving operator EXC — bandingkan dengan minggu lalu",
+      "Verifikasi apakah jenis pekerjaan berubah (hauling vs barging)",
+      "Exclude EXC-028 & EXC-031 dari ranking FR (first-refuel & anomali)",
     ],
   });
 
-  // ── N-05: DT FR stabil ─────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-05: DT FR STABIL (GOOD)
+  // ═══════════════════════════════════════════════════════════
   out.push({
     id: "N-05",
     category: "Dump Truck",
     severity: "GOOD",
-    title: `Efisiensi DT stabil di range normal (${curr.dtFrHm} L/HM)`,
+    title: `FR DT stabil di ${KPI.dtFrHm} L/HM meski volume naik +68,6%`,
     why:
-      `FR DT current ${curr.dtFrHm} L/HM (dalam range ${FR_THRESHOLD.DT_NORMAL_MIN}–${FR_THRESHOLD.DT_NORMAL_MAX}). ` +
-      `Top efisien: DT-044 (7,78), DT-011 (8,53), DT-008 (8,54). ` +
-      `Top boros: DT-028 (21,27), DT-064 (20,81), DT-025 (20,33).`,
+      `FR DT current ${KPI.dtFrHm} L/HM (dalam range ${FR_THRESHOLD.DT_NORMAL_MIN}–${FR_THRESHOLD.DT_NORMAL_MAX}). ` +
+      `Volume naik 68,6% tapi FR hanya naik tipis dari 18,3 → 20,1 L/HM (+9,8%). ` +
+      `Top efisien: DT-022 (15,0), DT-069 (18,84), DT-070 (19,20). ` +
+      `Top boros: DT-019 (27,9), DT-020 (22,42), DT-028 (21,68).`,
     impact:
-      `Fleet DT sehat. Gap efisiensi terbaik vs terburuk ~2,7×. ` +
-      `Peluang penghematan dari coaching Q4: ~10–15% konsumsi unit boros.`,
+      `Fleet DT sehat — kenaikan volume proporsional dengan konsumsi. Gap efisiensi ` +
+      `terbaik vs terburuk ~1,86× — masih dalam batas wajar. ` +
+      `Peluang penghematan dari coaching Q4: ~8–12% konsumsi unit boros.`,
     actions: [
-      "Benchmark internal dari operator DT-044",
-      "Coaching untuk unit Q4 (DT-028, DT-064, DT-025)",
-      "Review pola driving/idling untuk outlier",
+      "Benchmark internal dari operator DT-022 (rute sama, FR 15 L/HM)",
+      "Coaching unit Q4: DT-019, DT-028, DT-064, DT-060",
+      "Review pola idling untuk outlier — cek data Star/End Refueling",
+      "Pertahankan range normal 18–24 L/HM sebagai target",
     ],
   });
 
-  // ── N-06: Stock recovery ──────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-06: STOK KRITIS (HIGH)
+  // ═══════════════════════════════════════════════════════════
   out.push({
     id: "N-06",
     category: "Stok",
-    severity: "GOOD",
-    title: `Stok: ${fmt(STOCK_SUMMARY.startStock)} → ${fmt(STOCK_SUMMARY.endStock)} L (net +${fmt(STOCK_SUMMARY.netChange)} L)`,
+    severity: "HIGH",
+    title: `⚠️ Stok turun 38.410 L — runway ~6 hari, stock-in gap 7–10 Okt`,
     why:
-      `Total Stock-In current week ${fmt(STOCK_SUMMARY.totalInCurrWeekRecorded)} L dari 6 pengiriman. ` +
-      `Total konsumsi gross ${fmt(STOCK_SUMMARY.totalOutGross)} L. Net +${fmt(STOCK_SUMMARY.netChange)} L. ` +
-      `Stok terendah 29 Sep (${fmt(STOCK_SUMMARY.minStock)} L), puncak 3 Okt (122.328 L).`,
+      `Stok EOD: 111.463 → 73.053 L (turun 38.410 L). ` +
+      `Stock-in current week hanya 46.000 L dari 4 pengiriman (5 Okt 10.000, 6 Okt 28.000, 11 Okt 8.000). ` +
+      `Tidak ada stock-in 7–10 Okt (4 hari berturut-turut kosong). ` +
+      `Sementara konsumsi gross 84.406 L — net negatif 38.410 L.`,
     impact:
-      `Runway saat ini ~${KPI.runwayDaysHigh.toFixed(1)} hari (aman). ` +
-      `Pola konsumsi FULL-ops ~${fmt(fullOpsAvg)} L/hari. ` +
-      `Tidak ada stock-in 4 Okt — monitor 5–6 Okt jika konsumsi tinggi.`,
+      `Runway ~6,2 hari @ konsumsi FULL-ops (11.793 L/hari). ` +
+      `Jika konsumsi tetap tinggi (10.000+ L/hari) tanpa stock-in tambahan, ` +
+      `stok akan kritis sebelum 18 Okt. Risiko: shutdown operasional.`,
     actions: [
-      `Set ROP minimal 3 hari full-ops = ~${fmt(fullOpsAvg * 3)} L`,
-      "Jadwalkan Stock-In 2×/minggu reguler",
-      "Auto-alert ketika runway < 3 hari",
+      "Jadwalkan stock-in darurat 12–13 Okt minimal 30.000 L (urgent)",
+      "Set ROP otomatis 35.000 L (3 hari full-ops + buffer)",
+      "Investigasi kenapa stock-in kosong 7–10 Okt (supply chain issue? vendor delay?)",
+      "Review kontrak vendor — pastikan SLA pengiriman 2×/minggu minimal",
     ],
   });
 
-  // ── N-07: Anomali HM ──────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-07: FIRST-REFUELING BATCH BARU
+  // ═══════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════
+  // N-12: EXC-026 TOP PERFORMER
+  // ═══════════════════════════════════════════════════════════
   out.push({
     id: "N-07",
-    category: "Data Quality",
-    severity: "HIGH",
-    title: `2 anomali HM kritis — SOP perlu diperbaiki`,
+    category: "Excavator",
+    severity: "INFO",
+    title: `EXC-026 (SANY 360) top consumer — FR 29,72 L/HM masih dalam range`,
     why:
-      `EXC-001: meter jump 329→1550 antar refuel (3–4 Okt). ` +
-      `EXC-002: HM_diff=72,4 jam (1 Okt). ` +
-      `EXC-031 first-refueling FR 50 L/HM.`,
-    impact: `FR unit-unit ini tidak akurat. Cost analysis overstated, maintenance scheduling bisa salah.`,
+      `EXC-026 konsumsi 3.770 L minggu ini (tertinggi di kategori EXC). ` +
+      `HM total 126,8 jam — utilisasi tertinggi. ` +
+      `FR 29,72 L/HM (dalam range 28–32 untuk SANY 360). ` +
+      `Total 8 refuel, rata-rata 471 L/refuel.`,
+    impact:
+      `EXC-026 adalah unit produktif — utilisasi tinggi dengan FR terjaga. ` +
+      `Bukan anomali, justru benchmark untuk unit 360 series lainnya. ` +
+      `EXC-014 & EXC-029 (SANY 360 lain) FR lebih rendah (27,3 & 28,7) — masih sehat.`,
     actions: [
-      "Checklist wajib update Last HM/KM sebelum nozzle",
-      "Sistem warning otomatis: HM_diff=0 atau >50 jam",
-      "Kalibrasi ulang HM meter EXC-001 & EXC-002",
-      "SOP khusus untuk unit baru (first-refueling)",
+      "Benchmark EXC-026 untuk unit 360 series lain (cara driving operator)",
+      "Monitor utilisasi — jika terus >120 jam/minggu, pertimbangkan rotasi",
+      "Cross-check dengan lokasi kerja (ETO) — apakah jenis material lebih keras?",
+      "Pertahankan FR 28–32 L/HM sebagai target range",
     ],
   });
 
-  // ── N-02: Penurunan konsumsi ───────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // N-13: DI MANA UANG FUEL TERBAKAR?
+  // ═══════════════════════════════════════════════════════════
   out.push({
     id: "N-08",
     category: "Produksi",
     severity: "MEDIUM",
-    title: `Di mana uang fuel benar-benar terbakar?`,
-    why: `90,5% fleet = Production. Di dalamnya DT ~40,2 kL dan EXC ~15,0 kL. Satu poin perbaikan FR di DT Q4 berdampak lebih besar daripada mengutak-atik Support (hanya 2,2%).`,
-    impact: ``,
-    actions: [""],
+    title: `91,2% fleet = Production. DT 67.704 L, EXC 17.788 L`,
+    why:
+      `Production = 91,2% total fleet (75.493 L dari 82.773 L). ` +
+      `Di dalamnya: DT 67.704 L (81,8%) + EXC 17.788 L (21,5%). ` +
+      `MHR hanya 7,1% (5.875 L), Support 1,4% (1.185 L). ` +
+      `Satu poin perbaikan FR di DT Q4 (DT-019, DT-028, DT-064) berdampak lebih besar ` +
+      `daripada mengutak-atik Support.`,
+    impact:
+      `Fokus optimasi 100% pada Production — khususnya DT yang mendominasi 81,8%. ` +
+      `Coaching 5 unit DT boros (Q4) berpotensi hemat ~5.000 L/minggu (~6% total fleet).`,
+    actions: [
+      "Fokus 80% effort audit pada DT (bukan Support/MHR)",
+      "Prioritas coaching: DT-019, DT-028, DT-064, DT-020, DT-060",
+      "Batasi analisis Support hanya untuk audit anomali (Genset, Tower Lamp)",
+      "Review apakah ada peluang elektrifikasi untuk Support (Hilux listrik?)",
+    ],
   });
 
   return out;
@@ -1072,11 +1127,6 @@ function AnalysisPage() {
           why: "Cegah pola stock-in gap",
           owner: "Supply Chain",
         },
-        {
-          task: "Coaching operator unit Q4 (DT-062, DT-028, DT-064)",
-          why: "FR 20,81–21,28 L/HM — 2,7× gap dengan unit terbaik",
-          owner: "Ops + Training",
-        },
       ],
     },
     {
@@ -1085,11 +1135,6 @@ function AnalysisPage() {
       color: "sky",
       icon: Target,
       items: [
-        {
-          task: "Pisahkan BPSP Loan & Inter-company dari Support",
-          why: "Agar Support mencerminkan konsumsi operasional murni",
-          owner: "Data Governance",
-        },
         {
           task: "Update Daily Issue dengan kolom mode operasi",
           why: "Baseline FR lebih akurat per mode",
