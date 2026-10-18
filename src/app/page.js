@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   BarChart,
   Bar,
@@ -2332,6 +2333,13 @@ export default function App() {
                 {EXECUTIVE.riskLevel}
               </div>
             </div>
+            <div className="w-px h-8 bg-white/10 hidden sm:block" />
+            <Link
+              href="/weekly"
+              className="flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 text-sky-300 px-3 py-1.5 rounded-lg border border-white/10 transition-colors">
+              <Package size={14} />
+              <span>Gudang / Spare Parts</span>
+            </Link>
           </div>
         </div>
       </header>
