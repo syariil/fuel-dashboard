@@ -160,10 +160,10 @@ export const KPI = {
   "totalWeekGross": 84433.14,
   "totalPrevWeekGross": 84406.42,
   "wowGross": 0.03,
-  "totalWeekFleet": 84347.6,
+  "totalWeekFleet": 84333.24,
   "totalPrevWeekFleet": 82773.83,
   "wowFleet": 1.9,
-  "totalWeekNet": 84347.6,
+  "totalWeekNet": 84333.24,
   "totalPrevWeekNet": 82773.83,
   "wowNet": 1.9,
   "fleetRateGross": 12061.9,
@@ -187,11 +187,11 @@ export const KPI = {
   "bpspNote": "BPSP loan CLOSED. Gross = as-recorded. Fleet = exclude interco (PT. MPS). HUB masuk Support."
 };
 export const EXECUTIVE = {
-  "headline": "Konsumsi fleet operasional stabil di 84.348 L (+1,9% WoW vs 82.774 L base week), dengan rata-rata harian 12.050 L/hari pada seluruh 7 hari beroperasi FULL-ops (termasuk HUB 132 L pada kategori Support). Efisiensi armada Dump Truck membaik dengan Fuel Ratio turun menjadi 19,11 L/HM (dari 20,39 L/HM pada base week), sementara Excavator tercatat 19,74 L/HM. Krisis stok berhasil diatasi: setelah sempat anjlok ke 37.288 L pada 14 Okt akibat gap pengiriman awal pekan, masuknya pasokan 75.000 L dari PT. Central Oil Indonesia Nicon pada 15–18 Okt memulihkan stok akhir ke 63.624 L dengan runway aman 5,3 hari.",
+  "headline": "Konsumsi fleet operasional stabil di 84.333 L (+1,9% WoW vs 82.774 L base week), dengan rata-rata harian 12.050 L/hari pada seluruh 7 hari beroperasi FULL-ops (termasuk HUB 132 L pada kategori Support). Efisiensi armada Dump Truck membaik dengan Fuel Ratio turun menjadi 19,11 L/HM (dari 20,39 L/HM pada base week), sementara Excavator tercatat 19,74 L/HM. Krisis stok berhasil diatasi: setelah sempat anjlok ke 37.288 L pada 14 Okt akibat gap pengiriman awal pekan, masuknya pasokan 75.000 L dari PT. Central Oil Indonesia Nicon pada 15–18 Okt memulihkan stok akhir ke 63.624 L dengan runway aman 5,3 hari.",
   "headlineGross": "Gross ledger transaksi tercatat 84.433 L (+0,03% WoW vs 84.406 L base week). Volume inter-company menyusut tajam menjadi 86 L (hanya PT. MPS, karena HUB masuk ke Support) seiring tuntasnya mobilisasi armada PT. MPS. Aktivitas produksi mendominasi 92,1% total konsumsi fleet (DT 58.115 L dan EXC 19.608 L), didukung penambahan armada baru (DT-017, DT-077, DT-078) yang mulai beroperasi.",
   "riskLevel": "MEDIUM",
   "keyPoints": [
-    "✅ Fleet stabil +1,9% WoW (84.348 L vs 82.774 L) dengan efisiensi DT membaik ke 19,11 L/HM (turun dari 20,39 L/HM)",
+    "✅ Fleet stabil +1,9% WoW (84.333 L vs 82.774 L) dengan efisiensi DT membaik ke 19,11 L/HM (turun dari 20,39 L/HM)",
     "⛽ Suplai 75.000 L tiba tepat waktu (15–18 Okt) setelah stok sempat anjlok ke level kritis 37.288 L pada 14 Okt",
     "🚛 3 unit Dump Truck baru masuk operasi (DT-017, DT-077, DT-078) dengan total konsumsi first-refuel 570 L",
     "📉 Interco transfer murni hanya PT. MPS 85,5 L (mobilisasi tuntas), sedangkan HUB 132 L masuk ke Support"
@@ -615,7 +615,7 @@ export const WEEK_COMPARISON = {
   "curr": {
     "label": "12–18 Okt",
     "total": 84433.14,
-    "fleet": 84347.6,
+    "fleet": 84333.24,
     "avgDaily": 12061.9,
     "avgFleetDaily": 12049.7,
     "records": 433,
@@ -2811,7 +2811,7 @@ export const STOCK_SUMMARY = {
   "bpspRepayOutCurr": 0,
   "totalInVendorOnly": 75000.0,
   "totalInCurrWeekVendorOnly": 75000.0,
-  "totalOutFleetNet": 84347.6,
+  "totalOutFleetNet": 84333.24,
   "netChange": -9433.14,
   "netChangeFleet": -9347.6,
   "stockInEvents": [
