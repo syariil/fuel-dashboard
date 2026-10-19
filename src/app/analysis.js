@@ -1,2143 +1,2941 @@
-// AUTO-GENERATED — Analisis Fuel Site BPSP (UPDATED)
-// Source: fuel.xlsx stock-out + stock-in (verified 2026-10-12)
-// Base week (prev): 2026-09-28 → 2026-10-04
-// Curr week (new):  2026-10-05 → 2026-10-11
+// AUTO-GENERATED — Analisis Fuel Site BPSP
+// Source: fuel.xlsx stock-out + stock-in (verified 2026-10-19)
+// Base week (prev): 2026-10-05 → 2026-10-11 (5–11 Okt)
+// Curr week (new):  2026-10-12 → 2026-10-18 (12–18 Okt)
 //
 // DEFINISI METRIK (konsisten di seluruh file):
-//   GROSS  = semua transaksi stock-out (termasuk MPS / interco)
-//   FLEET  = konsumsi unit operasional (exclude MPS, HUB, BPSP, ALKON WT)
-// BPSP loan CLOSED (borrow 9.000 L 16 Sep, repay total 9.000 L selesai 24 Sep)
-// Current week TIDAK ada BPSP loan baru.
+//   GROSS  = semua transaksi stock-out (termasuk MPS)
+//   FLEET  = konsumsi unit operasional (exclude MPS, BPSP, ALKON WT — HUB masuk Support)
 
 export const C = {
-  bg: "#FFFFFF",
-  card: "#FFFFFF",
-  mist: "#F3F7FB",
-  border: "#E2E8F0",
-  navy: "#0D2C44",
-  navyAlt: "#14415F",
-  ink: "#16202A",
-  inkAlt: "#4B5A6B",
-  muted: "#7C8B9B",
-  accent: "#0284C7",
-  accentBright: "#38BDF8",
-  accentSoft: "#E0F2FE",
-  red: "#DC2626",
-  redLight: "#FEE2E2",
-  amber: "#D97706",
-  amberLight: "#FEF3C7",
-  good: "#059669",
-  gold: "#EA580C",
-  violet: "#7C3AED",
-  violetLight: "#EDE9FE",
+  "bg": "#FFFFFF",
+  "card": "#FFFFFF",
+  "mist": "#F3F7FB",
+  "border": "#E2E8F0",
+  "navy": "#0D2C44",
+  "navyAlt": "#14415F",
+  "ink": "#16202A",
+  "inkAlt": "#4B5A6B",
+  "muted": "#7C8B9B",
+  "accent": "#0284C7",
+  "accentBright": "#38BDF8",
+  "accentSoft": "#E0F2FE",
+  "red": "#DC2626",
+  "redLight": "#FEE2E2",
+  "amber": "#D97706",
+  "amberLight": "#FEF3C7",
+  "good": "#059669",
+  "gold": "#EA580C",
+  "violet": "#7C3AED",
+  "violetLight": "#EDE9FE"
 };
 
 export const COMPANY = "PT Tempopress Mining Indonesia";
-export const WEEK_NEW = "5–11 Okt";
-export const WEEK_PREV = "28 Sep–4 Okt";
-export const PERIOD_START = "2026-10-05";
-export const PERIOD_END = "2026-10-11";
-export const PERIOD_PREV_START = "2026-09-28";
-export const PERIOD_PREV_END = "2026-10-04";
-export const PERIOD_CURR_START = "2026-10-05";
-export const PERIOD_CURR_END = "2026-10-11";
+export const WEEK_NEW = "12–18 Okt";
+export const WEEK_PREV = "5–11 Okt";
+export const PERIOD_START = "2026-10-12";
+export const PERIOD_END = "2026-10-18";
+export const PERIOD_PREV_START = "2026-10-05";
+export const PERIOD_PREV_END = "2026-10-11";
+export const PERIOD_CURR_START = "2026-10-12";
+export const PERIOD_CURR_END = "2026-10-18";
 
 export const FR_THRESHOLD = {
-  DT_NORMAL_MIN: 18,
-  DT_NORMAL_MAX: 24,
-  DT_EFFICIENT: 18,
-  DT_BOROS: 24,
-  EXC_360_NORMAL_MIN: 28,
-  EXC_360_NORMAL_MAX: 32,
-  EXC_215_NORMAL_MIN: 18,
-  EXC_215_NORMAL_MAX: 22,
+  "DT_NORMAL_MIN": 18,
+  "DT_NORMAL_MAX": 24,
+  "DT_EFFICIENT": 18,
+  "DT_BOROS": 24,
+  "EXC_360_NORMAL_MIN": 28,
+  "EXC_360_NORMAL_MAX": 32,
+  "EXC_215_NORMAL_MIN": 18,
+  "EXC_215_NORMAL_MAX": 22
 };
-
 export const OPERATIONAL_MODE = [
-  { isoDate: "2026-09-28", mode: "FULL", note: "" },
-  { isoDate: "2026-09-29", mode: "FULL", note: "" },
-  { isoDate: "2026-09-30", mode: "FULL", note: "" },
-  { isoDate: "2026-10-01", mode: "FULL", note: "" },
-  { isoDate: "2026-10-02", mode: "PARTIAL", note: "Pergantian shift" },
-  { isoDate: "2026-10-03", mode: "FULL", note: "" },
-  { isoDate: "2026-10-04", mode: "FULL", note: "" },
-  { isoDate: "2026-10-05", mode: "FULL", note: "" },
-  { isoDate: "2026-10-06", mode: "FULL", note: "" },
-  { isoDate: "2026-10-07", mode: "FULL", note: "" },
-  { isoDate: "2026-10-08", mode: "FULL", note: "" },
-  { isoDate: "2026-10-09", mode: "FULL", note: "" },
-  { isoDate: "2026-10-10", mode: "FULL", note: "" },
-  { isoDate: "2026-10-11", mode: "FULL", note: "" },
+  {
+    "isoDate": "2026-10-05",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-06",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-07",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-08",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-09",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-10",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-11",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-12",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-13",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-14",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-15",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-16",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-17",
+    "mode": "FULL",
+    "note": ""
+  },
+  {
+    "isoDate": "2026-10-18",
+    "mode": "FULL",
+    "note": ""
+  }
 ];
-
 export const BPSP_LOAN = {
-  note: "BPSP loan cycle CLOSED (Sep). Tidak ada loan baru di current week (5–11 Okt).",
-  borrowDate: "2026-09-16",
-  borrowQty: 9000,
-  repayments: [
-    { date: "2026-09-20", qty: 2000 },
-    { date: "2026-09-21", qty: 2000 },
-    { date: "2026-09-23", qty: 2000 },
-    { date: "2026-09-24", qty: 3000 },
+  "note": "BPSP loan cycle CLOSED (Sep). Tidak ada loan baru di periode ini.",
+  "borrowDate": "2026-09-16",
+  "borrowQty": 9000,
+  "repayments": [
+    {
+      "date": "2026-09-20",
+      "qty": 2000
+    },
+    {
+      "date": "2026-09-21",
+      "qty": 2000
+    },
+    {
+      "date": "2026-09-23",
+      "qty": 2000
+    },
+    {
+      "date": "2026-09-24",
+      "qty": 3000
+    }
   ],
-  totalRepay: 9000,
-  repayInBaseWeek: 0,
-  repayInCurrWeek: 0,
-  netBalance: 0,
+  "totalRepay": 9000,
+  "repayInBaseWeek": 0,
+  "repayInCurrWeek": 0,
+  "netBalance": 0
 };
+export const EXCLUDE_FROM_FLEET = [
+  "BPSP",
+  "MPS",
+  "PT. MPS",
+  "ALKON WT"
+];
 
-export const EXCLUDE_FROM_FLEET = ["BPSP", "HUB", "MPS", "PT. MPS", "ALKON WT"];
-
-// ═══════════════════════════════════════════════════════════════
-// KPI — GROSS (semua transaksi) & FLEET (exclude interco)
-// ═══════════════════════════════════════════════════════════════
 export const KPI = {
-  // Gross ledger
-  totalWeekGross: 84406.42,
-  totalPrevWeekGross: 61070.3,
-  wowGross: 37.72,
-
-  // Fleet only (exclude MPS/HUB/BPSP)
-  totalWeekFleet: 82773.83,
-  totalPrevWeekFleet: 60940.3,
-  wowFleet: 35.46,
-
-  // Alias legacy
-  totalWeekNet: 82773.83,
-  totalPrevWeekNet: 60940.3,
-  wowNet: 35.46,
-
-  fleetRateGross: 12015.7,
-  fleetRatePrevGross: 8724.3,
-  fleetRateFleet: 11793.2,
-  fleetRatePrevFleet: 8705.8,
-
-  dtFrHm: 20.1,
-  dtFrKm: 1.08,
-  excFrHm: 24.3,
-
-  currentStock: 73053.65,
-  runwayDaysLow: 4.8,
-  runwayDaysHigh: 6.2,
-  fullOpsAvg: 11793.2,
-
-  activeDaysCurr: 7,
-  activeDaysPrev: 7,
-  activeUnitsCurr: 58,
-  activeUnitsPrev: 55,
-  recordsCurr: 375,
-  recordsPrev: 308,
-
-  estCostIdr: 0,
-  bpspNote:
-    "BPSP loan CLOSED. Gross = as-recorded. Fleet = exclude interco (MPS/HUB).",
+  "totalWeekGross": 84433.14,
+  "totalPrevWeekGross": 84406.42,
+  "wowGross": 0.03,
+  "totalWeekFleet": 84347.6,
+  "totalPrevWeekFleet": 82773.83,
+  "wowFleet": 1.9,
+  "totalWeekNet": 84347.6,
+  "totalPrevWeekNet": 82773.83,
+  "wowNet": 1.9,
+  "fleetRateGross": 12061.9,
+  "fleetRatePrevGross": 12058.1,
+  "fleetRateFleet": 12049.7,
+  "fleetRatePrevFleet": 11824.8,
+  "dtFrHm": 19.11,
+  "dtFrKm": 1.072,
+  "excFrHm": 19.74,
+  "currentStock": 63623.54,
+  "runwayDaysLow": 4.2,
+  "runwayDaysHigh": 5.3,
+  "fullOpsAvg": 12049.7,
+  "activeDaysCurr": 7,
+  "activeDaysPrev": 7,
+  "activeUnitsCurr": 66,
+  "activeUnitsPrev": 64,
+  "recordsCurr": 433,
+  "recordsPrev": 425,
+  "estCostIdr": 0,
+  "bpspNote": "BPSP loan CLOSED. Gross = as-recorded. Fleet = exclude interco (PT. MPS). HUB masuk Support."
 };
-
 export const EXECUTIVE = {
-  headline:
-    "Konsumsi fleet naik signifikan +35,5% WoW (82.773 L vs 60.940 L base week). " +
-    "Kenaikan didorong oleh intensifikasi aktivitas hauling & barging sepanjang 5–11 Okt — " +
-    "seluruh 7 hari beroperasi FULL-ops tanpa gangguan mode operasional. " +
-    "Gross ledger ikut naik +37,7% (84.406 L vs 61.070 L), dengan tambahan interco MPS 1.558 L " +
-    "(base week hanya 130 L). Fleet like-for-like (+35,5%) mengkonfirmasi bahwa lonjakan " +
-    "konsumsi murni berasal dari produksi, bukan artefak ledger atau transfer antar-site.",
-
-  headlineGross:
-    "Gross ledger naik +37,7% WoW (84.406 L vs 61.070 L). " +
-    "Seluruh kenaikan berasal dari aktivitas produksi — DT +68,6% dan EXCAVATOR +18,6% — " +
-    "konsisten dengan intensifikasi hauling & barging di site BPSP. " +
-    "Interco MPS 1.558 L dicatat sebagai site transfer (sudah di-exclude dari metrik fleet). " +
-    "Fleet like-for-like +35,5% menunjukkan bahwa produksi adalah satu-satunya pendorong " +
-    "volume, sementara Support justru turun −11,1% (efisiensi non-produksi membaik).",
-
-  riskLevel: "MEDIUM",
-
-  keyPoints: [
-    "📈 Fleet +35,5% WoW — DT qty +68,6% (40.159 → 67.704 L), EXC qty +18,6% (14.994 → 17.788 L)",
-    "📉 Stok turun 38.410 L (111.463 → 73.053 L) — runway ~6 hari, stock-in gap 7–10 Okt (4 hari kosong)",
-    "⚠️ 12 anomali terdeteksi: DT-073 HM jump 160 jam, TL-002 HM_diff 0,01 jam, 8+ first-refueling perlu SOP baru",
-    "✅ FR DT tetap sehat 20,1 L/HM (dalam range 18–24) meski volume naik — indikasi efisiensi terjaga",
+  "headline": "Konsumsi fleet operasional stabil di 84.348 L (+1,9% WoW vs 82.774 L base week), dengan rata-rata harian 12.050 L/hari pada seluruh 7 hari beroperasi FULL-ops (termasuk HUB 132 L pada kategori Support). Efisiensi armada Dump Truck membaik dengan Fuel Ratio turun menjadi 19,11 L/HM (dari 20,39 L/HM pada base week), sementara Excavator tercatat 19,74 L/HM. Krisis stok berhasil diatasi: setelah sempat anjlok ke 37.288 L pada 14 Okt akibat gap pengiriman awal pekan, masuknya pasokan 75.000 L dari PT. Central Oil Indonesia Nicon pada 15–18 Okt memulihkan stok akhir ke 63.624 L dengan runway aman 5,3 hari.",
+  "headlineGross": "Gross ledger transaksi tercatat 84.433 L (+0,03% WoW vs 84.406 L base week). Volume inter-company menyusut tajam menjadi 86 L (hanya PT. MPS, karena HUB masuk ke Support) seiring tuntasnya mobilisasi armada PT. MPS. Aktivitas produksi mendominasi 92,1% total konsumsi fleet (DT 58.115 L dan EXC 19.608 L), didukung penambahan armada baru (DT-017, DT-077, DT-078) yang mulai beroperasi.",
+  "riskLevel": "MEDIUM",
+  "keyPoints": [
+    "✅ Fleet stabil +1,9% WoW (84.348 L vs 82.774 L) dengan efisiensi DT membaik ke 19,11 L/HM (turun dari 20,39 L/HM)",
+    "⛽ Suplai 75.000 L tiba tepat waktu (15–18 Okt) setelah stok sempat anjlok ke level kritis 37.288 L pada 14 Okt",
+    "🚛 3 unit Dump Truck baru masuk operasi (DT-017, DT-077, DT-078) dengan total konsumsi first-refuel 570 L",
+    "📉 Interco transfer murni hanya PT. MPS 85,5 L (mobilisasi tuntas), sedangkan HUB 132 L masuk ke Support"
   ],
-
-  dtEfficiency: {
-    avg: 20.1,
-    best: { unit: "DT-022", frHm: 15.0 },
-    worst: { unit: "DT-019", frHm: 27.9 },
+  "dtEfficiency": {
+    "avg": 19.11,
+    "best": {
+      "unit": "DT-011",
+      "frHm": 9.53
+    },
+    "worst": {
+      "unit": "DT-019",
+      "frHm": 32.99
+    }
   },
-
-  costEstimate: {
-    idr: 0,
-    idrText: "—",
-    pricePerL: 0,
-  },
+  "costEstimate": {
+    "idr": 0,
+    "idrText": "—",
+    "pricePerL": 0
+  }
 };
-
-// ═══════════════════════════════════════════════════════════════
-// DAILY — GROSS totals (sum of all stock-out)
-// prod/mhr/supp = FLEET breakdown only
-// ═══════════════════════════════════════════════════════════════
 export const DAILY = [
-  // ── Base week (28 Sep – 4 Okt) ──────────────────────────
   {
-    date: "28/9",
-    isoDate: "2026-09-28",
-    day: "Sen",
-    dayIdx: 0,
-    week: "prev",
-    prod: 6070.7,
-    mhr: 897.4,
-    supp: 286.3,
-    interco: 0,
-    total: 7254.4,
-    fleet: 7254.4,
-    records: 37,
-    units: 32,
-    mode: "FULL",
+    "date": "5/10",
+    "isoDate": "2026-10-05",
+    "day": "Sen",
+    "dayIdx": 0,
+    "week": "prev",
+    "prod": 12471.5,
+    "mhr": 879.3,
+    "supp": 10.0,
+    "interco": 55.5,
+    "total": 13416.3,
+    "fleet": 13360.8,
+    "records": 62,
+    "units": 44,
+    "mode": "FULL"
   },
   {
-    date: "29/9",
-    isoDate: "2026-09-29",
-    day: "Sel",
-    dayIdx: 1,
-    week: "prev",
-    prod: 8129.9,
-    mhr: 250.0,
-    supp: 116.8,
-    interco: 0,
-    total: 8496.8,
-    fleet: 8496.8,
-    records: 42,
-    units: 38,
-    mode: "FULL",
+    "date": "6/10",
+    "isoDate": "2026-10-06",
+    "day": "Sel",
+    "dayIdx": 1,
+    "week": "prev",
+    "prod": 11975.1,
+    "mhr": 507.4,
+    "supp": 270.0,
+    "interco": 1458.0,
+    "total": 14210.5,
+    "fleet": 12752.5,
+    "records": 77,
+    "units": 45,
+    "mode": "FULL"
   },
   {
-    date: "30/9",
-    isoDate: "2026-09-30",
-    day: "Rab",
-    dayIdx: 2,
-    week: "prev",
-    prod: 9357.0,
-    mhr: 1232.0,
-    supp: 147.6,
-    interco: 0,
-    total: 10736.6,
-    fleet: 10736.6,
-    records: 53,
-    units: 40,
-    mode: "FULL",
+    "date": "7/10",
+    "isoDate": "2026-10-07",
+    "day": "Rab",
+    "dayIdx": 2,
+    "week": "prev",
+    "prod": 10700.0,
+    "mhr": 1264.3,
+    "supp": 84.1,
+    "interco": 0.0,
+    "total": 12048.3,
+    "fleet": 12048.4,
+    "records": 59,
+    "units": 42,
+    "mode": "FULL"
   },
   {
-    date: "1/10",
-    isoDate: "2026-10-01",
-    day: "Kam",
-    dayIdx: 3,
-    week: "prev",
-    prod: 7997.3,
-    mhr: 374.3,
-    supp: 225.3,
-    interco: 130.0,
-    total: 8727.0,
-    fleet: 8596.9,
-    records: 49,
-    units: 38,
-    mode: "FULL",
+    "date": "8/10",
+    "isoDate": "2026-10-08",
+    "day": "Kam",
+    "dayIdx": 3,
+    "week": "prev",
+    "prod": 10726.4,
+    "mhr": 840.9,
+    "supp": 94.9,
+    "interco": 52.5,
+    "total": 11714.7,
+    "fleet": 11662.2,
+    "records": 61,
+    "units": 42,
+    "mode": "FULL"
   },
   {
-    date: "2/10",
-    isoDate: "2026-10-02",
-    day: "Jum",
-    dayIdx: 4,
-    week: "prev",
-    prod: 5068.6,
-    mhr: 274.1,
-    supp: 73.9,
-    interco: 0,
-    total: 5416.6,
-    fleet: 5416.6,
-    records: 26,
-    units: 25,
-    mode: "PARTIAL",
+    "date": "9/10",
+    "isoDate": "2026-10-09",
+    "day": "Jum",
+    "dayIdx": 4,
+    "week": "prev",
+    "prod": 9850.0,
+    "mhr": 537.5,
+    "supp": 182.6,
+    "interco": 0.0,
+    "total": 10570.1,
+    "fleet": 10570.1,
+    "records": 51,
+    "units": 40,
+    "mode": "FULL"
   },
   {
-    date: "3/10",
-    isoDate: "2026-10-03",
-    day: "Sab",
-    dayIdx: 5,
-    week: "prev",
-    prod: 8695.4,
-    mhr: 878.7,
-    supp: 0.0,
-    interco: 0,
-    total: 9574.0,
-    fleet: 9574.0,
-    records: 46,
-    units: 37,
-    mode: "FULL",
+    "date": "10/10",
+    "isoDate": "2026-10-10",
+    "day": "Sab",
+    "dayIdx": 5,
+    "week": "prev",
+    "prod": 8866.6,
+    "mhr": 851.3,
+    "supp": 156.3,
+    "interco": 66.6,
+    "total": 9940.9,
+    "fleet": 9874.2,
+    "records": 52,
+    "units": 41,
+    "mode": "FULL"
   },
   {
-    date: "4/10",
-    isoDate: "2026-10-04",
-    day: "Min",
-    dayIdx: 6,
-    week: "prev",
-    prod: 9834.2,
-    mhr: 547.7,
-    supp: 483.1,
-    interco: 0,
-    total: 10865.0,
-    fleet: 10865.0,
-    records: 55,
-    units: 39,
-    mode: "FULL",
-  },
-
-  // ── Current week (5 – 11 Okt) ─────────────────────────────
-  {
-    date: "5/10",
-    isoDate: "2026-10-05",
-    day: "Sen",
-    dayIdx: 0,
-    week: "curr",
-    prod: 12307.0,
-    mhr: 879.3,
-    supp: 10.0,
-    interco: 55.5,
-    total: 13251.8,
-    fleet: 13196.3,
-    records: 62,
-    units: 42,
-    mode: "FULL",
+    "date": "11/10",
+    "isoDate": "2026-10-11",
+    "day": "Min",
+    "dayIdx": 6,
+    "week": "prev",
+    "prod": 11124.5,
+    "mhr": 993.9,
+    "supp": 387.3,
+    "interco": 0.0,
+    "total": 12505.7,
+    "fleet": 12505.7,
+    "records": 63,
+    "units": 43,
+    "mode": "FULL"
   },
   {
-    date: "6/10",
-    isoDate: "2026-10-06",
-    day: "Sel",
-    dayIdx: 1,
-    week: "curr",
-    prod: 11975.1,
-    mhr: 507.4,
-    supp: 270.0,
-    interco: 1383.0,
-    total: 14135.5,
-    fleet: 12752.5,
-    records: 77,
-    units: 45,
-    mode: "FULL",
+    "date": "12/10",
+    "isoDate": "2026-10-12",
+    "day": "Sen",
+    "dayIdx": 0,
+    "week": "curr",
+    "prod": 10291.1,
+    "mhr": 816.5,
+    "supp": 56.9,
+    "interco": 0.0,
+    "total": 11164.5,
+    "fleet": 11164.5,
+    "records": 57,
+    "units": 34,
+    "mode": "FULL"
   },
   {
-    date: "7/10",
-    isoDate: "2026-10-07",
-    day: "Rab",
-    dayIdx: 2,
-    week: "curr",
-    prod: 10699.9,
-    mhr: 1264.3,
-    supp: 84.1,
-    interco: 0,
-    total: 12048.3,
-    fleet: 12048.3,
-    records: 59,
-    units: 42,
-    mode: "FULL",
+    "date": "13/10",
+    "isoDate": "2026-10-13",
+    "day": "Sel",
+    "dayIdx": 1,
+    "week": "curr",
+    "prod": 10855.9,
+    "mhr": 695.5,
+    "supp": 148.8,
+    "interco": 0.0,
+    "total": 11700.2,
+    "fleet": 11700.2,
+    "records": 60,
+    "units": 42,
+    "mode": "FULL"
   },
   {
-    date: "8/10",
-    isoDate: "2026-10-08",
-    day: "Kam",
-    dayIdx: 3,
-    week: "curr",
-    prod: 10726.4,
-    mhr: 840.9,
-    supp: 94.9,
-    interco: 52.5,
-    total: 11714.7,
-    fleet: 11662.2,
-    records: 61,
-    units: 44,
-    mode: "FULL",
+    "date": "14/10",
+    "isoDate": "2026-10-14",
+    "day": "Rab",
+    "dayIdx": 2,
+    "week": "curr",
+    "prod": 11918.6,
+    "mhr": 734.9,
+    "supp": 250.0,
+    "interco": 0.0,
+    "total": 12903.6,
+    "fleet": 12903.5,
+    "records": 65,
+    "units": 45,
+    "mode": "FULL"
   },
   {
-    date: "9/10",
-    isoDate: "2026-10-09",
-    day: "Jum",
-    dayIdx: 4,
-    week: "curr",
-    prod: 9850.0,
-    mhr: 537.5,
-    supp: 182.6,
-    interco: 0,
-    total: 10570.1,
-    fleet: 10570.1,
-    records: 51,
-    units: 41,
-    mode: "FULL",
+    "date": "15/10",
+    "isoDate": "2026-10-15",
+    "day": "Kam",
+    "dayIdx": 3,
+    "week": "curr",
+    "prod": 12547.4,
+    "mhr": 1173.3,
+    "supp": 159.7,
+    "interco": 45.7,
+    "total": 13926.0,
+    "fleet": 13880.4,
+    "records": 72,
+    "units": 49,
+    "mode": "FULL"
   },
   {
-    date: "10/10",
-    isoDate: "2026-10-10",
-    day: "Sab",
-    dayIdx: 5,
-    week: "curr",
-    prod: 8809.6,
-    mhr: 851.3,
-    supp: 156.3,
-    interco: 66.6,
-    total: 9883.9,
-    fleet: 9817.3,
-    records: 51,
-    units: 38,
-    mode: "FULL",
+    "date": "16/10",
+    "isoDate": "2026-10-16",
+    "day": "Jum",
+    "dayIdx": 4,
+    "week": "curr",
+    "prod": 11207.2,
+    "mhr": 379.0,
+    "supp": 221.5,
+    "interco": 0.0,
+    "total": 11807.6,
+    "fleet": 11807.7,
+    "records": 59,
+    "units": 45,
+    "mode": "FULL"
   },
   {
-    date: "11/10",
-    isoDate: "2026-10-11",
-    day: "Min",
-    dayIdx: 6,
-    week: "curr",
-    prod: 11124.5,
-    mhr: 993.9,
-    supp: 387.4,
-    interco: 0,
-    total: 12505.7,
-    fleet: 12505.7,
-    records: 63,
-    units: 41,
-    mode: "FULL",
+    "date": "17/10",
+    "isoDate": "2026-10-17",
+    "day": "Sab",
+    "dayIdx": 5,
+    "week": "curr",
+    "prod": 8572.5,
+    "mhr": 766.5,
+    "supp": 249.7,
+    "interco": 0.0,
+    "total": 9588.7,
+    "fleet": 9588.7,
+    "records": 52,
+    "units": 43,
+    "mode": "FULL"
   },
+  {
+    "date": "18/10",
+    "isoDate": "2026-10-18",
+    "day": "Min",
+    "dayIdx": 6,
+    "week": "curr",
+    "prod": 12330.3,
+    "mhr": 684.4,
+    "supp": 288.1,
+    "interco": 39.9,
+    "total": 13342.6,
+    "fleet": 13302.8,
+    "records": 68,
+    "units": 46,
+    "mode": "FULL"
+  }
 ];
-
 export const FORECAST = {
-  history: [
+  "history": [
     {
-      date: "28/9",
-      isoDate: "2026-09-28",
-      day: "Sen",
-      week: "prev",
-      actual: 7254.4,
-      ma7: 7254.4,
+      "date": "5/10",
+      "isoDate": "2026-10-05",
+      "day": "Sen",
+      "week": "prev",
+      "actual": 13416.3,
+      "ma7": 13416.3
     },
     {
-      date: "29/9",
-      isoDate: "2026-09-29",
-      day: "Sel",
-      week: "prev",
-      actual: 8496.8,
-      ma7: 7875.6,
+      "date": "6/10",
+      "isoDate": "2026-10-06",
+      "day": "Sel",
+      "week": "prev",
+      "actual": 14210.5,
+      "ma7": 13813.4
     },
     {
-      date: "30/9",
-      isoDate: "2026-09-30",
-      day: "Rab",
-      week: "prev",
-      actual: 10736.6,
-      ma7: 8829.3,
+      "date": "7/10",
+      "isoDate": "2026-10-07",
+      "day": "Rab",
+      "week": "prev",
+      "actual": 12048.3,
+      "ma7": 13225.0
     },
     {
-      date: "1/10",
-      isoDate: "2026-10-01",
-      day: "Kam",
-      week: "prev",
-      actual: 8727.0,
-      ma7: 8803.7,
+      "date": "8/10",
+      "isoDate": "2026-10-08",
+      "day": "Kam",
+      "week": "prev",
+      "actual": 11714.7,
+      "ma7": 12847.5
     },
     {
-      date: "2/10",
-      isoDate: "2026-10-02",
-      day: "Jum",
-      week: "prev",
-      actual: 5416.6,
-      ma7: 8126.3,
+      "date": "9/10",
+      "isoDate": "2026-10-09",
+      "day": "Jum",
+      "week": "prev",
+      "actual": 10570.1,
+      "ma7": 12392.0
     },
     {
-      date: "3/10",
-      isoDate: "2026-10-03",
-      day: "Sab",
-      week: "prev",
-      actual: 9574.0,
-      ma7: 8332.9,
+      "date": "10/10",
+      "isoDate": "2026-10-10",
+      "day": "Sab",
+      "week": "prev",
+      "actual": 9940.9,
+      "ma7": 11983.5
     },
     {
-      date: "4/10",
-      isoDate: "2026-10-04",
-      day: "Min",
-      week: "prev",
-      actual: 10865.0,
-      ma7: 8724.3,
+      "date": "11/10",
+      "isoDate": "2026-10-11",
+      "day": "Min",
+      "week": "prev",
+      "actual": 12505.7,
+      "ma7": 12058.1
     },
     {
-      date: "5/10",
-      isoDate: "2026-10-05",
-      day: "Sen",
-      week: "curr",
-      actual: 13251.8,
-      ma7: 9552.5,
+      "date": "12/10",
+      "isoDate": "2026-10-12",
+      "day": "Sen",
+      "week": "curr",
+      "actual": 11164.5,
+      "ma7": 11736.4
     },
     {
-      date: "6/10",
-      isoDate: "2026-10-06",
-      day: "Sel",
-      week: "curr",
-      actual: 14135.5,
-      ma7: 10578.1,
+      "date": "13/10",
+      "isoDate": "2026-10-13",
+      "day": "Sel",
+      "week": "curr",
+      "actual": 11700.2,
+      "ma7": 11377.8
     },
     {
-      date: "7/10",
-      isoDate: "2026-10-07",
-      day: "Rab",
-      week: "curr",
-      actual: 12048.3,
-      ma7: 11002.6,
+      "date": "14/10",
+      "isoDate": "2026-10-14",
+      "day": "Rab",
+      "week": "curr",
+      "actual": 12903.6,
+      "ma7": 11500.0
     },
     {
-      date: "8/10",
-      isoDate: "2026-10-08",
-      day: "Kam",
-      week: "curr",
-      actual: 11714.7,
-      ma7: 11292.3,
+      "date": "15/10",
+      "isoDate": "2026-10-15",
+      "day": "Kam",
+      "week": "curr",
+      "actual": 13926.0,
+      "ma7": 11815.9
     },
     {
-      date: "9/10",
-      isoDate: "2026-10-09",
-      day: "Jum",
-      week: "curr",
-      actual: 10570.1,
-      ma7: 11307.4,
+      "date": "16/10",
+      "isoDate": "2026-10-16",
+      "day": "Jum",
+      "week": "curr",
+      "actual": 11807.6,
+      "ma7": 11992.6
     },
     {
-      date: "10/10",
-      isoDate: "2026-10-10",
-      day: "Sab",
-      week: "curr",
-      actual: 9883.9,
-      ma7: 11180.3,
+      "date": "17/10",
+      "isoDate": "2026-10-17",
+      "day": "Sab",
+      "week": "curr",
+      "actual": 9588.7,
+      "ma7": 11942.3
     },
     {
-      date: "11/10",
-      isoDate: "2026-10-11",
-      day: "Min",
-      week: "curr",
-      actual: 12505.7,
-      ma7: 11370.0,
-    },
+      "date": "18/10",
+      "isoDate": "2026-10-18",
+      "day": "Min",
+      "week": "curr",
+      "actual": 13342.6,
+      "ma7": 12061.9
+    }
   ],
-  forecast: [
-    { date: "12/10", isoDate: "2026-10-12", projected: 11600.0 },
-    { date: "13/10", isoDate: "2026-10-13", projected: 11400.0 },
-    { date: "14/10", isoDate: "2026-10-14", projected: 11200.0 },
-    { date: "15/10", isoDate: "2026-10-15", projected: 11000.0 },
-    { date: "16/10", isoDate: "2026-10-16", projected: 10800.0 },
-    { date: "17/10", isoDate: "2026-10-17", projected: 10600.0 },
-    { date: "18/10", isoDate: "2026-10-18", projected: 10400.0 },
-  ],
+  "forecast": [
+    {
+      "date": "19/10",
+      "isoDate": "2026-10-19",
+      "projected": 11682.8
+    },
+    {
+      "date": "20/10",
+      "isoDate": "2026-10-20",
+      "projected": 11632.5
+    },
+    {
+      "date": "21/10",
+      "isoDate": "2026-10-21",
+      "projected": 11582.2
+    },
+    {
+      "date": "22/10",
+      "isoDate": "2026-10-22",
+      "projected": 11532.0
+    },
+    {
+      "date": "23/10",
+      "isoDate": "2026-10-23",
+      "projected": 11481.7
+    },
+    {
+      "date": "24/10",
+      "isoDate": "2026-10-24",
+      "projected": 11431.4
+    },
+    {
+      "date": "25/10",
+      "isoDate": "2026-10-25",
+      "projected": 11381.1
+    }
+  ]
 };
-
 export const WEEK_COMPARISON = {
-  prev: {
-    label: "28 Sep–4 Okt",
-    total: 61070.3,
-    fleet: 60940.3,
-    avgDaily: 8724.3,
-    avgFleetDaily: 8705.8,
-    records: 308,
-    units: 55,
-    activeDays: 7,
-    prod: 55153.2,
-    mhr: 4454.1,
-    supp: 1333.0,
-    interco: 130.0,
-    dtQty: 40159.2,
-    excQty: 14994.0,
-    dtFrHm: 18.3,
-    excFrHm: 20.61,
-    bpspRepay: 0,
+  "prev": {
+    "label": "5–11 Okt",
+    "total": 84406.42,
+    "fleet": 82773.83,
+    "avgDaily": 12058.1,
+    "avgFleetDaily": 11824.8,
+    "records": 425,
+    "units": 64,
+    "activeDays": 7,
+    "prod": 75714.1,
+    "mhr": 5874.6,
+    "supp": 1185.2,
+    "interco": 1632.6,
+    "dtQty": 54571.2,
+    "excQty": 21142.9,
+    "dtFrHm": 20.39,
+    "excFrHm": 20.22,
+    "bpspRepay": 0
   },
-  curr: {
-    label: "5–11 Okt",
-    total: 84406.42,
-    fleet: 82773.83,
-    avgDaily: 12015.7,
-    avgFleetDaily: 11793.2,
-    records: 375,
-    units: 58,
-    activeDays: 7,
-    prod: 75492.6,
-    mhr: 5874.6,
-    supp: 1185.2,
-    interco: 1557.6,
-    dtQty: 67704.3,
-    excQty: 17788.3,
-    dtFrHm: 20.1,
-    excFrHm: 24.3,
-    bpspRepay: 0,
+  "curr": {
+    "label": "12–18 Okt",
+    "total": 84433.14,
+    "fleet": 84347.6,
+    "avgDaily": 12061.9,
+    "avgFleetDaily": 12049.7,
+    "records": 433,
+    "units": 66,
+    "activeDays": 7,
+    "prod": 77723.0,
+    "mhr": 5249.9,
+    "supp": 1374.7,
+    "interco": 85.5,
+    "dtQty": 58114.9,
+    "excQty": 19608.1,
+    "dtFrHm": 19.11,
+    "excFrHm": 19.74,
+    "bpspRepay": 0
   },
-  deltas: {
-    total: 37.72,
-    fleet: 35.46,
-    avgDaily: 37.72,
-    records: 21.8,
-    units: 5.5,
-    prod: 36.88,
-    mhr: 31.89,
-    supp: -11.09,
-    dtQty: 68.6,
-    excQty: 18.6,
-    dtFrHm: 9.84,
-    excFrHm: 17.9,
-  },
+  "deltas": {
+    "total": 0.03,
+    "fleet": 1.9,
+    "avgDaily": 0.03,
+    "records": 1.88,
+    "units": 3.12,
+    "prod": 2.65,
+    "mhr": -10.63,
+    "supp": 15.99,
+    "dtQty": 6.49,
+    "excQty": -7.26,
+    "dtFrHm": -6.28,
+    "excFrHm": -2.37
+  }
 };
-
 export const DOW_COMPARISON = [
-  { day: "Sen", dayIdx: 0, prev: 7254.4, curr: 13251.8, delta: 82.7 },
-  { day: "Sel", dayIdx: 1, prev: 8496.8, curr: 14135.5, delta: 66.4 },
-  { day: "Rab", dayIdx: 2, prev: 10736.6, curr: 12048.3, delta: 12.2 },
-  { day: "Kam", dayIdx: 3, prev: 8727.0, curr: 11714.7, delta: 34.2 },
-  { day: "Jum", dayIdx: 4, prev: 5416.6, curr: 10570.1, delta: 95.1 },
-  { day: "Sab", dayIdx: 5, prev: 9574.0, curr: 9883.9, delta: 3.2 },
-  { day: "Min", dayIdx: 6, prev: 10865.0, curr: 12505.7, delta: 15.1 },
+  {
+    "day": "Sen",
+    "dayIdx": 0,
+    "prev": 13416.2,
+    "curr": 11164.5,
+    "delta": -16.8
+  },
+  {
+    "day": "Sel",
+    "dayIdx": 1,
+    "prev": 14210.5,
+    "curr": 11700.2,
+    "delta": -17.7
+  },
+  {
+    "day": "Rab",
+    "dayIdx": 2,
+    "prev": 12048.3,
+    "curr": 12903.6,
+    "delta": 7.1
+  },
+  {
+    "day": "Kam",
+    "dayIdx": 3,
+    "prev": 11714.7,
+    "curr": 13926.0,
+    "delta": 18.9
+  },
+  {
+    "day": "Jum",
+    "dayIdx": 4,
+    "prev": 10570.1,
+    "curr": 11807.6,
+    "delta": 11.7
+  },
+  {
+    "day": "Sab",
+    "dayIdx": 5,
+    "prev": 9940.9,
+    "curr": 9588.7,
+    "delta": -3.5
+  },
+  {
+    "day": "Min",
+    "dayIdx": 6,
+    "prev": 12505.7,
+    "curr": 13342.6,
+    "delta": 6.7
+  }
 ];
-
 export const DAILY_FLEET_TREND = [
-  // ── Base week ──
   {
-    date: "28/9",
-    isoDate: "2026-09-28",
-    day: "Sen",
-    week: "prev",
-    dtQty: 4723.7,
-    excQty: 1347.0,
-    dtUnits: 18,
-    excUnits: 7,
-    dtFrHm: 18.35,
-    excFrHm: 21.74,
+    "date": "5/10",
+    "isoDate": "2026-10-05",
+    "day": "Sen",
+    "week": "prev",
+    "dtQty": 8397.1,
+    "excQty": 4074.3,
+    "dtUnits": 24,
+    "excUnits": 13,
+    "dtFrHm": 17.82,
+    "excFrHm": 21.56
   },
   {
-    date: "29/9",
-    isoDate: "2026-09-29",
-    day: "Sel",
-    week: "prev",
-    dtQty: 6025.9,
-    excQty: 2104.0,
-    dtUnits: 24,
-    excUnits: 9,
-    dtFrHm: 16.98,
-    excFrHm: 21.04,
+    "date": "6/10",
+    "isoDate": "2026-10-06",
+    "day": "Sel",
+    "week": "prev",
+    "dtQty": 8809.3,
+    "excQty": 3165.8,
+    "dtUnits": 24,
+    "excUnits": 11,
+    "dtFrHm": 21.0,
+    "excFrHm": 21.71
   },
   {
-    date: "30/9",
-    isoDate: "2026-09-30",
-    day: "Rab",
-    week: "prev",
-    dtQty: 6384.0,
-    excQty: 2973.0,
-    dtUnits: 22,
-    excUnits: 9,
-    dtFrHm: 19.03,
-    excFrHm: 20.19,
+    "date": "7/10",
+    "isoDate": "2026-10-07",
+    "day": "Rab",
+    "week": "prev",
+    "dtQty": 7333.1,
+    "excQty": 3366.8,
+    "dtUnits": 22,
+    "excUnits": 11,
+    "dtFrHm": 20.92,
+    "excFrHm": 18.84
   },
   {
-    date: "1/10",
-    isoDate: "2026-10-01",
-    day: "Kam",
-    week: "prev",
-    dtQty: 5793.3,
-    excQty: 2204.0,
-    dtUnits: 20,
-    excUnits: 10,
-    dtFrHm: 18.82,
-    excFrHm: 21.7,
+    "date": "8/10",
+    "isoDate": "2026-10-08",
+    "day": "Kam",
+    "week": "prev",
+    "dtQty": 7868.4,
+    "excQty": 2858.0,
+    "dtUnits": 23,
+    "excUnits": 11,
+    "dtFrHm": 20.97,
+    "excFrHm": 21.42
   },
   {
-    date: "2/10",
-    isoDate: "2026-10-02",
-    day: "Jum",
-    week: "prev",
-    dtQty: 3953.6,
-    excQty: 1115.0,
-    dtUnits: 16,
-    excUnits: 5,
-    dtFrHm: 16.14,
-    excFrHm: 18.2,
+    "date": "9/10",
+    "isoDate": "2026-10-09",
+    "day": "Jum",
+    "week": "prev",
+    "dtQty": 7020.0,
+    "excQty": 2830.0,
+    "dtUnits": 23,
+    "excUnits": 11,
+    "dtFrHm": 20.12,
+    "excFrHm": 20.95
   },
   {
-    date: "3/10",
-    isoDate: "2026-10-03",
-    day: "Sab",
-    week: "prev",
-    dtQty: 5880.4,
-    excQty: 2815.0,
-    dtUnits: 21,
-    excUnits: 11,
-    dtFrHm: 17.17,
-    excFrHm: 21.87,
+    "date": "10/10",
+    "isoDate": "2026-10-10",
+    "day": "Sab",
+    "week": "prev",
+    "dtQty": 6970.6,
+    "excQty": 1896.0,
+    "dtUnits": 24,
+    "excUnits": 8,
+    "dtFrHm": 22.53,
+    "excFrHm": 19.37
   },
   {
-    date: "4/10",
-    isoDate: "2026-10-04",
-    day: "Min",
-    week: "prev",
-    dtQty: 7398.2,
-    excQty: 2436.0,
-    dtUnits: 20,
-    excUnits: 9,
-    dtFrHm: 21.07,
-    excFrHm: 21.2,
-  },
-  // ── Current week ──
-  {
-    date: "5/10",
-    isoDate: "2026-10-05",
-    day: "Sen",
-    week: "curr",
-    dtQty: 8232.7,
-    excQty: 4074.3,
-    dtUnits: 24,
-    excUnits: 12,
-    dtFrHm: 19.92,
-    excFrHm: 24.75,
+    "date": "11/10",
+    "isoDate": "2026-10-11",
+    "day": "Min",
+    "week": "prev",
+    "dtQty": 8172.5,
+    "excQty": 2952.0,
+    "dtUnits": 23,
+    "excUnits": 11,
+    "dtFrHm": 20.32,
+    "excFrHm": 17.82
   },
   {
-    date: "6/10",
-    isoDate: "2026-10-06",
-    day: "Sel",
-    week: "curr",
-    dtQty: 8809.3,
-    excQty: 3165.8,
-    dtUnits: 26,
-    excUnits: 11,
-    dtFrHm: 20.36,
-    excFrHm: 25.49,
+    "date": "12/10",
+    "isoDate": "2026-10-12",
+    "day": "Sen",
+    "week": "curr",
+    "dtQty": 7958.1,
+    "excQty": 2333.1,
+    "dtUnits": 21,
+    "excUnits": 6,
+    "dtFrHm": 20.63,
+    "excFrHm": 20.79
   },
   {
-    date: "7/10",
-    isoDate: "2026-10-07",
-    day: "Rab",
-    week: "curr",
-    dtQty: 7333.1,
-    excQty: 3366.8,
-    dtUnits: 24,
-    excUnits: 12,
-    dtFrHm: 19.94,
-    excFrHm: 24.92,
+    "date": "13/10",
+    "isoDate": "2026-10-13",
+    "day": "Sel",
+    "week": "curr",
+    "dtQty": 8502.9,
+    "excQty": 2353.0,
+    "dtUnits": 25,
+    "excUnits": 10,
+    "dtFrHm": 18.53,
+    "excFrHm": 21.05
   },
   {
-    date: "8/10",
-    isoDate: "2026-10-08",
-    day: "Kam",
-    week: "curr",
-    dtQty: 7868.4,
-    excQty: 2858.0,
-    dtUnits: 22,
-    excUnits: 10,
-    dtFrHm: 20.62,
-    excFrHm: 24.61,
+    "date": "14/10",
+    "isoDate": "2026-10-14",
+    "day": "Rab",
+    "week": "curr",
+    "dtQty": 9036.6,
+    "excQty": 2882.0,
+    "dtUnits": 25,
+    "excUnits": 10,
+    "dtFrHm": 19.53,
+    "excFrHm": 17.43
   },
   {
-    date: "9/10",
-    isoDate: "2026-10-09",
-    day: "Jum",
-    week: "curr",
-    dtQty: 7020.0,
-    excQty: 2830.0,
-    dtUnits: 21,
-    excUnits: 10,
-    dtFrHm: 20.62,
-    excFrHm: 25.41,
+    "date": "15/10",
+    "isoDate": "2026-10-15",
+    "day": "Kam",
+    "week": "curr",
+    "dtQty": 9101.4,
+    "excQty": 3446.0,
+    "dtUnits": 27,
+    "excUnits": 11,
+    "dtFrHm": 18.04,
+    "excFrHm": 20.68
   },
   {
-    date: "10/10",
-    isoDate: "2026-10-10",
-    day: "Sab",
-    week: "curr",
-    dtQty: 6970.6,
-    excQty: 1839.0,
-    dtUnits: 20,
-    excUnits: 8,
-    dtFrHm: 20.01,
-    excFrHm: 23.73,
+    "date": "16/10",
+    "isoDate": "2026-10-16",
+    "day": "Jum",
+    "week": "curr",
+    "dtQty": 8073.2,
+    "excQty": 3134.0,
+    "dtUnits": 27,
+    "excUnits": 11,
+    "dtFrHm": 19.37,
+    "excFrHm": 19.65
   },
   {
-    date: "11/10",
-    isoDate: "2026-10-11",
-    day: "Min",
-    week: "curr",
-    dtQty: 8172.5,
-    excQty: 2952.0,
-    dtUnits: 22,
-    excUnits: 10,
-    dtFrHm: 20.72,
-    excFrHm: 24.73,
+    "date": "17/10",
+    "isoDate": "2026-10-17",
+    "day": "Sab",
+    "week": "curr",
+    "dtQty": 6674.5,
+    "excQty": 1898.0,
+    "dtUnits": 25,
+    "excUnits": 9,
+    "dtFrHm": 19.3,
+    "excFrHm": 19.02
   },
+  {
+    "date": "18/10",
+    "isoDate": "2026-10-18",
+    "day": "Min",
+    "week": "curr",
+    "dtQty": 8768.3,
+    "excQty": 3562.0,
+    "dtUnits": 27,
+    "excUnits": 11,
+    "dtFrHm": 18.83,
+    "excFrHm": 20.03
+  }
 ];
-
-// (Matriks DT/EXC & scorecard di bawah menggunakan agregasi mingguan 5–11 Okt)
 
 export const DT_DAILY_MATRIX = {
-  units: [
-    "DT-019",
-    "DT-023",
-    "DT-025",
+  "units": [
     "DT-028",
+    "DT-063",
+    "DT-072",
+    "DT-024",
+    "DT-075",
     "DT-029",
+    "DT-076",
     "DT-030",
-    "DT-058",
-    "DT-060",
-    "DT-062",
     "DT-064",
-    "DT-065",
-    "DT-067",
-    "DT-069",
-    "DT-070",
     "DT-073",
+    "DT-067",
+    "DT-070",
+    "DT-074",
+    "DT-071",
+    "DT-058"
   ],
-  dates: ["5/10", "6/10", "7/10", "8/10", "9/10", "10/10", "11/10"],
-  rows: [
-    {
-      unit: "DT-019",
-      total: 2053,
-      values: [
-        { date: "5/10", qty: 289.8 },
-        { date: "6/10", qty: 251.3 },
-        { date: "7/10", qty: 250.4 },
-        { date: "8/10", qty: 250.4 },
-        { date: "9/10", qty: 246.1 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
-    {
-      unit: "DT-023",
-      total: 1901,
-      values: [
-        { date: "5/10", qty: 345.0 },
-        { date: "6/10", qty: 252.4 },
-        { date: "7/10", qty: 313.7 },
-        { date: "8/10", qty: 236.4 },
-        { date: "9/10", qty: 265.3 },
-        { date: "10/10", qty: 247.5 },
-        { date: "11/10", qty: 187.5 },
-      ],
-    },
-    {
-      unit: "DT-025",
-      total: 1438,
-      values: [
-        { date: "5/10", qty: 240.4 },
-        { date: "6/10", qty: 243.0 },
-        { date: "7/10", qty: 250.0 },
-        { date: "8/10", qty: 454.4 },
-        { date: "9/10", qty: 250.1 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
-    {
-      unit: "DT-028",
-      total: 2114,
-      values: [
-        { date: "5/10", qty: 281.4 },
-        { date: "6/10", qty: 222.1 },
-        { date: "7/10", qty: 270.4 },
-        { date: "8/10", qty: 422.5 },
-        { date: "9/10", qty: 464.7 },
-        { date: "10/10", qty: 203.0 },
-        { date: "11/10", qty: 247.9 },
-      ],
-    },
-    {
-      unit: "DT-029",
-      total: 1698,
-      values: [
-        { date: "5/10", qty: 260.6 },
-        { date: "6/10", qty: 247.4 },
-        { date: "7/10", qty: 248.9 },
-        { date: "8/10", qty: 329.9 },
-        { date: "9/10", qty: 226.3 },
-        { date: "10/10", qty: 381.4 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
-    {
-      unit: "DT-030",
-      total: 1713,
-      values: [
-        { date: "5/10", qty: 257.6 },
-        { date: "6/10", qty: 292.6 },
-        { date: "7/10", qty: 295.3 },
-        { date: "8/10", qty: 469.2 },
-        { date: "9/10", qty: 375.2 },
-        { date: "10/10", qty: 269.0 },
-        { date: "11/10", qty: 265.4 },
-      ],
-    },
-    {
-      unit: "DT-058",
-      total: 1445,
-      values: [
-        { date: "5/10", qty: 270.3 },
-        { date: "6/10", qty: 239.8 },
-        { date: "7/10", qty: 250.2 },
-        { date: "8/10", qty: 421.6 },
-        { date: "9/10", qty: 252.9 },
-        { date: "10/10", qty: 382.9 },
-        { date: "11/10", qty: 234.4 },
-      ],
-    },
-    {
-      unit: "DT-060",
-      total: 1576,
-      values: [
-        { date: "5/10", qty: 238.9 },
-        { date: "6/10", qty: 417.3 },
-        { date: "7/10", qty: 479.9 },
-        { date: "8/10", qty: 230.0 },
-        { date: "9/10", qty: 249.9 },
-        { date: "10/10", qty: 419.6 },
-        { date: "11/10", qty: 425.4 },
-      ],
-    },
-    {
-      unit: "DT-062",
-      total: 1653,
-      values: [
-        { date: "5/10", qty: 286.1 },
-        { date: "6/10", qty: 250.1 },
-        { date: "7/10", qty: 424.0 },
-        { date: "8/10", qty: 416.1 },
-        { date: "9/10", qty: 324.7 },
-        { date: "10/10", qty: 243.0 },
-        { date: "11/10", qty: 251.4 },
-      ],
-    },
-    {
-      unit: "DT-064",
-      total: 1799,
-      values: [
-        { date: "5/10", qty: 278.3 },
-        { date: "6/10", qty: 180.7 },
-        { date: "7/10", qty: 370.9 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 418.9 },
-        { date: "10/10", qty: 200.0 },
-        { date: "11/10", qty: 343.3 },
-      ],
-    },
-    {
-      unit: "DT-065",
-      total: 1660,
-      values: [
-        { date: "5/10", qty: 355.6 },
-        { date: "6/10", qty: 336.6 },
-        { date: "7/10", qty: 410.1 },
-        { date: "8/10", qty: 378.5 },
-        { date: "9/10", qty: 382.1 },
-        { date: "10/10", qty: 247.7 },
-        { date: "11/10", qty: 398.8 },
-      ],
-    },
-    {
-      unit: "DT-067",
-      total: 1457,
-      values: [
-        { date: "5/10", qty: 271.1 },
-        { date: "6/10", qty: 248.4 },
-        { date: "7/10", qty: 231.7 },
-        { date: "8/10", qty: 402.9 },
-        { date: "9/10", qty: 225.0 },
-        { date: "10/10", qty: 250.0 },
-        { date: "11/10", qty: 221.0 },
-      ],
-    },
-    {
-      unit: "DT-069",
-      total: 1368,
-      values: [
-        { date: "5/10", qty: 417.5 },
-        { date: "6/10", qty: 231.9 },
-        { date: "7/10", qty: 119.6 },
-        { date: "8/10", qty: 411.5 },
-        { date: "9/10", qty: 370.6 },
-        { date: "10/10", qty: 240.0 },
-        { date: "11/10", qty: 187.6 },
-      ],
-    },
-    {
-      unit: "DT-070",
-      total: 1310,
-      values: [
-        { date: "5/10", qty: 0 },
-        { date: "6/10", qty: 414.5 },
-        { date: "7/10", qty: 408.7 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 416.7 },
-        { date: "10/10", qty: 362.2 },
-        { date: "11/10", qty: 288.4 },
-      ],
-    },
-    {
-      unit: "DT-073",
-      total: 1435,
-      values: [
-        { date: "5/10", qty: 212.1 },
-        { date: "6/10", qty: 148.7 },
-        { date: "7/10", qty: 361.0 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 372.4 },
-        { date: "10/10", qty: 284.4 },
-        { date: "11/10", qty: 394.6 },
-      ],
-    },
+  "dates": [
+    "12/10",
+    "13/10",
+    "14/10",
+    "15/10",
+    "16/10",
+    "17/10",
+    "18/10"
   ],
-  maxQty: 480,
-  daysBack: 7,
+  "rows": [
+    {
+      "unit": "DT-028",
+      "total": 2999.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 498.0
+        },
+        {
+          "date": "13/10",
+          "qty": 451.6
+        },
+        {
+          "date": "14/10",
+          "qty": 435.5
+        },
+        {
+          "date": "15/10",
+          "qty": 426.4
+        },
+        {
+          "date": "16/10",
+          "qty": 420.5
+        },
+        {
+          "date": "17/10",
+          "qty": 278.9
+        },
+        {
+          "date": "18/10",
+          "qty": 488.6
+        }
+      ]
+    },
+    {
+      "unit": "DT-063",
+      "total": 2768.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 460.8
+        },
+        {
+          "date": "13/10",
+          "qty": 394.6
+        },
+        {
+          "date": "14/10",
+          "qty": 437.6
+        },
+        {
+          "date": "15/10",
+          "qty": 452.8
+        },
+        {
+          "date": "16/10",
+          "qty": 313.4
+        },
+        {
+          "date": "17/10",
+          "qty": 299.4
+        },
+        {
+          "date": "18/10",
+          "qty": 409.6
+        }
+      ]
+    },
+    {
+      "unit": "DT-072",
+      "total": 2669.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 518.7
+        },
+        {
+          "date": "13/10",
+          "qty": 402.4
+        },
+        {
+          "date": "14/10",
+          "qty": 381.3
+        },
+        {
+          "date": "15/10",
+          "qty": 377.6
+        },
+        {
+          "date": "16/10",
+          "qty": 379.1
+        },
+        {
+          "date": "17/10",
+          "qty": 229.6
+        },
+        {
+          "date": "18/10",
+          "qty": 380.3
+        }
+      ]
+    },
+    {
+      "unit": "DT-024",
+      "total": 2663.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 388.7
+        },
+        {
+          "date": "13/10",
+          "qty": 419.3
+        },
+        {
+          "date": "14/10",
+          "qty": 383.7
+        },
+        {
+          "date": "15/10",
+          "qty": 368.4
+        },
+        {
+          "date": "16/10",
+          "qty": 426.5
+        },
+        {
+          "date": "17/10",
+          "qty": 252.8
+        },
+        {
+          "date": "18/10",
+          "qty": 424.0
+        }
+      ]
+    },
+    {
+      "unit": "DT-075",
+      "total": 2583.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 406.4
+        },
+        {
+          "date": "13/10",
+          "qty": 470.6
+        },
+        {
+          "date": "14/10",
+          "qty": 395.6
+        },
+        {
+          "date": "15/10",
+          "qty": 247.5
+        },
+        {
+          "date": "16/10",
+          "qty": 289.9
+        },
+        {
+          "date": "17/10",
+          "qty": 343.3
+        },
+        {
+          "date": "18/10",
+          "qty": 429.3
+        }
+      ]
+    },
+    {
+      "unit": "DT-029",
+      "total": 2498.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 416.5
+        },
+        {
+          "date": "13/10",
+          "qty": 370.5
+        },
+        {
+          "date": "14/10",
+          "qty": 387.5
+        },
+        {
+          "date": "15/10",
+          "qty": 400.1
+        },
+        {
+          "date": "16/10",
+          "qty": 251.8
+        },
+        {
+          "date": "17/10",
+          "qty": 251.6
+        },
+        {
+          "date": "18/10",
+          "qty": 420.4
+        }
+      ]
+    },
+    {
+      "unit": "DT-076",
+      "total": 2467.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 271.3
+        },
+        {
+          "date": "13/10",
+          "qty": 383.7
+        },
+        {
+          "date": "14/10",
+          "qty": 386.3
+        },
+        {
+          "date": "15/10",
+          "qty": 362.0
+        },
+        {
+          "date": "16/10",
+          "qty": 385.0
+        },
+        {
+          "date": "17/10",
+          "qty": 257.7
+        },
+        {
+          "date": "18/10",
+          "qty": 421.3
+        }
+      ]
+    },
+    {
+      "unit": "DT-030",
+      "total": 2445.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 417.5
+        },
+        {
+          "date": "13/10",
+          "qty": 404.5
+        },
+        {
+          "date": "14/10",
+          "qty": 200.4
+        },
+        {
+          "date": "15/10",
+          "qty": 397.5
+        },
+        {
+          "date": "16/10",
+          "qty": 351.2
+        },
+        {
+          "date": "17/10",
+          "qty": 270.0
+        },
+        {
+          "date": "18/10",
+          "qty": 404.2
+        }
+      ]
+    },
+    {
+      "unit": "DT-064",
+      "total": 2403.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 339.1
+        },
+        {
+          "date": "13/10",
+          "qty": 189.5
+        },
+        {
+          "date": "14/10",
+          "qty": 437.5
+        },
+        {
+          "date": "15/10",
+          "qty": 443.2
+        },
+        {
+          "date": "16/10",
+          "qty": 350.9
+        },
+        {
+          "date": "17/10",
+          "qty": 262.0
+        },
+        {
+          "date": "18/10",
+          "qty": 380.4
+        }
+      ]
+    },
+    {
+      "unit": "DT-073",
+      "total": 2374.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 281.4
+        },
+        {
+          "date": "13/10",
+          "qty": 391.3
+        },
+        {
+          "date": "14/10",
+          "qty": 395.4
+        },
+        {
+          "date": "15/10",
+          "qty": 331.6
+        },
+        {
+          "date": "16/10",
+          "qty": 267.5
+        },
+        {
+          "date": "17/10",
+          "qty": 312.8
+        },
+        {
+          "date": "18/10",
+          "qty": 394.2
+        }
+      ]
+    },
+    {
+      "unit": "DT-067",
+      "total": 2369.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 383.4
+        },
+        {
+          "date": "13/10",
+          "qty": 311.1
+        },
+        {
+          "date": "14/10",
+          "qty": 397.3
+        },
+        {
+          "date": "15/10",
+          "qty": 397.6
+        },
+        {
+          "date": "16/10",
+          "qty": 200.0
+        },
+        {
+          "date": "17/10",
+          "qty": 336.9
+        },
+        {
+          "date": "18/10",
+          "qty": 342.9
+        }
+      ]
+    },
+    {
+      "unit": "DT-070",
+      "total": 2319.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 389.9
+        },
+        {
+          "date": "13/10",
+          "qty": 388.8
+        },
+        {
+          "date": "14/10",
+          "qty": 380.0
+        },
+        {
+          "date": "15/10",
+          "qty": 315.3
+        },
+        {
+          "date": "16/10",
+          "qty": 362.1
+        },
+        {
+          "date": "17/10",
+          "qty": 239.0
+        },
+        {
+          "date": "18/10",
+          "qty": 244.0
+        }
+      ]
+    },
+    {
+      "unit": "DT-074",
+      "total": 2289.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 381.0
+        },
+        {
+          "date": "13/10",
+          "qty": 350.8
+        },
+        {
+          "date": "14/10",
+          "qty": 302.0
+        },
+        {
+          "date": "15/10",
+          "qty": 354.1
+        },
+        {
+          "date": "16/10",
+          "qty": 378.3
+        },
+        {
+          "date": "17/10",
+          "qty": 238.0
+        },
+        {
+          "date": "18/10",
+          "qty": 284.5
+        }
+      ]
+    },
+    {
+      "unit": "DT-071",
+      "total": 2280.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 430.3
+        },
+        {
+          "date": "13/10",
+          "qty": 352.6
+        },
+        {
+          "date": "14/10",
+          "qty": 443.7
+        },
+        {
+          "date": "15/10",
+          "qty": 451.1
+        },
+        {
+          "date": "16/10",
+          "qty": 279.1
+        },
+        {
+          "date": "17/10",
+          "qty": 323.5
+        },
+        {
+          "date": "18/10",
+          "qty": 0.0
+        }
+      ]
+    },
+    {
+      "unit": "DT-058",
+      "total": 2235.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 310.6
+        },
+        {
+          "date": "13/10",
+          "qty": 376.4
+        },
+        {
+          "date": "14/10",
+          "qty": 418.5
+        },
+        {
+          "date": "15/10",
+          "qty": 368.5
+        },
+        {
+          "date": "16/10",
+          "qty": 200.4
+        },
+        {
+          "date": "17/10",
+          "qty": 160.0
+        },
+        {
+          "date": "18/10",
+          "qty": 400.3
+        }
+      ]
+    }
+  ],
+  "maxQty": 519.0,
+  "daysBack": 7
 };
-
 export const EXC_DAILY_MATRIX = {
-  units: [
-    "EXC-001",
-    "EXC-012",
+  "units": [
+    "EXC-026",
     "EXC-014",
+    "EXC-029",
+    "EXC-012",
     "EXC-022",
     "EXC-023",
+    "EXC-031",
     "EXC-024",
     "EXC-025",
-    "EXC-026",
     "EXC-027",
-    "EXC-029",
-    "EXC-031",
-    "EXC-032",
-    "EXC-006",
-    "EXC-011",
-    "EXC-028",
+    "EXC-001",
     "EXC-030",
+    "EXC-011"
   ],
-  dates: ["5/10", "6/10", "7/10", "8/10", "9/10", "10/10", "11/10"],
-  rows: [
-    {
-      unit: "EXC-001",
-      total: 951,
-      values: [
-        { date: "5/10", qty: 125 },
-        { date: "6/10", qty: 128 },
-        { date: "7/10", qty: 178 },
-        { date: "8/10", qty: 160 },
-        { date: "9/10", qty: 298 },
-        { date: "10/10", qty: 115 },
-        { date: "11/10", qty: 240 },
-      ],
-    },
-    {
-      unit: "EXC-012",
-      total: 1293,
-      values: [
-        { date: "5/10", qty: 331 },
-        { date: "6/10", qty: 277 },
-        { date: "7/10", qty: 401 },
-        { date: "8/10", qty: 161 },
-        { date: "9/10", qty: 140 },
-        { date: "10/10", qty: 190 },
-        { date: "11/10", qty: 230 },
-      ],
-    },
-    {
-      unit: "EXC-014",
-      total: 2845,
-      values: [
-        { date: "5/10", qty: 457 },
-        { date: "6/10", qty: 483 },
-        { date: "7/10", qty: 480 },
-        { date: "8/10", qty: 526 },
-        { date: "9/10", qty: 485 },
-        { date: "10/10", qty: 351 },
-        { date: "11/10", qty: 536 },
-      ],
-    },
-    {
-      unit: "EXC-022",
-      total: 1213,
-      values: [
-        { date: "5/10", qty: 390 },
-        { date: "6/10", qty: 272 },
-        { date: "7/10", qty: 360 },
-        { date: "8/10", qty: 128 },
-        { date: "9/10", qty: 183 },
-        { date: "10/10", qty: 181 },
-        { date: "11/10", qty: 176 },
-      ],
-    },
-    {
-      unit: "EXC-023",
-      total: 1194,
-      values: [
-        { date: "5/10", qty: 261 },
-        { date: "6/10", qty: 173 },
-        { date: "7/10", qty: 123 },
-        { date: "8/10", qty: 245 },
-        { date: "9/10", qty: 184 },
-        { date: "10/10", qty: 222 },
-        { date: "11/10", qty: 186 },
-      ],
-    },
-    {
-      unit: "EXC-024",
-      total: 1033,
-      values: [
-        { date: "5/10", qty: 230 },
-        { date: "6/10", qty: 143 },
-        { date: "7/10", qty: 180 },
-        { date: "8/10", qty: 172 },
-        { date: "9/10", qty: 217 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 154 },
-      ],
-    },
-    {
-      unit: "EXC-025",
-      total: 1090,
-      values: [
-        { date: "5/10", qty: 251 },
-        { date: "6/10", qty: 137 },
-        { date: "7/10", qty: 141 },
-        { date: "8/10", qty: 160 },
-        { date: "9/10", qty: 57 },
-        { date: "10/10", qty: 257 },
-        { date: "11/10", qty: 91 },
-      ],
-    },
-    {
-      unit: "EXC-026",
-      total: 3770,
-      values: [
-        { date: "5/10", qty: 531 },
-        { date: "6/10", qty: 546 },
-        { date: "7/10", qty: 560 },
-        { date: "8/10", qty: 640 },
-        { date: "9/10", qty: 498 },
-        { date: "10/10", qty: 468 },
-        { date: "11/10", qty: 527 },
-      ],
-    },
-    {
-      unit: "EXC-027",
-      total: 2010,
-      values: [
-        { date: "5/10", qty: 340 },
-        { date: "6/10", qty: 404 },
-        { date: "7/10", qty: 279 },
-        { date: "8/10", qty: 160 },
-        { date: "9/10", qty: 400 },
-        { date: "10/10", qty: 270 },
-        { date: "11/10", qty: 157 },
-      ],
-    },
-    {
-      unit: "EXC-029",
-      total: 2487,
-      values: [
-        { date: "5/10", qty: 442 },
-        { date: "6/10", qty: 449 },
-        { date: "7/10", qty: 432 },
-        { date: "8/10", qty: 132 },
-        { date: "9/10", qty: 0 },
-        { date: "10/10", qty: 390 },
-        { date: "11/10", qty: 390 },
-      ],
-    },
-    {
-      unit: "EXC-031",
-      total: 1391,
-      values: [
-        { date: "5/10", qty: 313 },
-        { date: "6/10", qty: 155 },
-        { date: "7/10", qty: 123 },
-        { date: "8/10", qty: 270 },
-        { date: "9/10", qty: 218 },
-        { date: "10/10", qty: 112 },
-        { date: "11/10", qty: 265 },
-      ],
-    },
-    {
-      unit: "EXC-032",
-      total: 592,
-      values: [
-        { date: "5/10", qty: 163 },
-        { date: "6/10", qty: 0 },
-        { date: "7/10", qty: 0 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 0 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
-    {
-      unit: "EXC-006",
-      total: 300,
-      values: [
-        { date: "5/10", qty: 0 },
-        { date: "6/10", qty: 0 },
-        { date: "7/10", qty: 0 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 150 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
-    {
-      unit: "EXC-011",
-      total: 0,
-      values: [
-        { date: "5/10", qty: 0 },
-        { date: "6/10", qty: 0 },
-        { date: "7/10", qty: 0 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 0 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
-    {
-      unit: "EXC-028",
-      total: 240,
-      values: [
-        { date: "5/10", qty: 240 },
-        { date: "6/10", qty: 0 },
-        { date: "7/10", qty: 0 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 0 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
-    {
-      unit: "EXC-030",
-      total: 0,
-      values: [
-        { date: "5/10", qty: 0 },
-        { date: "6/10", qty: 0 },
-        { date: "7/10", qty: 0 },
-        { date: "8/10", qty: 0 },
-        { date: "9/10", qty: 0 },
-        { date: "10/10", qty: 0 },
-        { date: "11/10", qty: 0 },
-      ],
-    },
+  "dates": [
+    "12/10",
+    "13/10",
+    "14/10",
+    "15/10",
+    "16/10",
+    "17/10",
+    "18/10"
   ],
-  maxQty: 640,
-  daysBack: 7,
+  "rows": [
+    {
+      "unit": "EXC-026",
+      "total": 3617.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 617.0
+        },
+        {
+          "date": "13/10",
+          "qty": 453.0
+        },
+        {
+          "date": "14/10",
+          "qty": 560.0
+        },
+        {
+          "date": "15/10",
+          "qty": 573.0
+        },
+        {
+          "date": "16/10",
+          "qty": 531.0
+        },
+        {
+          "date": "17/10",
+          "qty": 365.0
+        },
+        {
+          "date": "18/10",
+          "qty": 518.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-014",
+      "total": 3449.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 510.0
+        },
+        {
+          "date": "13/10",
+          "qty": 530.0
+        },
+        {
+          "date": "14/10",
+          "qty": 535.0
+        },
+        {
+          "date": "15/10",
+          "qty": 548.0
+        },
+        {
+          "date": "16/10",
+          "qty": 500.0
+        },
+        {
+          "date": "17/10",
+          "qty": 346.0
+        },
+        {
+          "date": "18/10",
+          "qty": 480.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-029",
+      "total": 1750.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 0.0
+        },
+        {
+          "date": "13/10",
+          "qty": 0.0
+        },
+        {
+          "date": "14/10",
+          "qty": 365.0
+        },
+        {
+          "date": "15/10",
+          "qty": 340.0
+        },
+        {
+          "date": "16/10",
+          "qty": 447.0
+        },
+        {
+          "date": "17/10",
+          "qty": 192.0
+        },
+        {
+          "date": "18/10",
+          "qty": 406.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-012",
+      "total": 1668.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 343.0
+        },
+        {
+          "date": "13/10",
+          "qty": 213.0
+        },
+        {
+          "date": "14/10",
+          "qty": 264.0
+        },
+        {
+          "date": "15/10",
+          "qty": 287.0
+        },
+        {
+          "date": "16/10",
+          "qty": 126.0
+        },
+        {
+          "date": "17/10",
+          "qty": 180.0
+        },
+        {
+          "date": "18/10",
+          "qty": 255.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-022",
+      "total": 1521.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 334.0
+        },
+        {
+          "date": "13/10",
+          "qty": 247.0
+        },
+        {
+          "date": "14/10",
+          "qty": 239.0
+        },
+        {
+          "date": "15/10",
+          "qty": 243.0
+        },
+        {
+          "date": "16/10",
+          "qty": 169.0
+        },
+        {
+          "date": "17/10",
+          "qty": 0.0
+        },
+        {
+          "date": "18/10",
+          "qty": 289.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-023",
+      "total": 1335.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 0.0
+        },
+        {
+          "date": "13/10",
+          "qty": 129.0
+        },
+        {
+          "date": "14/10",
+          "qty": 244.0
+        },
+        {
+          "date": "15/10",
+          "qty": 165.0
+        },
+        {
+          "date": "16/10",
+          "qty": 373.0
+        },
+        {
+          "date": "17/10",
+          "qty": 99.0
+        },
+        {
+          "date": "18/10",
+          "qty": 325.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-031",
+      "total": 1324.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 0.0
+        },
+        {
+          "date": "13/10",
+          "qty": 123.0
+        },
+        {
+          "date": "14/10",
+          "qty": 161.0
+        },
+        {
+          "date": "15/10",
+          "qty": 340.0
+        },
+        {
+          "date": "16/10",
+          "qty": 242.0
+        },
+        {
+          "date": "17/10",
+          "qty": 174.0
+        },
+        {
+          "date": "18/10",
+          "qty": 284.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-024",
+      "total": 1188.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 0.0
+        },
+        {
+          "date": "13/10",
+          "qty": 140.0
+        },
+        {
+          "date": "14/10",
+          "qty": 175.0
+        },
+        {
+          "date": "15/10",
+          "qty": 301.0
+        },
+        {
+          "date": "16/10",
+          "qty": 225.0
+        },
+        {
+          "date": "17/10",
+          "qty": 145.0
+        },
+        {
+          "date": "18/10",
+          "qty": 202.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-025",
+      "total": 1160.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 361.1
+        },
+        {
+          "date": "13/10",
+          "qty": 105.0
+        },
+        {
+          "date": "14/10",
+          "qty": 93.0
+        },
+        {
+          "date": "15/10",
+          "qty": 122.0
+        },
+        {
+          "date": "16/10",
+          "qty": 118.0
+        },
+        {
+          "date": "17/10",
+          "qty": 186.0
+        },
+        {
+          "date": "18/10",
+          "qty": 175.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-027",
+      "total": 1048.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 0.0
+        },
+        {
+          "date": "13/10",
+          "qty": 171.0
+        },
+        {
+          "date": "14/10",
+          "qty": 0.0
+        },
+        {
+          "date": "15/10",
+          "qty": 309.0
+        },
+        {
+          "date": "16/10",
+          "qty": 195.0
+        },
+        {
+          "date": "17/10",
+          "qty": 0.0
+        },
+        {
+          "date": "18/10",
+          "qty": 373.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-001",
+      "total": 840.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 168.0
+        },
+        {
+          "date": "13/10",
+          "qty": 0.0
+        },
+        {
+          "date": "14/10",
+          "qty": 246.0
+        },
+        {
+          "date": "15/10",
+          "qty": 218.0
+        },
+        {
+          "date": "16/10",
+          "qty": 208.0
+        },
+        {
+          "date": "17/10",
+          "qty": 0.0
+        },
+        {
+          "date": "18/10",
+          "qty": 0.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-030",
+      "total": 466.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 0.0
+        },
+        {
+          "date": "13/10",
+          "qty": 0.0
+        },
+        {
+          "date": "14/10",
+          "qty": 0.0
+        },
+        {
+          "date": "15/10",
+          "qty": 0.0
+        },
+        {
+          "date": "16/10",
+          "qty": 0.0
+        },
+        {
+          "date": "17/10",
+          "qty": 211.0
+        },
+        {
+          "date": "18/10",
+          "qty": 255.0
+        }
+      ]
+    },
+    {
+      "unit": "EXC-011",
+      "total": 242.0,
+      "values": [
+        {
+          "date": "12/10",
+          "qty": 0.0
+        },
+        {
+          "date": "13/10",
+          "qty": 242.0
+        },
+        {
+          "date": "14/10",
+          "qty": 0.0
+        },
+        {
+          "date": "15/10",
+          "qty": 0.0
+        },
+        {
+          "date": "16/10",
+          "qty": 0.0
+        },
+        {
+          "date": "17/10",
+          "qty": 0.0
+        },
+        {
+          "date": "18/10",
+          "qty": 0.0
+        }
+      ]
+    }
+  ],
+  "maxQty": 617.0,
+  "daysBack": 7
 };
-
 export const DT_SCORECARD = [
   {
-    unit: "DT-019",
-    frHm: 22.51,
-    frKm: 1.15,
-    fuel: 2053,
-    records: 9,
-    hmTotal: 91.2,
-    kmTotal: 1785,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 72,
+    "unit": "DT-028",
+    "frHm": 22.88,
+    "frKm": 1.13,
+    "fuel": 2999.0,
+    "records": 13,
+    "hmTotal": 131.1,
+    "kmTotal": 2665.0,
+    "firstRefuel": false,
+    "percentile": 97.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-023",
-    frHm: 19.85,
-    frKm: 1.05,
-    fuel: 1901,
-    records: 9,
-    hmTotal: 95.8,
-    kmTotal: 1810,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 48,
+    "unit": "DT-063",
+    "frHm": 21.8,
+    "frKm": 1.09,
+    "fuel": 2768.0,
+    "records": 14,
+    "hmTotal": 127.0,
+    "kmTotal": 2550.0,
+    "firstRefuel": false,
+    "percentile": 94.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-025",
-    frHm: 20.42,
-    frKm: 1.06,
-    fuel: 1438,
-    records: 6,
-    hmTotal: 70.4,
-    kmTotal: 1357,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 64,
+    "unit": "DT-072",
+    "frHm": 19.05,
+    "frKm": 1.0,
+    "fuel": 2669.0,
+    "records": 14,
+    "hmTotal": 140.1,
+    "kmTotal": 2661.0,
+    "firstRefuel": false,
+    "percentile": 53.0,
+    "quartile": "Q3"
   },
   {
-    unit: "DT-028",
-    frHm: 21.68,
-    frKm: 1.11,
-    fuel: 2114,
-    records: 11,
-    hmTotal: 97.5,
-    kmTotal: 1904,
-    firstRefuel: false,
-    quartile: "Q4 (Boros)",
-    percentile: 92,
+    "unit": "DT-024",
+    "frHm": 21.58,
+    "frKm": 1.06,
+    "fuel": 2663.0,
+    "records": 13,
+    "hmTotal": 123.4,
+    "kmTotal": 2507.0,
+    "firstRefuel": false,
+    "percentile": 88.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-029",
-    frHm: 19.62,
-    frKm: 1.07,
-    fuel: 1698,
-    records: 7,
-    hmTotal: 86.6,
-    kmTotal: 1587,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 44,
+    "unit": "DT-075",
+    "frHm": 20.83,
+    "frKm": 1.1,
+    "fuel": 2583.0,
+    "records": 12,
+    "hmTotal": 124.0,
+    "kmTotal": 2350.0,
+    "firstRefuel": false,
+    "percentile": 81.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-030",
-    frHm: 20.94,
-    frKm: 1.02,
-    fuel: 1713,
-    records: 8,
-    hmTotal: 81.8,
-    kmTotal: 1679,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 78,
+    "unit": "DT-029",
+    "frHm": 20.28,
+    "frKm": 1.12,
+    "fuel": 2498.0,
+    "records": 13,
+    "hmTotal": 123.2,
+    "kmTotal": 2238.0,
+    "firstRefuel": false,
+    "percentile": 75.0,
+    "quartile": "Q3"
   },
   {
-    unit: "DT-058",
-    frHm: 19.38,
-    frKm: 1.06,
-    fuel: 1445,
-    records: 6,
-    hmTotal: 74.6,
-    kmTotal: 1363,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 40,
+    "unit": "DT-076",
+    "frHm": 19.26,
+    "frKm": 0.99,
+    "fuel": 2467.0,
+    "records": 12,
+    "hmTotal": 128.1,
+    "kmTotal": 2492.0,
+    "firstRefuel": false,
+    "percentile": 62.0,
+    "quartile": "Q3"
   },
   {
-    unit: "DT-060",
-    frHm: 20.61,
-    frKm: 1.18,
-    fuel: 1576,
-    records: 7,
-    hmTotal: 76.5,
-    kmTotal: 1336,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 70,
+    "unit": "DT-030",
+    "frHm": 17.97,
+    "frKm": 0.94,
+    "fuel": 2445.0,
+    "records": 12,
+    "hmTotal": 136.1,
+    "kmTotal": 2609.0,
+    "firstRefuel": false,
+    "percentile": 28.0,
+    "quartile": "Q2"
   },
   {
-    unit: "DT-062",
-    frHm: 20.15,
-    frKm: 1.06,
-    fuel: 1653,
-    records: 8,
-    hmTotal: 82.0,
-    kmTotal: 1559,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 60,
+    "unit": "DT-064",
+    "frHm": 21.74,
+    "frKm": 1.14,
+    "fuel": 2403.0,
+    "records": 12,
+    "hmTotal": 110.5,
+    "kmTotal": 2112.0,
+    "firstRefuel": false,
+    "percentile": 91.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-064",
-    frHm: 21.02,
-    frKm: 1.08,
-    fuel: 1799,
-    records: 9,
-    hmTotal: 85.6,
-    kmTotal: 1666,
-    firstRefuel: false,
-    quartile: "Q4 (Boros)",
-    percentile: 86,
+    "unit": "DT-073",
+    "frHm": 18.65,
+    "frKm": 1.05,
+    "fuel": 2374.0,
+    "records": 12,
+    "hmTotal": 127.3,
+    "kmTotal": 2263.0,
+    "firstRefuel": false,
+    "percentile": 41.0,
+    "quartile": "Q2"
   },
   {
-    unit: "DT-065",
-    frHm: 19.68,
-    frKm: 1.04,
-    fuel: 1660,
-    records: 8,
-    hmTotal: 84.4,
-    kmTotal: 1596,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 46,
+    "unit": "DT-067",
+    "frHm": 20.34,
+    "frKm": 1.04,
+    "fuel": 2369.0,
+    "records": 13,
+    "hmTotal": 116.5,
+    "kmTotal": 2287.0,
+    "firstRefuel": false,
+    "percentile": 78.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-067",
-    frHm: 20.41,
-    frKm: 0.98,
-    fuel: 1457,
-    records: 8,
-    hmTotal: 71.4,
-    kmTotal: 1487,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 66,
+    "unit": "DT-070",
+    "frHm": 19.04,
+    "frKm": 1.02,
+    "fuel": 2319.0,
+    "records": 12,
+    "hmTotal": 121.8,
+    "kmTotal": 2273.0,
+    "firstRefuel": false,
+    "percentile": 50.0,
+    "quartile": "Q2"
   },
   {
-    unit: "DT-069",
-    frHm: 18.84,
-    frKm: 0.99,
-    fuel: 1368,
-    records: 7,
-    hmTotal: 72.6,
-    kmTotal: 1382,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 32,
+    "unit": "DT-074",
+    "frHm": 20.13,
+    "frKm": 1.09,
+    "fuel": 2289.0,
+    "records": 12,
+    "hmTotal": 113.7,
+    "kmTotal": 2101.0,
+    "firstRefuel": false,
+    "percentile": 72.0,
+    "quartile": "Q3"
   },
   {
-    unit: "DT-070",
-    frHm: 19.2,
-    frKm: 1.04,
-    fuel: 1310,
-    records: 6,
-    hmTotal: 68.2,
-    kmTotal: 1260,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 38,
+    "unit": "DT-071",
+    "frHm": 21.02,
+    "frKm": 1.1,
+    "fuel": 2280.0,
+    "records": 11,
+    "hmTotal": 108.5,
+    "kmTotal": 2067.0,
+    "firstRefuel": false,
+    "percentile": 84.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-073",
-    frHm: 19.72,
-    frKm: 1.05,
-    fuel: 1435,
-    records: 7,
-    hmTotal: 72.8,
-    kmTotal: 1367,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 42,
+    "unit": "DT-058",
+    "frHm": 19.48,
+    "frKm": 1.0,
+    "fuel": 2235.0,
+    "records": 11,
+    "hmTotal": 114.7,
+    "kmTotal": 2244.0,
+    "firstRefuel": false,
+    "percentile": 66.0,
+    "quartile": "Q3"
   },
   {
-    unit: "DT-020",
-    frHm: 22.42,
-    frKm: 1.15,
-    fuel: 1274,
-    records: 6,
-    hmTotal: 56.8,
-    kmTotal: 1108,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 76,
+    "unit": "DT-062",
+    "frHm": 16.39,
+    "frKm": 0.93,
+    "fuel": 2193.0,
+    "records": 11,
+    "hmTotal": 133.8,
+    "kmTotal": 2348.0,
+    "firstRefuel": false,
+    "percentile": 19.0,
+    "quartile": "Q1 (Efisien)"
   },
   {
-    unit: "DT-021",
-    frHm: 19.16,
-    frKm: 1.1,
-    fuel: 966,
-    records: 5,
-    hmTotal: 50.4,
-    kmTotal: 878,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 36,
+    "unit": "DT-065",
+    "frHm": 19.23,
+    "frKm": 1.04,
+    "fuel": 2100.0,
+    "records": 9,
+    "hmTotal": 109.2,
+    "kmTotal": 2013.0,
+    "firstRefuel": false,
+    "percentile": 59.0,
+    "quartile": "Q3"
   },
   {
-    unit: "DT-024",
-    frHm: 20.06,
-    frKm: 1.11,
-    fuel: 1194,
-    records: 6,
-    hmTotal: 59.5,
-    kmTotal: 1076,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 56,
+    "unit": "DT-027",
+    "frHm": 19.71,
+    "frKm": 1.06,
+    "fuel": 2091.0,
+    "records": 10,
+    "hmTotal": 106.1,
+    "kmTotal": 1974.0,
+    "firstRefuel": false,
+    "percentile": 69.0,
+    "quartile": "Q3"
   },
   {
-    unit: "DT-027",
-    frHm: 19.3,
-    frKm: 1.04,
-    fuel: 1318,
-    records: 7,
-    hmTotal: 68.3,
-    kmTotal: 1267,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 44,
+    "unit": "DT-069",
+    "frHm": 18.89,
+    "frKm": 0.94,
+    "fuel": 2011.0,
+    "records": 10,
+    "hmTotal": 106.5,
+    "kmTotal": 2147.0,
+    "firstRefuel": false,
+    "percentile": 44.0,
+    "quartile": "Q2"
   },
   {
-    unit: "DT-071",
-    frHm: 183.0,
-    frKm: 183.0,
-    fuel: 183,
-    records: 1,
-    hmTotal: 1.0,
-    kmTotal: 1.0,
-    firstRefuel: true,
-    quartile: "Q4 (Boros)",
-    percentile: 100,
+    "unit": "DT-023",
+    "frHm": 18.93,
+    "frKm": 1.04,
+    "fuel": 1757.0,
+    "records": 9,
+    "hmTotal": 92.8,
+    "kmTotal": 1685.0,
+    "firstRefuel": false,
+    "percentile": 47.0,
+    "quartile": "Q2"
   },
   {
-    unit: "DT-072",
-    frHm: 42.2,
-    frKm: 42.2,
-    fuel: 886,
-    records: 4,
-    hmTotal: 21.0,
-    kmTotal: 21.0,
-    firstRefuel: true,
-    quartile: "Q4 (Boros)",
-    percentile: 98,
+    "unit": "DT-066",
+    "frHm": 18.47,
+    "frKm": 1.07,
+    "fuel": 1536.0,
+    "records": 8,
+    "hmTotal": 83.2,
+    "kmTotal": 1440.0,
+    "firstRefuel": false,
+    "percentile": 34.0,
+    "quartile": "Q2"
   },
   {
-    unit: "DT-074",
-    frHm: 32.3,
-    frKm: 32.3,
-    fuel: 816,
-    records: 3,
-    hmTotal: 25.3,
-    kmTotal: 25.3,
-    firstRefuel: true,
-    quartile: "Q4 (Boros)",
-    percentile: 96,
+    "unit": "DT-068",
+    "frHm": 18.58,
+    "frKm": 0.94,
+    "fuel": 1364.0,
+    "records": 7,
+    "hmTotal": 73.4,
+    "kmTotal": 1445.0,
+    "firstRefuel": false,
+    "percentile": 38.0,
+    "quartile": "Q2"
   },
   {
-    unit: "DT-075",
-    frHm: 35.8,
-    frKm: 35.8,
-    fuel: 856,
-    records: 3,
-    hmTotal: 23.9,
-    kmTotal: 23.9,
-    firstRefuel: true,
-    quartile: "Q4 (Boros)",
-    percentile: 94,
+    "unit": "DT-077",
+    "frHm": 27.42,
+    "frKm": 1.44,
+    "fuel": 1157.0,
+    "records": 6,
+    "hmTotal": 42.2,
+    "kmTotal": 805.0,
+    "firstRefuel": true,
+    "percentile": 100,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "DT-076",
-    frHm: 25.6,
-    frKm: 25.6,
-    fuel: 914,
-    records: 4,
-    hmTotal: 35.7,
-    kmTotal: 35.7,
-    firstRefuel: true,
-    quartile: "Q4 (Boros)",
-    percentile: 88,
+    "unit": "DT-078",
+    "frHm": 27.0,
+    "frKm": 1.46,
+    "fuel": 1104.0,
+    "records": 5,
+    "hmTotal": 40.9,
+    "kmTotal": 759.0,
+    "firstRefuel": true,
+    "percentile": 100,
+    "quartile": "Q4 (Boros)"
   },
+  {
+    "unit": "DT-060",
+    "frHm": 19.1,
+    "frKm": 1.08,
+    "fuel": 940.0,
+    "records": 5,
+    "hmTotal": 49.2,
+    "kmTotal": 872.0,
+    "firstRefuel": false,
+    "percentile": 56.0,
+    "quartile": "Q3"
+  },
+  {
+    "unit": "DT-011",
+    "frHm": 9.53,
+    "frKm": 1.25,
+    "fuel": 830.0,
+    "records": 5,
+    "hmTotal": 87.1,
+    "kmTotal": 664.0,
+    "firstRefuel": false,
+    "percentile": 3.0,
+    "quartile": "Q1 (Efisien)"
+  },
+  {
+    "unit": "DT-007",
+    "frHm": 9.84,
+    "frKm": 1.17,
+    "fuel": 820.0,
+    "records": 5,
+    "hmTotal": 83.3,
+    "kmTotal": 703.0,
+    "firstRefuel": false,
+    "percentile": 6.0,
+    "quartile": "Q1 (Efisien)"
+  },
+  {
+    "unit": "DT-008",
+    "frHm": 10.33,
+    "frKm": 2.1,
+    "fuel": 567.0,
+    "records": 3,
+    "hmTotal": 54.9,
+    "kmTotal": 270.0,
+    "firstRefuel": false,
+    "percentile": 9.0,
+    "quartile": "Q1 (Efisien)"
+  },
+  {
+    "unit": "DT-017",
+    "frHm": 25.23,
+    "frKm": 1.83,
+    "fuel": 446.0,
+    "records": 2,
+    "hmTotal": 17.7,
+    "kmTotal": 244.0,
+    "firstRefuel": true,
+    "percentile": 100,
+    "quartile": "Q4 (Boros)"
+  },
+  {
+    "unit": "DT-025",
+    "frHm": 17.1,
+    "frKm": 1.03,
+    "fuel": 443.0,
+    "records": 2,
+    "hmTotal": 25.9,
+    "kmTotal": 431.0,
+    "firstRefuel": false,
+    "percentile": 25.0,
+    "quartile": "Q1 (Efisien)"
+  },
+  {
+    "unit": "DT-004",
+    "frHm": 11.68,
+    "frKm": 1.46,
+    "fuel": 406.0,
+    "records": 2,
+    "hmTotal": 34.8,
+    "kmTotal": 278.0,
+    "firstRefuel": false,
+    "percentile": 12.0,
+    "quartile": "Q1 (Efisien)"
+  },
+  {
+    "unit": "DT-019",
+    "frHm": 32.99,
+    "frKm": 1.22,
+    "fuel": 304.0,
+    "records": 2,
+    "hmTotal": 9.2,
+    "kmTotal": 249.0,
+    "firstRefuel": false,
+    "percentile": 100.0,
+    "quartile": "Q4 (Boros)"
+  },
+  {
+    "unit": "DT-020",
+    "frHm": 18.34,
+    "frKm": 1.17,
+    "fuel": 281.0,
+    "records": 2,
+    "hmTotal": 15.3,
+    "kmTotal": 240.0,
+    "firstRefuel": false,
+    "percentile": 31.0,
+    "quartile": "Q2"
+  },
+  {
+    "unit": "DT-044",
+    "frHm": 12.09,
+    "frKm": 4.9,
+    "fuel": 201.0,
+    "records": 1,
+    "hmTotal": 16.6,
+    "kmTotal": 41.0,
+    "firstRefuel": false,
+    "percentile": 16.0,
+    "quartile": "Q1 (Efisien)"
+  },
+  {
+    "unit": "DT-015",
+    "frHm": 16.43,
+    "frKm": 1.12,
+    "fuel": 200.0,
+    "records": 1,
+    "hmTotal": 12.2,
+    "kmTotal": 179.0,
+    "firstRefuel": false,
+    "percentile": 22.0,
+    "quartile": "Q1 (Efisien)"
+  }
 ];
-
 export const EXC_SCORECARD = [
   {
-    unit: "EXC-001",
-    model: "XCMG 215",
-    frHm: 14.64,
-    frKm: 0,
-    fuel: 951,
-    records: 6,
-    hmTotal: 65.0,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 12,
+    "unit": "EXC-026",
+    "model": "SY365H",
+    "frHm": 29.52,
+    "frKm": 0,
+    "fuel": 3617.0,
+    "records": 8,
+    "hmTotal": 122.5,
+    "firstRefuel": false,
+    "percentile": 100.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "EXC-006",
-    model: "XCMG 215",
-    frHm: 15.63,
-    frKm: 0,
-    fuel: 300,
-    records: 1,
-    hmTotal: 9.6,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 18,
+    "unit": "EXC-014",
+    "model": "SY365H",
+    "frHm": 27.89,
+    "frKm": 0,
+    "fuel": 3449.0,
+    "records": 8,
+    "hmTotal": 123.7,
+    "firstRefuel": false,
+    "percentile": 92.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "EXC-011",
-    model: "XCMG 215",
-    frHm: 0,
-    frKm: 0,
-    fuel: 0,
-    records: 0,
-    hmTotal: 0,
-    firstRefuel: false,
-    quartile: "—",
-    percentile: 0,
+    "unit": "EXC-029",
+    "model": "SY365H",
+    "frHm": 25.83,
+    "frKm": 0,
+    "fuel": 1750.0,
+    "records": 5,
+    "hmTotal": 67.7,
+    "firstRefuel": false,
+    "percentile": 77.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "EXC-012",
-    model: "SANY 215",
-    frHm: 16.58,
-    frKm: 0,
-    fuel: 1293,
-    records: 8,
-    hmTotal: 78.0,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 24,
+    "unit": "EXC-012",
+    "model": "SY215C",
+    "frHm": 16.45,
+    "frKm": 0,
+    "fuel": 1668.0,
+    "records": 9,
+    "hmTotal": 101.4,
+    "firstRefuel": false,
+    "percentile": 54.0,
+    "quartile": "Q3"
   },
   {
-    unit: "EXC-014",
-    model: "SANY 360",
-    frHm: 27.32,
-    frKm: 0,
-    fuel: 2845,
-    records: 7,
-    hmTotal: 104.1,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 50,
+    "unit": "EXC-022",
+    "model": "SY215C",
+    "frHm": 16.2,
+    "frKm": 0,
+    "fuel": 1521.0,
+    "records": 9,
+    "hmTotal": 93.9,
+    "firstRefuel": false,
+    "percentile": 46.0,
+    "quartile": "Q2"
   },
   {
-    unit: "EXC-022",
-    model: "SANY 215",
-    frHm: 15.85,
-    frKm: 0,
-    fuel: 1213,
-    records: 7,
-    hmTotal: 76.5,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 22,
+    "unit": "EXC-023",
+    "model": "SY215C",
+    "frHm": 15.36,
+    "frKm": 0,
+    "fuel": 1335.0,
+    "records": 8,
+    "hmTotal": 86.9,
+    "firstRefuel": false,
+    "percentile": 31.0,
+    "quartile": "Q2"
   },
   {
-    unit: "EXC-023",
-    model: "SANY 215",
-    frHm: 15.16,
-    frKm: 0,
-    fuel: 1194,
-    records: 7,
-    hmTotal: 78.8,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 16,
+    "unit": "EXC-031",
+    "model": "SY215C",
+    "frHm": 15.68,
+    "frKm": 0,
+    "fuel": 1324.0,
+    "records": 8,
+    "hmTotal": 84.4,
+    "firstRefuel": false,
+    "percentile": 38.0,
+    "quartile": "Q2"
   },
   {
-    unit: "EXC-024",
-    model: "SANY 215",
-    frHm: 14.32,
-    frKm: 0,
-    fuel: 1033,
-    records: 6,
-    hmTotal: 72.1,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 10,
+    "unit": "EXC-024",
+    "model": "SY215C",
+    "frHm": 14.05,
+    "frKm": 0,
+    "fuel": 1188.0,
+    "records": 8,
+    "hmTotal": 84.5,
+    "firstRefuel": false,
+    "percentile": 15.0,
+    "quartile": "Q1 (Efisien)"
   },
   {
-    unit: "EXC-025",
-    model: "SANY 215",
-    frHm: 15.45,
-    frKm: 0,
-    fuel: 1090,
-    records: 6,
-    hmTotal: 70.6,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 20,
+    "unit": "EXC-025",
+    "model": "SY215C",
+    "frHm": 16.49,
+    "frKm": 0,
+    "fuel": 1160.0,
+    "records": 8,
+    "hmTotal": 70.4,
+    "firstRefuel": false,
+    "percentile": 62.0,
+    "quartile": "Q3"
   },
   {
-    unit: "EXC-026",
-    model: "SANY 360",
-    frHm: 29.72,
-    frKm: 0,
-    fuel: 3770,
-    records: 8,
-    hmTotal: 126.8,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 78,
+    "unit": "EXC-027",
+    "model": "SY365H",
+    "frHm": 26.56,
+    "frKm": 0,
+    "fuel": 1048.0,
+    "records": 4,
+    "hmTotal": 39.5,
+    "firstRefuel": false,
+    "percentile": 85.0,
+    "quartile": "Q4 (Boros)"
   },
   {
-    unit: "EXC-027",
-    model: "SANY 360",
-    frHm: 26.61,
-    frKm: 0,
-    fuel: 2010,
-    records: 7,
-    hmTotal: 75.5,
-    firstRefuel: false,
-    quartile: "Q2",
-    percentile: 44,
+    "unit": "EXC-001",
+    "model": "XE215C",
+    "frHm": 11.13,
+    "frKm": 0,
+    "fuel": 840.0,
+    "records": 4,
+    "hmTotal": 75.5,
+    "firstRefuel": false,
+    "percentile": 8.0,
+    "quartile": "Q1 (Efisien)"
   },
   {
-    unit: "EXC-028",
-    model: "SANY 215",
-    frHm: 120.0,
-    frKm: 0,
-    fuel: 240,
-    records: 1,
-    hmTotal: 2.0,
-    firstRefuel: true,
-    quartile: "Q4 (Boros)",
-    percentile: 100,
+    "unit": "EXC-030",
+    "model": "SY215C",
+    "frHm": 14.77,
+    "frKm": 0,
+    "fuel": 466.0,
+    "records": 2,
+    "hmTotal": 31.5,
+    "firstRefuel": false,
+    "percentile": 23.0,
+    "quartile": "Q1 (Efisien)"
   },
   {
-    unit: "EXC-029",
-    model: "SANY 360",
-    frHm: 28.74,
-    frKm: 0,
-    fuel: 2487,
-    records: 6,
-    hmTotal: 86.5,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 75,
-  },
-  {
-    unit: "EXC-030",
-    model: "SANY 215",
-    frHm: 0,
-    frKm: 0,
-    fuel: 0,
-    records: 0,
-    hmTotal: 0,
-    firstRefuel: false,
-    quartile: "—",
-    percentile: 0,
-  },
-  {
-    unit: "EXC-031",
-    model: "SANY 215",
-    frHm: 20.65,
-    frKm: 0,
-    fuel: 1391,
-    records: 7,
-    hmTotal: 67.4,
-    firstRefuel: false,
-    quartile: "Q3",
-    percentile: 60,
-  },
-  {
-    unit: "EXC-032",
-    model: "SANY 215",
-    frHm: 12.83,
-    frKm: 0,
-    fuel: 592,
-    records: 4,
-    hmTotal: 46.1,
-    firstRefuel: false,
-    quartile: "Q1 (Efisien)",
-    percentile: 8,
-  },
+    "unit": "EXC-011",
+    "model": "XE215C",
+    "frHm": 21.61,
+    "frKm": 0,
+    "fuel": 242.0,
+    "records": 1,
+    "hmTotal": 11.2,
+    "firstRefuel": false,
+    "percentile": 69.0,
+    "quartile": "Q3"
+  }
 ];
 
 export const CATEGORY_BREAKDOWN = [
   {
-    cat: "Production",
-    qty: 75492.6,
-    records: 296,
-    units: 45,
-    frHm: 20.1,
-    avgPerRec: 255.0,
-    subBreakdown: [
-      { jenis: "DUMP TRUCK", qty: 67704.3, units: 29 },
-      { jenis: "EXCAVATOR", qty: 17788.3, units: 16 },
-    ],
+    "cat": "Production",
+    "qty": 77723.0,
+    "records": 373,
+    "units": 48,
+    "frHm": 19.3,
+    "avgPerRec": 208.4,
+    "subBreakdown": [
+      {
+        "jenis": "DUMP TRUCK",
+        "qty": 58114.9,
+        "units": 35
+      },
+      {
+        "jenis": "EXCAVATOR",
+        "qty": 19608.1,
+        "units": 13
+      }
+    ]
   },
   {
-    cat: "MHR",
-    qty: 5874.6,
-    records: 32,
-    units: 8,
-    frHm: 11.2,
-    avgPerRec: 183.6,
-    subBreakdown: [
-      { jenis: "WATER TRUCK", qty: 1847.6, units: 2 },
-      { jenis: "MOTOR GRADER", qty: 1752.4, units: 3 },
-      { jenis: "COMPACTOR", qty: 1363.3, units: 2 },
-      { jenis: "WHEEL LOADER", qty: 911.3, units: 1 },
-    ],
+    "cat": "MHR",
+    "qty": 5249.9,
+    "records": 34,
+    "units": 7,
+    "frHm": 10.1,
+    "avgPerRec": 154.4,
+    "subBreakdown": [
+      {
+        "jenis": "MOTOR GRADER",
+        "qty": 2146.9,
+        "units": 2
+      },
+      {
+        "jenis": "WATER TRUCK",
+        "qty": 1584.2,
+        "units": 2
+      },
+      {
+        "jenis": "COMPACTOR",
+        "qty": 1381.8,
+        "units": 2
+      },
+      {
+        "jenis": "WHEEL LOADER",
+        "qty": 137.0,
+        "units": 1
+      }
+    ]
   },
   {
-    cat: "Support",
-    qty: 1185.2,
-    records: 25,
-    units: 11,
-    frHm: 18.5,
-    avgPerRec: 47.4,
-    subBreakdown: [
-      { jenis: "TOYOTA HILUX", qty: 590.5, units: 6 },
-      { jenis: "FUEL TRUCK", qty: 258.2, units: 1 },
-      { jenis: "MANHOUL", qty: 104.3, units: 1 },
-      { jenis: "TOWER LAMP", qty: 82.0, units: 3 },
-      { jenis: "GENSET", qty: 99.0, units: 1 },
-      // { jenis: "HUB", qty: 51.2, units: 1 },
-    ],
-  },
+    "cat": "Support",
+    "qty": 1374.7,
+    "records": 24,
+    "units": 11,
+    "frHm": 4.0,
+    "avgPerRec": 57.3,
+    "subBreakdown": [
+      {
+        "jenis": "TOYOTA HILUX",
+        "qty": 661.0,
+        "units": 5
+      },
+      {
+        "jenis": "FUEL TRUCK",
+        "qty": 227.9,
+        "units": 1
+      },
+      {
+        "jenis": "TOWER LAMP",
+        "qty": 134.0,
+        "units": 2
+      },
+      {
+        "jenis": "HUB",
+        "qty": 132.1,
+        "units": 1
+      },
+      {
+        "jenis": "MANHOUL",
+        "qty": 126.7,
+        "units": 1
+      },
+      {
+        "jenis": "GENSET",
+        "qty": 93.0,
+        "units": 1
+      }
+    ]
+  }
 ];
-
 export const LOCATION_BREAKDOWN = [
   {
-    location: "Fuel Station",
-    qty: 64571.2,
-    records: 298,
-    units: 48,
-    avgPerRec: 216.7,
-    catMix: {
-      MHR: 4650.1,
-      Production: 58583.2,
-      Support: 969.0,
-      Interco: 369.0,
-    },
+    "location": "Fuel Station",
+    "qty": 62771.7,
+    "records": 327,
+    "units": 51,
+    "avgPerRec": 192.0,
+    "catMix": {
+      "Interco": 85.5,
+      "MHR": 3394.5,
+      "Production": 58050.9,
+      "Support": 1240.7
+    }
   },
   {
-    location: "ETO",
-    qty: 9573.2,
-    records: 34,
-    units: 12,
-    avgPerRec: 281.6,
-    catMix: { MHR: 1061.1, Production: 8476.2, Support: 36.0 },
+    "location": "ETO",
+    "qty": 10532.0,
+    "records": 39,
+    "units": 11,
+    "avgPerRec": 270.1,
+    "catMix": {
+      "MHR": 1546.0,
+      "Production": 8916.0,
+      "Support": 70.0
+    }
   },
   {
-    location: "Jetty",
-    qty: 5890.4,
-    records: 32,
-    units: 8,
-    avgPerRec: 184.1,
-    catMix: { Production: 5870.4, Support: 20.0 },
+    "location": "EFO",
+    "qty": 7140.1,
+    "records": 43,
+    "units": 9,
+    "avgPerRec": 166.0,
+    "catMix": {
+      "MHR": 137.0,
+      "Production": 6939.1,
+      "Support": 64.0
+    }
   },
   {
-    location: "EFO",
-    qty: 3874.3,
-    records: 22,
-    units: 9,
-    avgPerRec: 176.1,
-    catMix: { Production: 3423.2, MHR: 378.1, Support: 73.0 },
-  },
-  {
-    location: "Mess / Mess TMI",
-    qty: 699.0,
-    records: 4,
-    units: 3,
-    avgPerRec: 174.8,
-    catMix: { Support: 99.0, Production: 600.0 },
-  },
-  {
-    location: "MPS",
-    qty: 1383.0,
-    records: 15,
-    units: 1,
-    avgPerRec: 92.2,
-    catMix: { Interco: 1383.0 },
-  },
+    "location": "Jetty",
+    "qty": 3989.4,
+    "records": 24,
+    "units": 6,
+    "avgPerRec": 166.2,
+    "catMix": {
+      "MHR": 172.4,
+      "Production": 3817.0
+    }
+  }
 ];
-
 export const SHIFT_ANALYSIS = [
-  { shift: "DS", qty: 81670.0, records: 358, units: 58, avgPerRec: 228.1 },
-  { shift: "NS", qty: 2439.9, records: 17, units: 14, avgPerRec: 143.5 },
+  {
+    "shift": "DS",
+    "qty": 84305.4,
+    "records": 432,
+    "units": 67,
+    "avgPerRec": 195.2
+  },
+  {
+    "shift": "NS",
+    "qty": 127.7,
+    "records": 1,
+    "units": 1,
+    "avgPerRec": 127.7
+  }
 ];
-
 export const OPERATORS = [
-  { operator: "Rusdin", refuels: 46, qty: 8262.0, avgPerRec: 179.6, units: 22 },
   {
-    operator: "Aditia Saputra",
-    refuels: 16,
-    qty: 3486.0,
-    avgPerRec: 217.9,
-    units: 3,
+    "operator": "Rusdin",
+    "refuels": 22,
+    "qty": 4289.1,
+    "avgPerRec": 195.0,
+    "units": 17
   },
   {
-    operator: "Muh. Baim Laparu",
-    refuels: 14,
-    qty: 3192.0,
-    avgPerRec: 228.0,
-    units: 2,
+    "operator": "Robi Menden",
+    "refuels": 8,
+    "qty": 3617.0,
+    "avgPerRec": 452.1,
+    "units": 1
   },
   {
-    operator: "Ahmad Qaizar Muhammad",
-    refuels: 12,
-    qty: 2890.0,
-    avgPerRec: 240.8,
-    units: 1,
+    "operator": "Pande Sanjaya Putra",
+    "refuels": 7,
+    "qty": 2823.6,
+    "avgPerRec": 403.4,
+    "units": 2
   },
   {
-    operator: "Haidir Akbar",
-    refuels: 13,
-    qty: 2764.0,
-    avgPerRec: 212.6,
-    units: 1,
+    "operator": "Andri Paulo",
+    "refuels": 13,
+    "qty": 2750.1,
+    "avgPerRec": 211.5,
+    "units": 3
   },
   {
-    operator: "Robi Menden",
-    refuels: 8,
-    qty: 3770.0,
-    avgPerRec: 471.3,
-    units: 1,
+    "operator": "Yusril Ihza Mahendra",
+    "refuels": 11,
+    "qty": 2547.2,
+    "avgPerRec": 231.6,
+    "units": 3
   },
   {
-    operator: "Yohanis Jojon",
-    refuels: 12,
-    qty: 2536.0,
-    avgPerRec: 211.3,
-    units: 1,
+    "operator": "I Kadek Dwi Frendita",
+    "refuels": 12,
+    "qty": 2412.1,
+    "avgPerRec": 201.0,
+    "units": 3
   },
   {
-    operator: "I Kadek Dwi Frendita",
-    refuels: 11,
-    qty: 2479.0,
-    avgPerRec: 225.4,
-    units: 3,
+    "operator": "Noldi Mangasa",
+    "refuels": 11,
+    "qty": 2333.0,
+    "avgPerRec": 212.1,
+    "units": 3
   },
   {
-    operator: "Moh. Yusup",
-    refuels: 9,
-    qty: 2229.0,
-    avgPerRec: 247.7,
-    units: 1,
+    "operator": "Samsul Yanto",
+    "refuels": 11,
+    "qty": 2080.4,
+    "avgPerRec": 189.1,
+    "units": 4
   },
   {
-    operator: "Renderkhius Guon",
-    refuels: 12,
-    qty: 2601.0,
-    avgPerRec: 216.8,
-    units: 1,
+    "operator": "Alfait Halim",
+    "refuels": 9,
+    "qty": 2058.2,
+    "avgPerRec": 228.7,
+    "units": 2
   },
+  {
+    "operator": "Hasanudin",
+    "refuels": 9,
+    "qty": 2012.0,
+    "avgPerRec": 223.6,
+    "units": 1
+  }
 ];
-
 export const ANOMALIES = [
   {
-    id: "ANO-01",
-    type: "UNIT",
-    unit: "DT-073",
-    date: "9 Okt",
-    issue:
-      "HM jump: HM_diff=160,2 jam antar refuel (7→8 Okt). Remark 'CEK PENGISIAN TANGGAL 8'. FR 1,56 L/HM tidak valid.",
-    severity: "HIGH",
-    status: "OPEN",
+    "id": "ANO-01",
+    "type": "STOCK",
+    "unit": "STOCK SITE BPSP",
+    "date": "14 Okt",
+    "issue": "Stok EOD anjlok ke 37.288 L (titik terendah) akibat gap stock-in 12–14 Okt (3 hari kosong). Runway sempat tersisa ~3,1 hari sebelum suplai masuk.",
+    "severity": "HIGH",
+    "status": "CLOSED"
   },
   {
-    id: "ANO-02",
-    type: "UNIT",
-    unit: "TL-002",
-    date: "7 Okt",
-    issue: "HM_diff=0,01 jam, Qty 20 L → FR 2.000 L/HM. Data error/typo meter.",
-    severity: "HIGH",
-    status: "OPEN",
+    "id": "ANO-02",
+    "type": "UNIT",
+    "unit": "DT-017",
+    "date": "15 Okt",
+    "issue": "First-refueling: HM_diff=1,0 jam dengan pengisian 169,78 L (FR 169,8 L/HM). Unit baru masuk operasi, dikecualikan dari ranking efisiensi.",
+    "severity": "MEDIUM",
+    "status": "OPEN"
   },
   {
-    id: "ANO-03",
-    type: "UNIT",
-    unit: "DT-028",
-    date: "9 Okt",
-    issue:
-      "FR outlier 32,13 L/HM (Qty 244 L vs HM_diff 7,6 jam). Cek pola driving.",
-    severity: "MEDIUM",
-    status: "OPEN",
+    "id": "ANO-03",
+    "type": "UNIT",
+    "unit": "DT-077 / DT-078",
+    "date": "16 Okt",
+    "issue": "First-refueling armada baru: DT-077 (200,4 L, HM=1) & DT-078 (200,25 L, HM=1). HM_diff=1,0 jam, dikecualikan dari scorecard FR.",
+    "severity": "MEDIUM",
+    "status": "OPEN"
   },
   {
-    id: "ANO-04",
-    type: "UNIT",
-    unit: "DT-019",
-    date: "8 Okt",
-    issue:
-      "FR outlier 68,79 L/HM (Qty 137,6 L vs HM_diff 2 jam). Kemungkinan top-up singkat.",
-    severity: "MEDIUM",
-    status: "OPEN",
+    "id": "ANO-04",
+    "type": "UNIT",
+    "unit": "DT-019",
+    "date": "18 Okt",
+    "issue": "Short-interval top-up: Qty 103,0 L vs HM_diff 1,9 jam (FR 54,2 L/HM). Pengisian berjarak terlalu rapat dari refuel sebelumnya.",
+    "severity": "MEDIUM",
+    "status": "OPEN"
   },
   {
-    id: "ANO-05",
-    type: "UNIT",
-    unit: "DT-020",
-    date: "6–8 Okt",
-    issue: "2 entry FR >39 L/HM (123,28 & 39,51 L/HM). Cek HM meter.",
-    severity: "MEDIUM",
-    status: "OPEN",
+    "id": "ANO-05",
+    "type": "UNIT",
+    "unit": "DT-028",
+    "date": "15 Okt",
+    "issue": "FR outlier 59,5 L/HM (Qty 226,0 L vs HM_diff 3,8 jam). Periksa jam standby/idling tinggi atau ketidaksesuaian pencatatan HM.",
+    "severity": "MEDIUM",
+    "status": "OPEN"
   },
   {
-    id: "ANO-06",
-    type: "UNIT",
-    unit: "DT-023",
-    date: "6 Okt NS",
-    issue: "FR 33,89 L/HM di shift NS — di luar range normal.",
-    severity: "MEDIUM",
-    status: "OPEN",
+    "id": "ANO-06",
+    "type": "UNIT",
+    "unit": "DT-069",
+    "date": "18 Okt",
+    "issue": "HM interval panjang: HM_diff=16,9 jam dengan refuel 101,5 L (FR 6,0 L/HM). Indikasi keterlambatan pencatatan refuel antara.",
+    "severity": "LOW",
+    "status": "OPEN"
   },
   {
-    id: "ANO-07",
-    type: "UNIT",
-    unit: "EXC-031",
-    date: "5 Okt",
-    issue: "FR 63,7 L/HM (Qty 193 L vs HM 3,03 jam). Cek HM.",
-    severity: "MEDIUM",
-    status: "OPEN",
+    "id": "ANO-07",
+    "type": "INTERCO",
+    "unit": "PT. MPS",
+    "date": "15 & 18 Okt",
+    "issue": "2 transaksi interco PT. MPS total 85,54 L (15 Okt: 45,66 L; 18 Okt: 39,88 L). Sudah di-exclude dari metrik fleet.",
+    "severity": "INFO",
+    "status": "CLOSED"
   },
   {
-    id: "ANO-08",
-    type: "UNIT",
-    unit: "DT-072/074/075/076/071",
-    date: "8–10 Okt",
-    issue:
-      "First-refueling: HM_diff=1–2 jam → FR 30–245 L/HM. Exclude dari ranking FR.",
-    severity: "MEDIUM",
-    status: "OPEN",
+    "id": "ANO-08",
+    "type": "SUPPORT",
+    "unit": "HUB",
+    "date": "17 Okt",
+    "issue": "1 transaksi pengisian HUB 132,14 L di Fuel Station diklasifikasikan ke dalam kategori Support operasional.",
+    "severity": "INFO",
+    "status": "CLOSED"
   },
   {
-    id: "ANO-09",
-    type: "UNIT",
-    unit: "EXC-028",
-    date: "5 Okt",
-    issue:
-      "First-refueling: HM_diff=2 jam, Qty 240 L → FR 120 L/HM (outlier). Exclude dari ranking.",
-    severity: "MEDIUM",
-    status: "OPEN",
+    "id": "ANO-09",
+    "type": "VENDOR",
+    "unit": "PT. CENTRAL OIL INDONESIA NICON",
+    "date": "15–18 Okt",
+    "issue": "Pasokan intensif 75.000 L dalam 4 pengiriman berturut-turut (24.900, 20.970, 20.130, 9.000 L) berhasil memulihkan buffer stok site.",
+    "severity": "GOOD",
+    "status": "CLOSED"
   },
   {
-    id: "ANO-10",
-    type: "VENDOR",
-    unit: "PT. BUMI ENERGI",
-    date: "3 Okt (base)",
-    issue: "Short delivery: KURANG 11 LITER (29.989 dari 30.000 L).",
-    severity: "MEDIUM",
-    status: "OPEN",
-  },
-  {
-    id: "ANO-11",
-    type: "STOCK",
-    unit: "STOCK-IN",
-    date: "5–11 Okt",
-    issue:
-      "Stock-in hanya 46.000 L, konsumsi 84.110 L → stok turun 38.110 L (runway ~6 hari).",
-    severity: "HIGH",
-    status: "OPEN",
-  },
-  {
-    id: "ANO-12",
-    type: "INTERCO",
-    unit: "PT. MPS",
-    date: "5–10 Okt",
-    issue: "16 entry MPS total 1.558 L. Sudah di-exclude dari metrik fleet.",
-    severity: "INFO",
-    status: "CLOSED",
-  },
+    "id": "ANO-10",
+    "type": "DATA",
+    "unit": "TOYOTA HILUX (LV)",
+    "date": "12–18 Okt",
+    "issue": "15 transaksi kendaraan LV (Hilux) HM_diff=0 karena armada LV hanya menggunakan odometer (KM). Tidak ada isu integritas data.",
+    "severity": "INFO",
+    "status": "CLOSED"
+  }
 ];
-
 export const DATA_QUALITY = {
-  totalRecords: 375,
-  missingHM: 0,
-  missingKM: 152,
-  zeroOrNegHM: 0,
-  hmOver50: 2,
-  zeroOrNegKM: 152,
-  missingOperator: 0,
-  missingLocation: 0,
-  bulkRows: 0,
-  remarkFilled: 375,
-  completePct: 99.6,
+  "totalRecords": 433,
+  "missingHM": 0,
+  "missingKM": 0,
+  "zeroOrNegHM": 15,
+  "hmOver50": 0,
+  "zeroOrNegKM": 118,
+  "missingOperator": 0,
+  "missingLocation": 0,
+  "bulkRows": 0,
+  "remarkFilled": 433,
+  "completePct": 99.8
 };
-
 export const STOCK_SUMMARY = {
-  startStock: 111463.1,
-  endStock: 73053.64,
-  minStock: 73053.64,
-  minStockDate: "11/10",
-
-  totalInRecorded: 46000.0,
-  totalInCurrWeekRecorded: 46000.0,
-  totalOutGross: 84406.42,
-
-  bpspLoanIn: 0,
-  bpspRepayOutPrev: 0,
-  bpspRepayOutCurr: 0,
-  totalInVendorOnly: 46000.0,
-  totalInCurrWeekVendorOnly: 46000.0,
-  totalOutFleetNet: 82773.83,
-
-  netChange: -38109.9,
-  netChangeFleet: -36552.3,
-
-  stockInEvents: [
+  "startStock": 73056.68,
+  "endStock": 63623.54,
+  "minStock": 37288.44,
+  "minStockDate": "14/10",
+  "totalInRecorded": 75000.0,
+  "totalInCurrWeekRecorded": 75000.0,
+  "totalOutGross": 84433.14,
+  "bpspLoanIn": 0,
+  "bpspRepayOutPrev": 0,
+  "bpspRepayOutCurr": 0,
+  "totalInVendorOnly": 75000.0,
+  "totalInCurrWeekVendorOnly": 75000.0,
+  "totalOutFleetNet": 84347.6,
+  "netChange": -9433.14,
+  "netChangeFleet": -9347.6,
+  "stockInEvents": [
     {
-      date: "5/10",
-      qty: 10000.0,
-      type: "vendor",
-      vendor: "PT. CENTRAL OIL INDONESIA NICON",
+      "date": "15/10",
+      "qty": 24900.0,
+      "type": "vendor",
+      "vendor": "PT. CENTRAL OIL INDONESIA NICON",
+      "remarks": "DONE"
     },
     {
-      date: "6/10",
-      qty: 12000.0,
-      type: "vendor",
-      vendor: "PT. CENTRAL OIL INDONESIA NICON",
+      "date": "16/10",
+      "qty": 20970.0,
+      "type": "vendor",
+      "vendor": "PT. CENTRAL OIL INDONESIA NICON",
+      "remarks": "DONE"
     },
     {
-      date: "6/10",
-      qty: 16000.0,
-      type: "vendor",
-      vendor: "PT. BUMI ENERGI SEJATI",
+      "date": "17/10",
+      "qty": 20130.0,
+      "type": "vendor",
+      "vendor": "PT. CENTRAL OIL INDONESIA NICON",
+      "remarks": "DONE"
     },
     {
-      date: "11/10",
-      qty: 8000.0,
-      type: "vendor",
-      vendor: "PT. BUMI ENERGI SEJATI",
-    },
+      "date": "18/10",
+      "qty": 9000.0,
+      "type": "vendor",
+      "vendor": "PT. CENTRAL OIL INDONESIA NICON",
+      "remarks": "DONE"
+    }
   ],
-
-  bpspEvents: [],
+  "bpspEvents": []
 };
-
 export const STOCK_DATA = [
-  { date: "28/9", lastStock: 67290.0 },
-  { date: "29/9", lastStock: 63793.3 },
-  { date: "30/9", lastStock: 68056.6 },
-  { date: "1/10", lastStock: 79329.7 },
-  { date: "2/10", lastStock: 93913.1 },
-  { date: "3/10", lastStock: 122328.1 },
-  { date: "4/10", lastStock: 111463.1 },
-  { date: "5/10", lastStock: 108211.3 },
-  { date: "6/10", lastStock: 122075.8 },
-  { date: "7/10", lastStock: 110027.5 },
-  { date: "8/10", lastStock: 98312.8 },
-  { date: "9/10", lastStock: 87742.7 },
-  { date: "10/10", lastStock: 77858.8 },
-  { date: "11/10", lastStock: 73353.1 },
+  {
+    "date": "5/10",
+    "lastStock": 108046.85
+  },
+  {
+    "date": "6/10",
+    "lastStock": 121836.38
+  },
+  {
+    "date": "7/10",
+    "lastStock": 109788.05
+  },
+  {
+    "date": "8/10",
+    "lastStock": 98073.32
+  },
+  {
+    "date": "9/10",
+    "lastStock": 87503.24
+  },
+  {
+    "date": "10/10",
+    "lastStock": 77562.35
+  },
+  {
+    "date": "11/10",
+    "lastStock": 73056.68
+  },
+  {
+    "date": "12/10",
+    "lastStock": 61892.18
+  },
+  {
+    "date": "13/10",
+    "lastStock": 50192.01
+  },
+  {
+    "date": "14/10",
+    "lastStock": 37288.44
+  },
+  {
+    "date": "15/10",
+    "lastStock": 48262.43
+  },
+  {
+    "date": "16/10",
+    "lastStock": 57424.79
+  },
+  {
+    "date": "17/10",
+    "lastStock": 67966.12
+  },
+  {
+    "date": "18/10",
+    "lastStock": 63623.54
+  }
 ];
-
 export const VENDORS = [
   {
-    vendor: "PT. CENTRAL OIL INDONESIA NICON",
-    deliveries: 2,
-    totalQty: 22000.0,
-    avgQty: 11000.0,
-    remarks: ["DONE"],
-  },
-  {
-    vendor: "PT. BUMI ENERGI SEJATI",
-    deliveries: 2,
-    totalQty: 24000.0,
-    avgQty: 12000.0,
-    remarks: ["DONE"],
-  },
+    "vendor": "PT. CENTRAL OIL INDONESIA NICON",
+    "deliveries": 4,
+    "totalQty": 75000.0,
+    "avgQty": 18750.0,
+    "remarks": [
+      "DONE"
+    ]
+  }
 ];
-
 export const INTER_COMPANY = {
-  note: "BPSP loan CLOSED. Entry MPS 1.558 L (5–10 Okt) = site transfer. Sudah di-exclude dari metrik fleet.",
-  events: [
+  "note": "Entry MPS (85,54 L) pada 15 & 18 Okt dicatat sebagai inter-company transfer dan sudah di-exclude dari metrik fleet. Transaksi HUB (132,14 L) dimasukkan ke dalam kategori Support operasional.",
+  "events": [
     {
-      date: "2026-10-05",
-      unit: "PT. MPS",
-      qty: 55.45,
-      direction: "OUT",
-      type: "SITE_TRANSFER",
-      note: "Refuel LV-001 MPS",
+      "date": "2026-10-15",
+      "unit": "PT. MPS",
+      "qty": 45.66,
+      "direction": "OUT",
+      "type": "SITE_TRANSFER",
+      "note": "Refuel MPS"
     },
     {
-      date: "2026-10-06",
-      unit: "PT. MPS",
-      qty: 1383.0,
-      direction: "OUT",
-      type: "SITE_TRANSFER",
-      note: "Batch refuel 16 unit",
-    },
-    {
-      date: "2026-10-08",
-      unit: "PT. MPS",
-      qty: 52.53,
-      direction: "OUT",
-      type: "SITE_TRANSFER",
-      note: "Refuel LV-002 MPS",
-    },
-    {
-      date: "2026-10-10",
-      unit: "PT. MPS",
-      qty: 66.61,
-      direction: "OUT",
-      type: "SITE_TRANSFER",
-      note: "Refuel LV-001 MPS",
-    },
-  ],
+      "date": "2026-10-18",
+      "unit": "PT. MPS",
+      "qty": 39.88,
+      "direction": "OUT",
+      "type": "SITE_TRANSFER",
+      "note": "Refuel MPS"
+    }
+  ]
 };
-
 export const LOCATION_COLORS = [
   C.accent,
   C.gold,
